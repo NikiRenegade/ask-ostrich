@@ -1,0 +1,41 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Rider ignored files
+/.idea/
+/.idea/*
+!.idea/codeStyles
+!.idea/runConfigurations
+
+# Rider project files (не нужны в git)
+*.iml
+/modules.xml
+/projectSettingsUpdater.xml
+/contentModel.xml
+/.idea.ask-ostrich.iml
+/indexLayout.xml
+/vcs.xml
+/encodings.xml
+
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# Build outputs
+bin/
+obj/
+out/
+
+# User-specific
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS-specific
+.DS_Store
+Thumbs.db
