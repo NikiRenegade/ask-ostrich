@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "aaZY7xLlT0k=",
+  "success": true,
+  "projectFilePath": "/Users/yakushnikita/Documents/Git/ask-ostrich/backend/src/SecurityService/Presentation/SecurityService.Presentation.API/SecurityService.Presentation.API.csproj",
+  "expectedPackageFiles": [
+    "/Users/yakushnikita/.nuget/packages/microsoft.aspnetcore.openapi/9.0.2/microsoft.aspnetcore.openapi.9.0.2.nupkg.sha512",
+    "/Users/yakushnikita/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
