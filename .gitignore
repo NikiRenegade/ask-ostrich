@@ -1,0 +1,4 @@
+.idea/
+*.rider.project.*
+obj/
+.DS_Store
