@@ -29,6 +29,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecurityService.Presentation.API", "src\SecurityService\Presentation\SecurityService.Presentation.API\SecurityService.Presentation.API.csproj", "{EE429482-537F-4261-B35D-E2825AE5C854}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{754FC069-D67B-A9D7-50A1-8D1CA196D8F1}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,5 +145,8 @@ Global
 		{A202ACBF-D76B-498C-A2F9-BCD5C9CFC8D0} = {4D4E214C-F2A9-B5F6-D9EE-2B3E9B778915}
 		{9C6B3AD7-0B0A-A160-485C-17CCC79A7BE0} = {108265AA-95DA-60A3-7433-73B388B13BEB}
 		{EE429482-537F-4261-B35D-E2825AE5C854} = {9C6B3AD7-0B0A-A160-485C-17CCC79A7BE0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD0C7378-0188-46D8-BFDE-88C88CC2A286}
 	EndGlobalSection
 EndGlobal
