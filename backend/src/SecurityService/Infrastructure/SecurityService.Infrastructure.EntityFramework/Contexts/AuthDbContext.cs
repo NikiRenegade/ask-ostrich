@@ -4,10 +4,10 @@ using SecurityService.Infrastructure.EntityFramework.Configurations;
 
 namespace SecurityService.Infrastructure.EntityFramework.Contexts;
 
-public class DatabaseContext
+public class AuthDbContext
     : DbContext
 {
-    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+    public AuthDbContext(DbContextOptions<AuthDbContext> options)
         : base(options)
     {
         
