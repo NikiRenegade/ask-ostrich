@@ -9,6 +9,7 @@ public class SurveyManageDbContext : DbContext
     public SurveyManageDbContext(DbContextOptions<SurveyManageDbContext> options)
         : base(options)
     {
+        Database.AutoTransactionBehavior = AutoTransactionBehavior.Never;
     }
 
     public DbSet<Survey> Surveys => Set<Survey>();
@@ -17,6 +18,8 @@ public class SurveyManageDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Survey>().ToCollection("surveys");
+        modelBuilder.Entity<Survey>().OwnsMany(s => s.Questions, question => question.OwnsMany(q => q.Options));
+
         modelBuilder.Entity<User>().ToCollection("users");
     }
 }

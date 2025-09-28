@@ -6,22 +6,19 @@ public class Question
 {
     private readonly List<Option> _options = [];
 
-    public Guid Id { get; set; }
     public QuestionType Type { get; set; }
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
     public int Order { get; set; } = 0;
-    public string InnerText { get; set; }
+    public string InnerText { get; set; } = string.Empty;
     public IEnumerable<Option> Options => _options.ToList();
 
     // Parameterless constructor for Entity Framework
     public Question()
     {
-        Id = Guid.NewGuid();
     }
 
     public Question(QuestionType type, string title, int order, string innerText)
     {        
-        Id = Guid.NewGuid();
         Type = type;
         Title = title;
         Order = order;
