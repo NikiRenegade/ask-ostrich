@@ -58,7 +58,7 @@ Content-Type: {{contentType}}
 ###
 
 ### 6. Update User (Replace userId with actual ID)
-PUT {{baseUrl}}/api/user
+PUT {{baseUrl}}/api/user/{{userId}}
 Content-Type: {{contentType}}
 
 {
@@ -72,7 +72,7 @@ Content-Type: {{contentType}}
 ###
 
 ### 7. Update User - Change Email Only
-PUT {{baseUrl}}/api/user
+PUT {{baseUrl}}/api/user/{{userId}}
 Content-Type: {{contentType}}
 
 {
@@ -88,110 +88,5 @@ Content-Type: {{contentType}}
 ### 8. Delete User (Replace userId with actual ID)
 DELETE {{baseUrl}}/api/user/{{userId}}
 Accept: {{contentType}}
-
-###
-
-### 9. Test Error Cases
-
-### 9.1 Create User with Invalid Data - Empty Username
-POST {{baseUrl}}/api/user
-Content-Type: {{contentType}}
-
-{
-  "userName": "",
-  "email": "invalid@example.com",
-  "firstName": "Invalid",
-  "lastName": "User"
-}
-
-###
-
-### 9.2 Create User with Invalid Data - Empty Email
-POST {{baseUrl}}/api/user
-Content-Type: {{contentType}}
-
-{
-  "userName": "invalid.user",
-  "email": "",
-  "firstName": "Invalid",
-  "lastName": "User"
-}
-
-###
-
-### 9.3 Create User with Invalid Data - Missing Required Fields
-POST {{baseUrl}}/api/user
-Content-Type: {{contentType}}
-
-{
-  "userName": "incomplete.user"
-}
-
-###
-
-### 9.4 Create User with Invalid Email Format
-POST {{baseUrl}}/api/user
-Content-Type: {{contentType}}
-
-{
-  "userName": "invalid.email",
-  "email": "not-an-email",
-  "firstName": "Invalid",
-  "lastName": "Email"
-}
-
-###
-
-### 9.5 Get Non-existent User
-GET {{baseUrl}}/api/user/00000000-0000-0000-0000-000000000999
-Accept: {{contentType}}
-
-###
-
-### 9.6 Update Non-existent User
-PUT {{baseUrl}}/api/user
-Content-Type: {{contentType}}
-
-{
-  "id": "00000000-0000-0000-0000-000000000999",
-  "userName": "non.existent",
-  "email": "non.existent@example.com",
-  "firstName": "Non",
-  "lastName": "Existent"
-}
-
-###
-
-### 9.7 Delete Non-existent User
-DELETE {{baseUrl}}/api/user/00000000-0000-0000-0000-000000000999
-Accept: {{contentType}}
-
-###
-
-### 10. Test Duplicate Username/Email (if validation is implemented)
-
-### 10.1 Create User with Duplicate Username
-POST {{baseUrl}}/api/user
-Content-Type: {{contentType}}
-
-{
-  "userName": "john.doe",
-  "email": "different@example.com",
-  "firstName": "Different",
-  "lastName": "User"
-}
-
-###
-
-### 10.2 Create User with Duplicate Email
-POST {{baseUrl}}/api/user
-Content-Type: {{contentType}}
-
-{
-  "userName": "different.user",
-  "email": "john.doe@example.com",
-  "firstName": "Different",
-  "lastName": "User"
-}
 
 ###

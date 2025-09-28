@@ -13,6 +13,12 @@ public class Question
     public string InnerText { get; set; }
     public IEnumerable<Option> Options => _options.ToList();
 
+    // Parameterless constructor for Entity Framework
+    public Question()
+    {
+        Id = Guid.NewGuid();
+    }
+
     public Question(QuestionType type, string title, int order, string innerText)
     {        
         Id = Guid.NewGuid();

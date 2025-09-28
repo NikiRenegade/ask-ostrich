@@ -13,11 +13,21 @@ public class Survey : BaseEntity
     public string ShortUrl { get; set; } 
     public IEnumerable<Question> Questions => _questions.ToList();
 
-    public Survey(string title, string desctiption, User author)
+    // Parameterless constructor for Entity Framework
+    public Survey()
+    {
+        Id = Guid.NewGuid();
+        ShortUrl = string.Empty;
+        IsPublished = false;
+        CreatedAt = DateTime.Now;
+        LastUpdateAt = DateTime.Now;
+    }
+
+    public Survey(string title, string description, User author)
     {
         Id = Guid.NewGuid();
         Title = title;
-        Description = desctiption;
+        Description = description;
         ShortUrl = string.Empty;
         Author = author;
         IsPublished = false;

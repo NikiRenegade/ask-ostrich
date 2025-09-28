@@ -7,6 +7,11 @@ public class User: BaseEntity
     public string FirstName { get; set; }
     public string LastName { get; set; }
 
+    // Parameterless constructor for Entity Framework
+    public User()
+    {
+    }
+
     public User(string userName, string email, string firstName, string lastName)
     {
         UserName = userName;

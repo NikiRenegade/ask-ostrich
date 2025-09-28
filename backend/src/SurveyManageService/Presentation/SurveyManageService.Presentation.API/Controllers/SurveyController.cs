@@ -16,7 +16,7 @@ public class SurveyController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IList<SurveyDto>>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IList<SurveyDto>>> GetAll(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -30,7 +30,7 @@ public class SurveyController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SurveyDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<SurveyDto>> GetById(Guid id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -48,7 +48,7 @@ public class SurveyController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<SurveyCreatedDto>> CreateAsync([FromBody] CreateSurveyDto request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<SurveyCreatedDto>> Create([FromBody] CreateSurveyDto request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -58,7 +58,7 @@ public class SurveyController : ControllerBase
             }
 
             var result = await _surveyService.AddAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
         catch (ArgumentException ex)
         {
@@ -71,7 +71,7 @@ public class SurveyController : ControllerBase
     }
 
     [HttpPut()]
-    public async Task<IActionResult> UpdateAsync([FromBody] UpdateSurveyDto request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Update([FromBody] UpdateSurveyDto request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -94,7 +94,7 @@ public class SurveyController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
         try
         {

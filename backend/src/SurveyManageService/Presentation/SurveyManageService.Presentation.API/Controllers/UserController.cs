@@ -16,7 +16,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IList<UserDto>>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IList<UserDto>>> GetAll(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -30,7 +30,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<UserDto>> GetById(Guid id, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -48,7 +48,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserCreatedDto>> CreateAsync([FromBody] CreateUserDto request, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<UserCreatedDto>> Create([FromBody] CreateUserDto request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -58,7 +58,7 @@ public class UserController : ControllerBase
             }
 
             var result = await _userService.AddAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
         catch (ArgumentException ex)
         {
@@ -70,8 +70,8 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPut()]
-    public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserDto request, CancellationToken cancellationToken = default)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDto request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -94,7 +94,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
         try
         {
