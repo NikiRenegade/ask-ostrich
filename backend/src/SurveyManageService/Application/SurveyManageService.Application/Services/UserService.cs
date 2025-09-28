@@ -1,0 +1,54 @@
+using SurveyManageService.Application.Mappers;
+using SurveyManageService.Domain.DTO;
+using SurveyManageService.Domain.Interfaces.Repositories;
+using SurveyManageService.Domain.Interfaces.Services;
+
+namespace SurveyManageService.Application.Services
+{
+    public class UserService : IUserService
+    {
+        private readonly IUserRepository _repository;
+
+        public UserService(IUserRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public async Task<IList<UserDto>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            var users = await _repository.GetAllAsync(cancellationToken);
+            return users.Select(UserMapper.ToDto).ToList();
+        }
+
+        public async Task<UserDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var user = await _repository.GetByIdAsync(id, cancellationToken);
+            return user != null ? UserMapper.ToDto(user) : null;
+        }
+
+        public async Task<UserCreatedDto> AddAsync(CreateUserDto request, CancellationToken cancellationToken = default)
+        {
+            var user = UserMapper.ToEntity(request);
+            await _repository.AddAsync(user, cancellationToken);
+            
+            return new UserCreatedDto { Id = user.Id };
+        }
+
+        public async Task UpdateAsync(UpdateUserDto request, CancellationToken cancellationToken = default)
+        {
+            var existingUser = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            if (existingUser == null)
+            {
+                throw new ArgumentException("User not found", nameof(request.Id));
+            }
+
+            var updatedUser = UserMapper.ToEntity(request);
+            await _repository.UpdateAsync(updatedUser, cancellationToken);
+        }
+
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            await _repository.DeleteAsync(id, cancellationToken);
+        }
+    }
+}

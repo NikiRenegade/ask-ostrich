@@ -8,6 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application\SurveyManageService.Application\SurveyManageService.Application.csproj" />
+    <ProjectReference Include="..\..\Domain\SurveyManageService.Domain.Interfaces\SurveyManageService.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\SurveyManageService.Infrastructure.Repositories\SurveyManageService.Infrastructure.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

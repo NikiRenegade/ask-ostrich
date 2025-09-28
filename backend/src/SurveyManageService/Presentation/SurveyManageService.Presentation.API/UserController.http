@@ -1,0 +1,197 @@
+### UserController API Tests
+### Base URL - Update this to match your local development server
+@baseUrl = https://localhost:7001
+@contentType = application/json
+
+### Variables for testing
+@userId = 00000000-0000-0000-0000-000000000000
+
+### 1. Get All Users
+GET {{baseUrl}}/api/user
+Accept: {{contentType}}
+
+###
+
+### 2. Get User by ID (Replace with actual ID after creating a user)
+GET {{baseUrl}}/api/user/{{userId}}
+Accept: {{contentType}}
+
+###
+
+### 3. Create a new User
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "john.doe",
+  "email": "john.doe@example.com",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+### 4. Create another User
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "jane.smith",
+  "email": "jane.smith@example.com",
+  "firstName": "Jane",
+  "lastName": "Smith"
+}
+
+###
+
+### 5. Create User with Special Characters
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "maria.garcia-lopez",
+  "email": "maria.garcia@example.com",
+  "firstName": "María",
+  "lastName": "García-López"
+}
+
+###
+
+### 6. Update User (Replace userId with actual ID)
+PUT {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "id": "{{userId}}",
+  "userName": "john.doe.updated",
+  "email": "john.doe.updated@example.com",
+  "firstName": "John",
+  "lastName": "Doe Updated"
+}
+
+###
+
+### 7. Update User - Change Email Only
+PUT {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "id": "{{userId}}",
+  "userName": "john.doe",
+  "email": "john.doe.newemail@example.com",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+###
+
+### 8. Delete User (Replace userId with actual ID)
+DELETE {{baseUrl}}/api/user/{{userId}}
+Accept: {{contentType}}
+
+###
+
+### 9. Test Error Cases
+
+### 9.1 Create User with Invalid Data - Empty Username
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "",
+  "email": "invalid@example.com",
+  "firstName": "Invalid",
+  "lastName": "User"
+}
+
+###
+
+### 9.2 Create User with Invalid Data - Empty Email
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "invalid.user",
+  "email": "",
+  "firstName": "Invalid",
+  "lastName": "User"
+}
+
+###
+
+### 9.3 Create User with Invalid Data - Missing Required Fields
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "incomplete.user"
+}
+
+###
+
+### 9.4 Create User with Invalid Email Format
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "invalid.email",
+  "email": "not-an-email",
+  "firstName": "Invalid",
+  "lastName": "Email"
+}
+
+###
+
+### 9.5 Get Non-existent User
+GET {{baseUrl}}/api/user/00000000-0000-0000-0000-000000000999
+Accept: {{contentType}}
+
+###
+
+### 9.6 Update Non-existent User
+PUT {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "id": "00000000-0000-0000-0000-000000000999",
+  "userName": "non.existent",
+  "email": "non.existent@example.com",
+  "firstName": "Non",
+  "lastName": "Existent"
+}
+
+###
+
+### 9.7 Delete Non-existent User
+DELETE {{baseUrl}}/api/user/00000000-0000-0000-0000-000000000999
+Accept: {{contentType}}
+
+###
+
+### 10. Test Duplicate Username/Email (if validation is implemented)
+
+### 10.1 Create User with Duplicate Username
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "john.doe",
+  "email": "different@example.com",
+  "firstName": "Different",
+  "lastName": "User"
+}
+
+###
+
+### 10.2 Create User with Duplicate Email
+POST {{baseUrl}}/api/user
+Content-Type: {{contentType}}
+
+{
+  "userName": "different.user",
+  "email": "john.doe@example.com",
+  "firstName": "Different",
+  "lastName": "User"
+}
+
+###
