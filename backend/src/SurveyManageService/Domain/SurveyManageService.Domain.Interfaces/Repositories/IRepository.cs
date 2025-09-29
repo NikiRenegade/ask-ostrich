@@ -10,7 +10,7 @@ public interface IRepository<T> where T : BaseEntity
 
     Task AddAsync(T entity, CancellationToken cancellationToken);
 
-    Task UpdateAsync(T entity, CancellationToken cancellationToken);
+    Task<bool> UpdateAsync(T entity, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }

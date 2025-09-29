@@ -30,10 +30,17 @@ public class UserRepository: IUserRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(User user, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateAsync(User user, CancellationToken cancellationToken = default)
     {
+        var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id, cancellationToken);
+        if (existingUser == null)
+        {
+            return false;
+        }
+
         _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        return true;
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)

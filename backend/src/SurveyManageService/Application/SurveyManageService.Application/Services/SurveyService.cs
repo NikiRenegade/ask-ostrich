@@ -48,14 +48,8 @@ namespace SurveyManageService.Application.Services
             return new SurveyCreatedDto { Id = survey.Id };
         }
 
-        public async Task UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken = default)
         {
-            var existingSurvey = await _repository.GetByIdAsync(request.Id, cancellationToken);
-            if (existingSurvey == null)
-            {
-                throw new ArgumentException("Survey not found", nameof(request.Id));
-            }
-
             var author = await _userRepository.GetByIdAsync(request.AuthorGuid, cancellationToken);
             if (author == null)
             {
@@ -63,7 +57,7 @@ namespace SurveyManageService.Application.Services
             }
 
             var updatedSurvey = SurveyMapper.ToEntity(request, author);
-            await _repository.UpdateAsync(updatedSurvey, cancellationToken);
+            return await _repository.UpdateAsync(updatedSurvey, cancellationToken);
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)

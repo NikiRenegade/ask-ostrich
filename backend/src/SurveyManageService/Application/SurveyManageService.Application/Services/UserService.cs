@@ -34,16 +34,10 @@ namespace SurveyManageService.Application.Services
             return new UserCreatedDto { Id = user.Id };
         }
 
-        public async Task UpdateAsync(UpdateUserDto request, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateAsync(UpdateUserDto request, CancellationToken cancellationToken = default)
         {
-            var existingUser = await _repository.GetByIdAsync(request.Id, cancellationToken);
-            if (existingUser == null)
-            {
-                throw new ArgumentException("User not found", nameof(request.Id));
-            }
-
             var updatedUser = UserMapper.ToEntity(request);
-            await _repository.UpdateAsync(updatedUser, cancellationToken);
+            return await _repository.UpdateAsync(updatedUser, cancellationToken);
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)

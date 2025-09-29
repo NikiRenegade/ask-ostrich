@@ -80,7 +80,11 @@ public class UserController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            await _userService.UpdateAsync(request, cancellationToken);
+            var updated = await _userService.UpdateAsync(request, cancellationToken);
+            if (!updated)
+            {
+                return NotFound(new { message = $"User with ID {request.Id} not found" });
+            }
             return NoContent();
         }
         catch (ArgumentException ex)

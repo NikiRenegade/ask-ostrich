@@ -10,7 +10,7 @@ public interface IUserService
 
     Task<UserCreatedDto> AddAsync(CreateUserDto request, CancellationToken cancellationToken);
 
-    Task UpdateAsync(UpdateUserDto request, CancellationToken cancellationToken);
+    Task<bool> UpdateAsync(UpdateUserDto request, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }

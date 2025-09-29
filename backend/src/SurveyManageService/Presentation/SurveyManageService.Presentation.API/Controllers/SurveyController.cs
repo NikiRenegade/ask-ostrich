@@ -80,7 +80,11 @@ public class SurveyController : ControllerBase
                 return BadRequest(ModelState);
             }
 
-            await _surveyService.UpdateAsync(request, cancellationToken);
+            var updated = await _surveyService.UpdateAsync(request, cancellationToken);
+            if (!updated)
+            {
+                return NotFound(new { message = $"Survey with ID {request.Id} not found" });
+            }
             return NoContent();
         }
         catch (ArgumentException ex)

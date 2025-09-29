@@ -10,7 +10,7 @@ public interface ISurveyService
 
     Task<SurveyCreatedDto> AddAsync(CreateSurveyDto request, CancellationToken cancellationToken);
 
-    Task UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken);
+    Task<bool> UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
