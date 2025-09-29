@@ -36,7 +36,7 @@ public class SurveyRepository: ISurveyRepository
 
     public async Task<bool> UpdateAsync(Survey survey, CancellationToken cancellationToken = default)
     {
-        var existingSurvey = await _dbContext.Surveys.FirstOrDefaultAsync(s => s.Id == survey.Id, cancellationToken);
+        var existingSurvey = await _dbContext.Surveys.AsNoTracking().FirstOrDefaultAsync(s => s.Id == survey.Id, cancellationToken);
         if (existingSurvey == null)
         {
             return false;

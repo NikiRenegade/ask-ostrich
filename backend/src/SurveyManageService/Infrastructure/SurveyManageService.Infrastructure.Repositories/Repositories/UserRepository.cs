@@ -32,7 +32,7 @@ public class UserRepository: IUserRepository
 
     public async Task<bool> UpdateAsync(User user, CancellationToken cancellationToken = default)
     {
-        var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id, cancellationToken);
+        var existingUser = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == user.Id, cancellationToken);
         if (existingUser == null)
         {
             return false;
