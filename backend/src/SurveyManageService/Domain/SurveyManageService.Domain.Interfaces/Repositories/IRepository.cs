@@ -12,5 +12,5 @@ public interface IRepository<T> where T : BaseEntity
 
     Task UpdateAsync(T entity, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }

@@ -46,9 +46,9 @@ namespace SurveyManageService.Application.Services
             await _repository.UpdateAsync(updatedUser, cancellationToken);
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            await _repository.DeleteAsync(id, cancellationToken);
+            return await _repository.DeleteAsync(id, cancellationToken);
         }
     }
 }

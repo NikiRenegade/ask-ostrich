@@ -1,6 +1,4 @@
-﻿using SurveyManageService.Domain.ValueObjects;
-
-namespace SurveyManageService.Domain.Entities;
+﻿namespace SurveyManageService.Domain.Entities;
 
 public class Question
 {

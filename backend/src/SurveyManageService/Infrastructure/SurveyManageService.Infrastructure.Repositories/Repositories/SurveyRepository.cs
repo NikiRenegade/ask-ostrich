@@ -40,14 +40,15 @@ public class SurveyRepository: ISurveyRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var entity = await _dbContext.Surveys.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         if (entity is null)
         {
-            return;
+            return false;
         }
         _dbContext.Surveys.Remove(entity);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        return true;
     }
 }

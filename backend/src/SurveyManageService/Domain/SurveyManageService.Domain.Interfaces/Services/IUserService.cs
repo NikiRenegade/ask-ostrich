@@ -12,5 +12,5 @@ public interface IUserService
 
     Task UpdateAsync(UpdateUserDto request, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }

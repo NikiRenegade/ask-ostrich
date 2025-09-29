@@ -1,4 +1,4 @@
-﻿namespace SurveyManageService.Domain.ValueObjects;
+﻿namespace SurveyManageService.Domain.Entities;
 
 public class Option
 {

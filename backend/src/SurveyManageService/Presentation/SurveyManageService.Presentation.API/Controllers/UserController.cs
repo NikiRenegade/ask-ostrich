@@ -98,7 +98,11 @@ public class UserController : ControllerBase
     {
         try
         {
-            await _userService.DeleteAsync(id, cancellationToken);
+            var deleted = await _userService.DeleteAsync(id, cancellationToken);
+            if (!deleted)
+            {
+                return NotFound(new { message = $"User with ID {id} not found" });
+            }
             return NoContent();
         }
         catch (Exception ex)

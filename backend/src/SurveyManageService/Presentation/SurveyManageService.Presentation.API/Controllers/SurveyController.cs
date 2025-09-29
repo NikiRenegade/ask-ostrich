@@ -98,7 +98,11 @@ public class SurveyController : ControllerBase
     {
         try
         {
-            await _surveyService.DeleteAsync(id, cancellationToken);
+            var deleted = await _surveyService.DeleteAsync(id, cancellationToken);
+            if (!deleted)
+            {
+                return NotFound(new { message = $"Survey with ID {id} not found" });
+            }
             return NoContent();
         }
         catch (Exception ex)

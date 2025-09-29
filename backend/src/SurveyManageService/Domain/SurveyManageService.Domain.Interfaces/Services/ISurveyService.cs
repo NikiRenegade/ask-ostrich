@@ -12,5 +12,5 @@ public interface ISurveyService
 
     Task UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
