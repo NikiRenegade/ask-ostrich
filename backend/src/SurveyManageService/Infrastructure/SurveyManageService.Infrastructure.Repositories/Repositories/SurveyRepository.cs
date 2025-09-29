@@ -36,13 +36,23 @@ public class SurveyRepository: ISurveyRepository
 
     public async Task<bool> UpdateAsync(Survey survey, CancellationToken cancellationToken = default)
     {
-        var existingSurvey = await _dbContext.Surveys.AsNoTracking().FirstOrDefaultAsync(s => s.Id == survey.Id, cancellationToken);
+        var existingSurvey = await _dbContext.Surveys.FirstOrDefaultAsync(s => s.Id == survey.Id, cancellationToken);
         if (existingSurvey == null)
         {
             return false;
         }
 
-        _dbContext.Surveys.Update(survey);
+        // Update properties manually to avoid shadow property issues
+        existingSurvey.Title = survey.Title;
+        existingSurvey.Description = survey.Description;
+        existingSurvey.IsPublished = survey.IsPublished;
+        existingSurvey.Author = survey.Author;
+        existingSurvey.LastUpdateAt = DateTime.Now;
+        existingSurvey.ShortUrl = survey.ShortUrl;
+
+        // Update questions and their options
+        existingSurvey.UpdateQuestions(survey.Questions.ToList());
+
         await _dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }

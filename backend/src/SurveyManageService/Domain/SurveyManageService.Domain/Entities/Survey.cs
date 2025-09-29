@@ -42,4 +42,13 @@ public class Survey : BaseEntity
             _questions.AddRange(questions);
         }
     }
+
+    public void UpdateQuestions(List<Question> questions)
+    {
+        _questions.Clear();
+        if (questions != null && questions.Any())
+        {
+            _questions.AddRange(questions);
+        }
+    }
 }
