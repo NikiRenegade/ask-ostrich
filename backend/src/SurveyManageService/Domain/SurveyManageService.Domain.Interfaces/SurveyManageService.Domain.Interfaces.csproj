@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SurveyManageService.Domain\SurveyManageService.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
