@@ -32,7 +32,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-    options.CallbackPath = "/signin-google";
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 });
 
 // ===== Authorization =====
@@ -43,9 +43,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // ===== Application Services =====
+builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 // ===== Repositories =====
