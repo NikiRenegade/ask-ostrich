@@ -7,6 +7,7 @@ using SecurityService.Application.Services;
 using SecurityService.Domain.Entities;
 using SecurityService.Domain.Interfaces.Repositories;
 using SecurityService.Infrastructure.EntityFramework.Contexts;
+using SecurityService.Infrastructure.Identity;
 using SecurityService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
