@@ -1,0 +1,59 @@
+### SurveyResultController API Tests for Survey Answers
+### Base URL
+@baseUrl = https://localhost:7001
+@contentType = application/json
+
+### Variables
+@userId = 00000000-0000-0000-0000-000000000000
+@surveyId = 00000000-0000-0000-0000-000000000000
+@surveyResultId = REPLACE_WITH_ACTUAL_ID
+@questionId1 = REPLACE_WITH_Q1_ID
+@questionId2 = REPLACE_WITH_Q2_ID
+@questionId3 = REPLACE_WITH_Q3_ID
+
+### 1. Submit Answers for "Customer Satisfaction Survey"
+POST {{baseUrl}}/api/SurveyResult
+Content-Type: {{contentType}}
+
+{
+  "userId": "{{userId}}",
+  "surveyId": "{{surveyId}}",
+  "datePassed": "2025-10-08T10:00:00Z",
+  "answers": [
+    { 
+      "questionId": "{{questionId1}}",
+      "questionTitle": "How satisfied are you with our service?",
+      "values": ["Very satisfied"]
+    },
+    { 
+      "questionId": "{{questionId2}}",
+      "questionTitle": "What is your preferred contact method?",
+      "values": ["email"]
+    },
+    { 
+      "questionId": "{{questionId3}}",
+      "questionTitle": "Which features do you use?",
+      "values": ["mobile","web"]
+    }
+  ]
+}
+
+###
+
+### 2. Update Survey Result (Replace surveyResultId with actual ID)
+PUT {{baseUrl}}/api/SurveyResult
+Content-Type: {{contentType}}
+
+{
+  "id": "{{surveyResultId}}",
+  "userId": "{{userId}}",
+  "surveyId": "{{surveyId}}",
+  "datePassed": "2025-10-08T12:00:00Z",
+  "answers": [
+    { 
+      "questionId": "{{questionId1}}",
+      "questionTitle": "How satisfied are you with our updated service?",
+      "values": ["Satisfied"]
+    }
+  ]
+}

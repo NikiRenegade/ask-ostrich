@@ -53,32 +53,32 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyManageService.Presentation.API", "src\SurveyManageService\Presentation\SurveyManageService.Presentation.API\SurveyManageService.Presentation.API.csproj", "{F2C7556B-9430-47F7-91EC-36CD6792B4BE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SurveyResultService", "SurveyResultService", "{AFF55B51-953A-DA20-C2EE-362752DC1B39}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SurveyResponseService", "SurveyResponseService", "{AFF55B51-953A-DA20-C2EE-362752DC1B39}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{6FD61242-7D0C-7FE6-A57F-0828FA88D57D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResultService.Application", "src\SurveyResultService\Application\SurveyResultService.Application\SurveyResultService.Application.csproj", "{80AB2670-BD40-428B-A936-2B0660C68768}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Application", "src\SurveyResponseService\Application\SurveyResponseService.Application\SurveyResponseService.Application.csproj", "{80AB2670-BD40-428B-A936-2B0660C68768}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{8C2A271E-E107-F7EF-EBDD-16A9258AEA03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResultService.Domain", "src\SurveyResultService\Domain\SurveyResultService.Domain\SurveyResultService.Domain.csproj", "{96134877-CA19-4C2E-8A27-A0B786FFEA54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Domain", "src\SurveyResponseService\Domain\SurveyResponseService.Domain\SurveyResponseService.Domain.csproj", "{96134877-CA19-4C2E-8A27-A0B786FFEA54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResultService.Domain.Interfaces", "src\SurveyResultService\Domain\SurveyResultService.Domain.Interfaces\SurveyResultService.Domain.Interfaces.csproj", "{F00FD209-DC83-4A71-B1EA-8B965A7D8679}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Domain.Interfaces", "src\SurveyResponseService\Domain\SurveyResponseService.Domain.Interfaces\SurveyResponseService.Domain.Interfaces.csproj", "{F00FD209-DC83-4A71-B1EA-8B965A7D8679}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{C68A6A60-4784-412A-BBB3-7D534B6AF1EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResultService.Infrastructure", "src\SurveyResultService\Infrastructure\SurveyResultService.Infrastructure\SurveyResultService.Infrastructure.csproj", "{F57FA523-6321-4B2D-9FF6-0281D69985F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Infrastructure", "src\SurveyResponseService\Infrastructure\SurveyResponseService.Infrastructure\SurveyResponseService.Infrastructure.csproj", "{F57FA523-6321-4B2D-9FF6-0281D69985F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResultService.Infrastructure.EntityFramework", "src\SurveyResultService\Infrastructure\SurveyResultService.Infrastructure.EntityFramework\SurveyResultService.Infrastructure.EntityFramework.csproj", "{F86610E5-3EE5-4EC0-ABD5-0C6B3707CB92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Infrastructure.EntityFramework", "src\SurveyResponseService\Infrastructure\SurveyResponseService.Infrastructure.EntityFramework\SurveyResponseService.Infrastructure.EntityFramework.csproj", "{F86610E5-3EE5-4EC0-ABD5-0C6B3707CB92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResultService.Infrastructure.Repositories", "src\SurveyResultService\Infrastructure\SurveyResultService.Infrastructure.Repositories\SurveyResultService.Infrastructure.Repositories.csproj", "{D179582D-3C43-4C25-8402-94EAD2E1B31D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Infrastructure.Repositories", "src\SurveyResponseService\Infrastructure\SurveyResponseService.Infrastructure.Repositories\SurveyResponseService.Infrastructure.Repositories.csproj", "{D179582D-3C43-4C25-8402-94EAD2E1B31D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{F578A179-7229-7C10-99D8-09638A1B8618}"
 	ProjectSection(SolutionItems) = preProject
 		Controllers\.gitkeep = Controllers\.gitkeep
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResultService.Presentation.API", "src\SurveyResultService\Presentation\SurveyResultService.Presentation.API\SurveyResultService.Presentation.API.csproj", "{17157657-811B-410A-87F4-6680C57F4EEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Presentation.API", "src\SurveyResponseService\Presentation\SurveyResponseService.Presentation.API\SurveyResponseService.Presentation.API.csproj", "{17157657-811B-410A-87F4-6680C57F4EEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\SurveyManageService.Domain\SurveyManageService.Domain.csproj" />
+    <ProjectReference Include="..\..\Domain\SurveyResponseService.Domain\SurveyResponseService.Domain.csproj" />
   </ItemGroup>
 
 </Project>
