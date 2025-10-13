@@ -8,7 +8,16 @@
 
   <ItemGroup>
     <Folder Include="Service/" />
-    <Folder Include="Setting/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\SecurityService.Domain.Interfaces\SecurityService.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\SecurityService.Infrastructure.EntityFramework\SecurityService.Infrastructure.EntityFramework.csproj" />
+    <ProjectReference Include="..\SecurityService.Infrastructure.Repositories\SecurityService.Infrastructure.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

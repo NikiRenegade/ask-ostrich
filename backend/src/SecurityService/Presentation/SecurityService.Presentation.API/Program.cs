@@ -1,50 +1,70 @@
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SecurityService.Application.Interfaces;
+using SecurityService.Application.Services;
+using SecurityService.Domain.Entities;
+using SecurityService.Domain.Interfaces.Repositories;
 using SecurityService.Infrastructure.EntityFramework.Contexts;
+using SecurityService.Infrastructure.Identity;
+using SecurityService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ===== DbContext =====
 var connectionString = builder.Configuration.GetConnectionString("authdbconnection");
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// ===== Identity =====
+builder.Services.AddIdentity<User, Role>()
+    .AddEntityFrameworkStores<AuthDbContext>()
+    .AddDefaultTokenProviders();
+
+// ===== Authentication (Google + Cookies) =====
+builder.Services.AddAuthentication(options =>
 {
-    options.UseNpgsql(connectionString);
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 });
+
+// ===== Authorization =====
+builder.Services.AddAuthorization();
+
+// ===== Controllers + OpenAPI =====
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+
+// ===== Application Services =====
+builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+// ===== Repositories =====
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ===== OpenAPI =====
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+// ===== Middleware =====
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
