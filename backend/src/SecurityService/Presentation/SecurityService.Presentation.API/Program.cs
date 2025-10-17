@@ -7,7 +7,6 @@ using SecurityService.Application.Services;
 using SecurityService.Domain.Entities;
 using SecurityService.Domain.Interfaces.Repositories;
 using SecurityService.Infrastructure.EntityFramework.Contexts;
-using SecurityService.Infrastructure.Identity;
 using SecurityService.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,6 +45,8 @@ builder.Services.AddOpenApi();
 // ===== Application Services =====
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
