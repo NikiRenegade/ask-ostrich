@@ -20,16 +20,16 @@ export const OrderArrows = <T extends { Order: number }>
 
     return (
         <div className="flex flex-col items-center space-y-1">
-            <button
+            {item.Order !== 1 && <button
                 type="button"
                 className="text-gray-500 hover:text-gray-700 leading-none"
                 onClick={moveUp} disabled={item.Order === 1}
-                title="Переместить вверх">↑</button>
-            <button
+                title="Переместить вверх">↑</button> }
+            {item.Order !== list.length && <button
                 type="button"
                 className="text-gray-500 hover:text-gray-700 leading-none"
                 onClick={moveDown} disabled={item.Order === list.length}
-                title="Переместить вниз">↓</button>
+                title="Переместить вниз">↓</button>}
         </div>
     );
 };
