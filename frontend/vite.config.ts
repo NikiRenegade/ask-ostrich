@@ -7,6 +7,6 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    sourcemap: true, // 👈 включаем карты исходников для дебага
+    sourcemap: true,
   },
 })

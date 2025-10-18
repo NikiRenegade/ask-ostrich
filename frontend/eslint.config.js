@@ -25,7 +25,7 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': 'off', // 👈 отключаем базовое правило
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
       'react/prop-types': 'off',
     },
