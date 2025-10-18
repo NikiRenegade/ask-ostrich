@@ -14,13 +14,11 @@ export const OptionEditor: React.FC<OptionEditorProps> = ({ option, onChange, on
                 className="flex-1 border border-gray-300 rounded px-2 py-1"
                 placeholder="Текст варианта"
                 value={option.Title}
-                onChange={(e) => onChange({ ...option, Title: e.target.value })}
-            />
+                onChange={(e) => onChange({ ...option, Title: e.target.value })}/>
             <input
                 type="checkbox"
                 checked={option.IsCorrect}
-                onChange={(e) => onChange({ ...option, IsCorrect: e.target.checked })}
-            />
+                onChange={(e) => onChange({ ...option, IsCorrect: e.target.checked })}/>
             <button
                 type="button"
                 className="text-red-500 hover:text-red-700 font-bold"

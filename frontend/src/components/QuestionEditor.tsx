@@ -42,8 +42,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                 <button
                     type="button"
                     className="text-red-500 font-bold text-xl"
-                    onClick={onDelete}
-                >
+                    onClick={onDelete}>
                     ✕
                 </button>
             </div>
@@ -53,8 +52,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                 className="w-full border border-gray-300 rounded px-3 py-2 mb-2"
                 placeholder="Заголовок вопроса"
                 value={question.Title}
-                onChange={(e) => onChange({ ...question, Title: e.target.value })}
-            />
+                onChange={(e) => onChange({ ...question, Title: e.target.value })}/>
 
             <select
                 className="border border-gray-300 rounded px-2 py-1 mb-2"
@@ -63,10 +61,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                     onChange({
                         ...question,
                         Type: e.target.value as QuestionType,
-                        Options: e.target.value === 'text' ? [] : question.Options,
-                    })
-                }
-            >
+                        Options: e.target.value === 'text' ? [] : question.Options})}>
                 <option value="text">Текстовый ответ</option>
                 <option value="singleChoice">Один выбор</option>
                 <option value="multipleChoice">Множественный выбор</option>
@@ -76,8 +71,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                 className="w-full border border-gray-300 rounded px-3 py-2 mb-2"
                 placeholder="Описание вопроса (InnerText)"
                 value={question.InnerText}
-                onChange={(e) => onChange({ ...question, InnerText: e.target.value })}
-            />
+                onChange={(e) => onChange({ ...question, InnerText: e.target.value })}/>
 
             {(question.Type === 'singleChoice' || question.Type === 'multipleChoice') && (
                 <div>
@@ -90,8 +84,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                             <OptionEditor
                             option={o}
                             onChange={(updated) => updateOptionByValue(o.Value, updated)}
-                            onDelete={() => deleteOptionByValue(o.Value)}
-                            />
+                            onDelete={() => deleteOptionByValue(o.Value)}/>
 
                         </div>
 
@@ -99,8 +92,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                     <button
                         type="button"
                         className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        onClick={addOption}
-                    >
+                        onClick={addOption}>
                         + Добавить вариант
                     </button>
                 </div>

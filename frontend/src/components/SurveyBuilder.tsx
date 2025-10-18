@@ -21,19 +21,16 @@ export const SurveyBuilder: React.FC = () => {
         JSON.stringify(survey, null, 2)
     );
 
-    // 🔁 Синхронизировать JSON при изменении survey
     React.useEffect(() => {
         setJsonText(JSON.stringify(survey, null, 2));
     }, [survey]);
 
-    // 💾 Применить изменения из JSON обратно в survey
     const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const text = e.target.value;
         setJsonText(text);
 
         try {
             const parsed = JSON.parse(text);
-            // Только ключевые поля, чтобы не сломать типизацию
             setSurvey((prev) => ({
                 ...prev,
                 Title: parsed.Title || prev.Title,
@@ -123,8 +120,7 @@ export const SurveyBuilder: React.FC = () => {
                 <textarea
                     className="w-full h-[700px] font-mono text-sm border border-gray-300 rounded p-2 bg-white"
                     value={jsonText}
-                    onChange={handleJsonChange}
-                />
+                    onChange={handleJsonChange}/>
                 <p className="text-xs text-gray-500 mt-1">
                     Изменяй JSON — изменения появятся в опросе (если JSON валидный)
                 </p>
