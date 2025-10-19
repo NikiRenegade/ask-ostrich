@@ -10,15 +10,18 @@ using SecurityService.Application.Interfaces;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IEmailConfirmationService _emailConfirmationService;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IExternalAuthService _externalAuthService;
 
     public AuthController(
         IAuthService authService,
+        IEmailConfirmationService emailConfirmationService,
         IJwtTokenService jwtTokenService,
         IExternalAuthService externalAuthService)
     {
         _authService = authService;
+        _emailConfirmationService = emailConfirmationService;
         _jwtTokenService = jwtTokenService;
         _externalAuthService = externalAuthService;
     }
@@ -27,7 +30,16 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterUserDto dto)
     {
-        var token = await _authService.RegisterUserAsync(dto);
+        string token = await _authService.RegisterUserAsync(dto);
+
+        var confirmLink = Url.Action(
+            nameof(EmailController.ConfirmEmail),
+            "Email",
+            new ConfirmEmailDto { UserName = dto.UserName, Token = token },
+            protocol: HttpContext.Request.Scheme);
+
+        await _emailConfirmationService.SendConfirmationLinkAsync(dto.Email, confirmLink);
+
         return CreatedAtAction(nameof(Register), new { email = dto.Email }, new AuthResponseDto { AccessToken = token });
     }
 

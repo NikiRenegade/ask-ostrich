@@ -33,6 +33,37 @@ namespace SecurityService.Application.Services
         }
 
         /// <summary>
+        /// Генерация токена подтверждения email по имени пользователя.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public async Task<string> GenerateEmailConfirmationTokenByUserNameAsync(string userName)
+        {
+            User user = await _userManager.FindByNameAsync(userName)
+                ?? throw new ArgumentException("Пользователь не существует");
+
+            return await GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        /// <summary>
+        /// Подтверждение email
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<bool> ConfirmEmailAsync(string userName, string token)
+        {
+            User? user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return result.Succeeded;
+        }
+
+        /// <summary>
         /// Проверка пароля пользователя.
         /// </summary>
         public async Task<bool> CheckPasswordAsync(User user, string password)
