@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\SecurityService.Domain.Interfaces\SecurityService.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\SecurityService.Infrastructure.EntityFramework\SecurityService.Infrastructure.EntityFramework.csproj" />
+  </ItemGroup>
+
 </Project>

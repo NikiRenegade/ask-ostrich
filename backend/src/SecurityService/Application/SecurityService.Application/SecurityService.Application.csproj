@@ -7,9 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs/" />
-    <Folder Include="Interfaces/" />
     <Folder Include="Mappers/" />
-    <Folder Include="Services/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="MailKit" Version="4.14.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\SecurityService.Domain.Interfaces\SecurityService.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Domain\SecurityService.Domain\SecurityService.Domain.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\SecurityService.Infrastructure.EntityFramework\SecurityService.Infrastructure.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\SecurityService.Infrastructure\SecurityService.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

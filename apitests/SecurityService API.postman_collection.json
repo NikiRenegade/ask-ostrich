@@ -1,0 +1,157 @@
+{
+	"info": {
+		"_postman_id": "ffad4990-f5be-49a2-8846-f2512535fb5a",
+		"name": "SecurityService API",
+		"description": "Тестирование Auth API + Google OAuth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31679953",
+		"_collection_link": "https://payroll-technology.postman.co/workspace/V2-Payroll-Web-API-Tests~a2c999e9-cde5-407f-bf19-eea0dca972b6/collection/31679953-ffad4990-f5be-49a2-8846-f2512535fb5a?action=share&source=collection_link&creator=31679953"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jexembayevag@gmail.com\",\n  \"password\": \"Password123!\",\n  \"userName\": \"jexembayevag\",\n  \"firstName\": \"Gaukhar\",\n  \"lastName\": \"Jexembayeva\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5046/api/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5046",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jexembayevag@gmail.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5046/api/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5046",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AccessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5046/api/auth/validate-token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5046",
+							"path": [
+								"api",
+								"auth",
+								"validate-token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Google OAuth",
+			"item": [
+				{
+					"name": "Login with Google (Redirect)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5046/api/auth/login-google",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5046",
+							"path": [
+								"api",
+								"auth",
+								"login-google"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Google Response (Manual Test)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5046/api/auth/google-response",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5046",
+							"path": [
+								"api",
+								"auth",
+								"google-response"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "AccessToken",
+			"value": ""
+		}
+	]
+}
