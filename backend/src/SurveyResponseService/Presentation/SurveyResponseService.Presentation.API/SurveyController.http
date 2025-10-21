@@ -1,0 +1,150 @@
+### SurveyController API Tests
+### Base URL - Update this to match your local development server
+@baseUrl = https://localhost:7001
+@contentType = application/json
+
+### Variables for testing
+@surveyId = 00000000-0000-0000-0000-000000000000
+@authorId = 00000000-0000-0000-0000-000000000001
+
+### 1. Get All Surveys
+GET {{baseUrl}}/api/survey
+Accept: {{contentType}}
+
+###
+
+### 2. Get Survey by ID (Replace with actual ID after creating a survey)
+GET {{baseUrl}}/api/survey/{{surveyId}}
+Accept: {{contentType}}
+
+###
+
+### 3. Create a new Survey
+POST {{baseUrl}}/api/survey
+Content-Type: {{contentType}}
+
+{
+  "title": "Customer Satisfaction Survey",
+  "description": "A survey to measure customer satisfaction with our services",
+  "authorGuid": "{{authorId}}",
+  "questions": [
+    {
+      "type": 0,
+      "title": "How satisfied are you with our service?",
+      "order": 1,
+      "innerText": "Please rate your satisfaction level",
+      "options": []
+    },
+    {
+      "type": 1,
+      "title": "What is your preferred contact method?",
+      "order": 2,
+      "innerText": "Select your preferred way to be contacted",
+      "options": [
+        {
+          "title": "Email",
+          "value": "email",
+          "order": 1,
+          "isCorrect": false
+        },
+        {
+          "title": "Phone",
+          "value": "phone",
+          "order": 2,
+          "isCorrect": false
+        },
+        {
+          "title": "SMS",
+          "value": "sms",
+          "order": 3,
+          "isCorrect": false
+        }
+      ]
+    },
+    {
+      "type": 2,
+      "title": "Which features do you use?",
+      "order": 3,
+      "innerText": "Select all features you regularly use",
+      "options": [
+        {
+          "title": "Mobile App",
+          "value": "mobile",
+          "order": 1,
+          "isCorrect": false
+        },
+        {
+          "title": "Web Portal",
+          "value": "web",
+          "order": 2,
+          "isCorrect": false
+        },
+        {
+          "title": "API Integration",
+          "value": "api",
+          "order": 3,
+          "isCorrect": false
+        }
+      ]
+    }
+  ]
+}
+
+###
+
+### 4. Create a simple Survey (minimal data)
+POST {{baseUrl}}/api/survey
+Content-Type: {{contentType}}
+
+{
+  "title": "Simple Survey",
+  "description": "A basic survey with no questions",
+  "authorGuid": "{{authorId}}",
+  "questions": []
+}
+
+###
+
+### 5. Update Survey (Replace surveyId with actual ID)
+PUT {{baseUrl}}/api/survey/{{surveyId}}
+Content-Type: {{contentType}}
+
+{
+  "id": "{{surveyId}}",
+  "title": "Updated Customer Satisfaction Survey",
+  "description": "An updated survey to measure customer satisfaction with our services",
+  "isPublished": true,
+  "authorGuid": "{{authorId}}",
+  "questions": [
+    {
+      "type": 0,
+      "title": "How satisfied are you with our updated service?",
+      "order": 1,
+      "innerText": "Please rate your satisfaction level with our improved service",
+      "options": []
+    }
+  ]
+}
+
+###
+
+### 6. Update Survey - Publish
+PUT {{baseUrl}}/api/survey/{{surveyId}}
+Content-Type: {{contentType}}
+
+{
+  "id": "{{surveyId}}",
+  "title": "Customer Satisfaction Survey",
+  "description": "A survey to measure customer satisfaction with our services",
+  "isPublished": true,
+  "authorGuid": "{{authorId}}",
+  "questions": []
+}
+
+###
+
+### 7. Delete Survey (Replace surveyId with actual ID)
+DELETE {{baseUrl}}/api/survey/{{surveyId}}
+Accept: {{contentType}}
+
+###

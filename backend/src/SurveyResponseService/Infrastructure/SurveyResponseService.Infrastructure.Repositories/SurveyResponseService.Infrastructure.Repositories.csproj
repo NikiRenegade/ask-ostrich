@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<GenerateMSBuildEditorConfigFile>false</GenerateMSBuildEditorConfigFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\SurveyResponseService.Domain.Interfaces\SurveyResponseService.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\SurveyResponseService.Infrastructure.EntityFramework\SurveyResponseService.Infrastructure.EntityFramework.csproj" />
+  </ItemGroup>
+
+</Project>
