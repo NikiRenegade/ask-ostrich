@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI" Version="9.10.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+    <PackageReference Include="OllamaSharp" Version="5.4.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domain\AIAssistantService.Domain.Interfaces\AIAssistantService.Domain.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Domain\AIAssistantService.Domain\AIAssistantService.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
