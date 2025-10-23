@@ -80,6 +80,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyResponseService.Presentation.API", "src\SurveyResponseService\Presentation\SurveyResponseService.Presentation.API\SurveyResponseService.Presentation.API.csproj", "{17157657-811B-410A-87F4-6680C57F4EEE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GatewayService", "GatewayService", "{CC977DB2-03FB-B3D2-064A-6BCC73BDAB7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayService.API", "src\GatewayService\GatewayService.API\GatewayService.API.csproj", "{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -342,6 +346,18 @@ Global
 		{17157657-811B-410A-87F4-6680C57F4EEE}.Release|x64.Build.0 = Release|Any CPU
 		{17157657-811B-410A-87F4-6680C57F4EEE}.Release|x86.ActiveCfg = Release|Any CPU
 		{17157657-811B-410A-87F4-6680C57F4EEE}.Release|x86.Build.0 = Release|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Debug|x64.Build.0 = Debug|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Debug|x86.Build.0 = Debug|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Release|x64.ActiveCfg = Release|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Release|x64.Build.0 = Release|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Release|x86.ActiveCfg = Release|Any CPU
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -383,6 +399,8 @@ Global
 		{D179582D-3C43-4C25-8402-94EAD2E1B31D} = {C68A6A60-4784-412A-BBB3-7D534B6AF1EF}
 		{F578A179-7229-7C10-99D8-09638A1B8618} = {AFF55B51-953A-DA20-C2EE-362752DC1B39}
 		{17157657-811B-410A-87F4-6680C57F4EEE} = {F578A179-7229-7C10-99D8-09638A1B8618}
+		{CC977DB2-03FB-B3D2-064A-6BCC73BDAB7C} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{DAA7F9B2-B1CC-4092-9A52-9DA3D2AA488E} = {CC977DB2-03FB-B3D2-064A-6BCC73BDAB7C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD0C7378-0188-46D8-BFDE-88C88CC2A286}
