@@ -4,6 +4,7 @@ import type { Question } from "../types/Question.ts";
 import type { Survey } from '../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
+import { JsonEditor } from './JsonEditor.tsx';
 
 export const SurveyBuilder: React.FC = () => {
     const [survey, setSurvey] = useState<Survey>({
@@ -114,16 +115,11 @@ export const SurveyBuilder: React.FC = () => {
                     </button>
                 </div>
             </div>
-
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <h2 className="text-xl font-semibold mb-2 text-gray-700">JSON структуры</h2>
-                <textarea
-                    className="w-full h-[700px] font-mono text-sm border border-gray-300 rounded p-2 bg-white"
-                    value={jsonText}
-                    onChange={handleJsonChange}/>
-                <p className="text-xs text-gray-500 mt-1">
-                    Изменяй JSON — изменения появятся в опросе (если JSON валидный)
-                </p>
+                <JsonEditor 
+                    jsonText={jsonText}
+                    onJsonChange={handleJsonChange}
+                />
             </div>
         </div>
     );
