@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 
 interface AIAssistantProps {
     onPromptSubmit?: (prompt: string) => void;
+    messages: ChatMessage[];
+    onMessagesChange: (messages: ChatMessage[]) => void;
 }
 
-interface ChatMessage {
+export interface ChatMessage {
     id: string;
     isUserMessage: boolean;
     content: string;
     isPending?: boolean;
 }
 
-export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
-    const [prompt, setPrompt] = useState<string>('');
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
+export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messages, onMessagesChange }) => {
+    const [prompt, setPrompt] = useState<string>('');    
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,7 +34,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
             isPending: true,
         };
 
-        setMessages((prev) => [...prev, userMessage, aiMessage]);        
+        onMessagesChange([...messages, userMessage, aiMessage]);        
 
         if (onPromptSubmit) {
             onPromptSubmit(userPrompt);
@@ -76,7 +77,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
                                 <div className="flex items-center gap-2">
                                     {!m.isUserMessage && (
                                         <span className="inline-flex items-center justify-center">
-                                            {m.isPending === true ? (
+                                            {m.isPending === true && (
                                                 <svg
                                                     className="h-4 w-4 animate-spin text-gray-500"
                                                     viewBox="0 0 24 24"
@@ -97,8 +98,6 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
                                                         d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                                                     />
                                                 </svg>
-                                            ) : (
-                                                <span className="text-lg">🤖</span>
                                             )}
                                         </span>
                                     )}

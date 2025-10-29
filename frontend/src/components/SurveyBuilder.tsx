@@ -7,6 +7,7 @@ import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
 import { JsonEditor } from './JsonEditor.tsx';
 import { AIAssistant } from './AIAssistant';
+import type { ChatMessage } from './AIAssistant';
 
 import 'react-tabs/style/react-tabs.css';
 
@@ -25,6 +26,8 @@ export const SurveyBuilder: React.FC = () => {
     const [jsonText, setJsonText] = useState<string>(
         JSON.stringify(survey, null, 2)
     );
+
+    const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
 
     React.useEffect(() => {
         setJsonText(JSON.stringify(survey, null, 2));
@@ -137,7 +140,11 @@ export const SurveyBuilder: React.FC = () => {
                     </TabList>
 
                     <TabPanel>
-                        <AIAssistant onPromptSubmit={handleAIPrompt} />
+                        <AIAssistant 
+                            onPromptSubmit={handleAIPrompt}
+                            messages={aiMessages}
+                            onMessagesChange={setAiMessages}
+                        />
                     </TabPanel>
                     <TabPanel>
                         <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} />
