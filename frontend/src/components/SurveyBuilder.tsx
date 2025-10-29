@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import type { Question } from "../types/Question.ts";
 import type { Survey } from '../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
 import { JsonEditor } from './JsonEditor.tsx';
+import { AIAssistant } from './AIAssistant';
+
+import 'react-tabs/style/react-tabs.css';
 
 export const SurveyBuilder: React.FC = () => {
     const [survey, setSurvey] = useState<Survey>({
@@ -70,6 +74,10 @@ export const SurveyBuilder: React.FC = () => {
         alert('Опрос создан! Посмотри результат в консоли.');
     };
 
+    const handleAIPrompt = (prompt: string) => {
+        console.log(prompt);
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 p-6">
             <div className="bg-white shadow rounded-lg p-6">
@@ -116,10 +124,25 @@ export const SurveyBuilder: React.FC = () => {
                 </div>
             </div>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <JsonEditor 
-                    jsonText={jsonText}
-                    onJsonChange={handleJsonChange}
-                />
+                <Tabs defaultIndex={0}>
+                    <TabList className="flex border-b border-gray-200 mb-4">
+                        <Tab className="flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 border-transparent cursor-pointer hover:text-gray-700 hover:border-gray-300 focus:outline-none ui-selected:border-blue-500 ui-selected:text-blue-600 ui-selected:bg-blue-50">
+                            <span className="text-lg">✨</span>
+                            AI
+                        </Tab>
+                        <Tab className="flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 border-transparent cursor-pointer hover:text-gray-700 hover:border-gray-300 focus:outline-none ui-selected:border-blue-500 ui-selected:text-blue-600 ui-selected:bg-blue-50">
+                            <span className="text-lg">📝</span>
+                            JSON
+                        </Tab>
+                    </TabList>
+
+                    <TabPanel>
+                        <AIAssistant onPromptSubmit={handleAIPrompt} />
+                    </TabPanel>
+                    <TabPanel>
+                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} />
+                    </TabPanel>
+                </Tabs>
             </div>
         </div>
     );
