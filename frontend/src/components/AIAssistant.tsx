@@ -134,10 +134,10 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messag
                     </button>
                     <button
                         type="button"
-                        onClick={() => setPrompt('')}
+                        onClick={() => onMessagesChange([])}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     >
-                        🧹 Очистить
+                        🧹 Очистить диалог
                     </button>
                 </div>
             </form>
