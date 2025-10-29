@@ -4,14 +4,42 @@ interface AIAssistantProps {
     onPromptSubmit?: (prompt: string) => void;
 }
 
+interface ChatMessage {
+    id: string;
+    isUserMessage: boolean;
+    content: string;
+    isPending?: boolean;
+}
+
 export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
     const [prompt, setPrompt] = useState<string>('');
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (prompt.trim() && onPromptSubmit) {
-            onPromptSubmit(prompt.trim());
+        const userPrompt = prompt.trim();
+        if (!userPrompt) return;
+
+        const userMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            isUserMessage: true,
+            content: userPrompt,
+        };
+
+        const aiMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            isUserMessage: false,
+            content: 'Запрос обрабатывается...',
+            isPending: true,
+        };
+
+        setMessages((prev) => [...prev, userMessage, aiMessage]);        
+
+        if (onPromptSubmit) {
+            onPromptSubmit(userPrompt);
         }
+
+        setPrompt('');
     };
 
     return (
@@ -20,10 +48,68 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     ИИ Ассистент
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                {messages.length === 0 && (<p className="text-sm text-gray-600 mb-4">
                     Опишите, какие изменения необходимо внести в текущий опрос.
-                </p>
+                </p>)}
             </div>
+
+            {messages.length > 0 && (
+                <div className="space-y-3">
+                    {messages.map((m) => {
+                        return (
+                        <div
+                            key={m.id}
+                            className={
+                                m.isUserMessage
+                                    ? 'flex justify-start'
+                                    : 'flex justify-end'
+                            }
+                        >
+                            <div
+                                className={
+                                    (m.isUserMessage
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-100 text-gray-800') +
+                                    ' max-w-[85%] rounded-lg px-3 py-2 text-sm shadow'
+                                }
+                            >
+                                <div className="flex items-center gap-2">
+                                    {!m.isUserMessage && (
+                                        <span className="inline-flex items-center justify-center">
+                                            {m.isPending === true ? (
+                                                <svg
+                                                    className="h-4 w-4 animate-spin text-gray-500"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    />
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                                    />
+                                                </svg>
+                                            ) : (
+                                                <span className="text-lg">🤖</span>
+                                            )}
+                                        </span>
+                                    )}
+                                    <span>{m.content}</span>
+                                </div>
+                            </div>
+                        </div>
+                        );
+                    })}
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -33,7 +119,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
                     <textarea
                         id="ai-prompt"
                         className="w-full h-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        placeholder="Например: Создай опрос пользовательской удовлетворенности сайтом с 5 вопросами разного типа..."
+                        placeholder={messages.length === 0 ? "Например: Создай опрос пользовательской удовлетворенности сайтом с 5 вопросами разного типа..." : ""}
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                     />
@@ -52,7 +138,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit }) => {
                         onClick={() => setPrompt('')}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
                     >
-                        Очистить
+                        🧹 Очистить
                     </button>
                 </div>
             </form>
