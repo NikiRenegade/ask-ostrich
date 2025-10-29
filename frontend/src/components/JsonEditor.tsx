@@ -8,11 +8,12 @@ interface JsonEditorProps {
 export const JsonEditor: React.FC<JsonEditorProps> = ({ jsonText, onJsonChange }) => {
     return (
         <div>
-            <h2 className="text-xl font-semibold mb-2 text-gray-700">JSON структуры</h2>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">JSON структуры</h3>
             <textarea
-                className="w-full h-[700px] font-mono text-sm border border-gray-300 rounded p-2 bg-white"
+                className="w-full h-[600px] font-mono text-sm border border-gray-300 rounded p-2 bg-white"
                 value={jsonText}
-                onChange={onJsonChange}/>
+                onChange={onJsonChange}
+            />
             <p className="text-xs text-gray-500 mt-1">
                 Изменяй JSON — изменения появятся в опросе (если JSON валидный)
             </p>
