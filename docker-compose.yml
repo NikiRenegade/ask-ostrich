@@ -12,7 +12,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ao_security_db_data:/var/lib/postgresql/data
+      - ../docker_data/ask-ostrich/ao_security_db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d AuthDb"]
       interval: 10s
@@ -30,7 +30,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ao_manage_db_data:/data/db
+      - ../docker_data/ask-ostrich/ao_manage_db_data:/data/db
       - ./backend/mongo-init-manage.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   ao_response_db:
@@ -44,7 +44,7 @@ services:
     ports:
       - "27018:27017"
     volumes:
-      - ao_response_db_data:/data/db
+      - ../docker_data/ask-ostrich/ao_response_db_data:/data/db
       - ./backend/mongo-init-response.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   # ========== MIGRATIONS ==========
@@ -149,7 +149,7 @@ services:
     ports:
       - "80:80"
 
-volumes:
-  ao_security_db_data:
-  ao_manage_db_data:
-  ao_response_db_data:
+#volumes:
+#  ao_security_db_data:
+#  ao_manage_db_data:
+#  ao_response_db_data:
