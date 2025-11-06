@@ -2,9 +2,9 @@ version: "3.9"
 
 services:
   # ========== DATABASES ==========
-  postgres:
+  ao_security_db:
     image: postgres:16
-    container_name: homework_postgres
+    container_name: ao_security_db
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -12,43 +12,53 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ao_security_db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d AuthDb"]
       interval: 10s
       retries: 5
       timeout: 5s
 
-  manage_db:
+  ao_manage_db:
     image: mongo:7
-    container_name: manage_db
+    container_name: ao_manage_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: ao_survey_manage
     restart: always
     ports:
       - "27017:27017"
     volumes:
-      - manage_data:/data/db
+      - ao_manage_db_data:/data/db
+      - ./backend/mongo-init-manage.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  response_db:
+  ao_response_db:
     image: mongo:7
-    container_name: response_db
+    container_name: ao_response_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: ao_survey_response
     restart: always
     ports:
       - "27018:27017"
     volumes:
-      - response_data:/data/db
+      - ao_response_db_data:/data/db
+      - ./backend/mongo-init-response.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   # ========== MIGRATIONS ==========
-  migrate:
+  ao_security_db_migrate:
     image: mcr.microsoft.com/dotnet/sdk:9.0
-    container_name: migrate_homework
+    container_name: ao_security_db_migrate
     depends_on:
-      postgres:
+      ao_security_db:
         condition: service_healthy
     working_dir: /src/backend/src/SecurityService/Presentation/SecurityService.Presentation.API
     volumes:
       - .:/src
     environment:
-      ConnectionStrings__authdbconnection: "Host=postgres;Port=5432;Database=AuthDb;Username=user;Password=password"
+      ConnectionStrings__authdbconnection: "Host=ao_security_db;Port=5432;Database=AuthDb;Username=user;Password=password"
     command: >
       sh -c "dotnet tool install --global dotnet-ef &&
              export PATH=\"$PATH:/root/.dotnet/tools\" &&
@@ -56,84 +66,90 @@ services:
              dotnet ef database update --context AuthDbContext"
 
   # ========== microservices ==========
-  security_service:
+  ao_security_service:
     build:
       context: ./backend
       dockerfile: src/SecurityService/Presentation/SecurityService.Presentation.API/Dockerfile
-    container_name: security_service
+    container_name: ao_security_service
     depends_on:
-      migrate:
+      ao_security_db_migrate:
         condition: service_completed_successfully
     environment:
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Default: Host=postgres;Port=5432;Database=AuthDb;Username=user;Password=password
+      ConnectionStrings__Default: Host=ao_security_db;Port=5432;Database=AuthDb;Username=user;Password=password
     ports:
       - "5001:8080"
 
-  survey_manage_service:
+  ao_survey_manage_service:
     build:
       context: ./backend
       dockerfile: src/SurveyManageService/Presentation/SurveyManageService.Presentation.API/Dockerfile
-    container_name: survey_manage_service
+    container_name: ao_survey_manage_service
     environment:
       ASPNETCORE_URLS: http://+:8080
-      MongoDb__ConnectionString: mongodb://manage_db:27017
+      MongoDb__ConnectionString: mongodb://user:password@ao_manage_db:27017/ao_survey_manage?authSource=ao_survey_manage
       MongoDb__Database: ao_survey_manage
     depends_on:
-      manage_db:
+      ao_manage_db:
         condition: service_started
     ports:
       - "5002:8080"
 
-  survey_response_service:
+  ao_survey_response_service:
     build:
       context: ./backend
       dockerfile: src/SurveyResponseService/Presentation/SurveyResponseService.Presentation.API/Dockerfile
-    container_name: survey_response_service
+    container_name: ao_survey_response_service
     environment:
       ASPNETCORE_URLS: http://+:8080
-      MongoDb__ConnectionString: mongodb://response_db:27017
+      MongoDb__ConnectionString: mongodb://user:password@ao_response_db:27017/ao_survey_response?authSource=ao_survey_response
       MongoDb__Database: ao_survey_response
     depends_on:
-      response_db:
+      ao_response_db:
         condition: service_started
     ports:
       - "5003:8080"
 
-  ai_assistant_service:
+  ao_ai_assistant_service:
     build:
       context: ./backend
       dockerfile: src/AIAssistantService/Presentation/AIAssistantService.Presentation.API/Dockerfile
-    container_name: ai_assistant_service
+    container_name: ao_ai_assistant_service
     environment:
       ASPNETCORE_URLS: http://+:8080
     ports:
       - "5004:8080"
 
   # ========== GATEWAY ==========
-  gateway_service:
+  ao_gateway_service:
     build:
       context: ./backend
       dockerfile: src/GatewayService/GatewayService.API/Dockerfile
-    container_name: gateway_service
+    container_name: ao_gateway_service
     command: yarn start
     depends_on:
-      security_service:
+      ao_security_service:
+        condition: service_started
+      ao_survey_manage_service:
+        condition: service_started
+      ao_survey_response_service:
+        condition: service_started
+      ao_ai_assistant_service:
         condition: service_started
     ports:
       - "8080:8080" # frontend talks to this
 
   # ========== FRONTEND ==========
-  frontend:
+  ao_frontend:
     build: ./frontend
-    container_name: frontend
+    container_name: ao_frontend
     depends_on:
-      gateway_service:
+      ao_gateway_service:
         condition: service_started
     ports:
       - "80:80"
 
 volumes:
-  postgres_data:
-  manage_data:
-  response_data:
+  ao_security_db_data:
+  ao_manage_db_data:
+  ao_response_db_data:
