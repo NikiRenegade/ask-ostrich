@@ -4,8 +4,12 @@ import type { Question } from "../types/Question.ts";
 import type { Survey } from '../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
+import { useAuth } from './auth/AuthProvider.tsx';
 
 export const SurveyBuilder: React.FC = () => {
+    
+    const { user } = useAuth();
+    
     const [survey, setSurvey] = useState<Survey>({
         SurveyId: uuidv4(),
         Title: '',
@@ -24,6 +28,17 @@ export const SurveyBuilder: React.FC = () => {
     React.useEffect(() => {
         setJsonText(JSON.stringify(survey, null, 2));
     }, [survey]);
+
+    React.useEffect(() => {
+        if (!user) {
+            setSurvey({
+                ...survey,
+                Title: '',
+                Description: '',
+                Questions: [],
+            });
+        }
+    }, [user]);
 
     const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const text = e.target.value;
@@ -103,13 +118,15 @@ export const SurveyBuilder: React.FC = () => {
                     <button
                         type="button"
                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        onClick={addQuestion}>
+                        onClick={addQuestion}
+                        disabled={!user}>
                         + Добавить вопрос
                     </button>
                     <button
                         type="button"
                         className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                        onClick={handleSave}>
+                        onClick={handleSave}
+                        disabled={!user}>
                         💾 Сохранить опрос
                     </button>
                 </div>
