@@ -30,7 +30,7 @@ namespace AIAssistantService.Presentation.API.Controllers
                     return BadRequest(new { message = "Prompt is required." });
                 }
 
-                var result = await _surveyGeneratorService.GenerateSurveyAsync(request.Prompt, cancellationToken);
+                var result = await _surveyGeneratorService.GenerateSurveyAsync(request, cancellationToken);
 
                 return Ok(result);
             }

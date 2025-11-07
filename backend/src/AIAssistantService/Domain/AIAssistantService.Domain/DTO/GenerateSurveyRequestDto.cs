@@ -3,4 +3,14 @@
 public class GenerateSurveyRequestDto
 {
     public required string Prompt { get; set; }
+
+    public required string CurrentSurveyJson { get; set; } 
+   
+    public PromptType Type { get; set; } = PromptType.UpdateSurvey;
+}
+
+public enum PromptType
+{    
+    UpdateSurvey,
+    Ask
 }
