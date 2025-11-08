@@ -140,9 +140,11 @@ export const SurveyBuilder: React.FC = () => {
                     </TabList>
 
                     <TabPanel>
-                        <AIAssistant 
+                        <AIAssistant                             
+                            messages={aiMessages}                            
+                            currentSurveyJson={jsonText}
+
                             onPromptSubmit={handleAIPrompt}
-                            messages={aiMessages}
                             onMessagesChange={setAiMessages}
                         />
                     </TabPanel>

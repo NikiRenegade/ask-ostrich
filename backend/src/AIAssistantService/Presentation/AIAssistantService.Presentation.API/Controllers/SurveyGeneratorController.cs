@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AIAssistantService.Presentation.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SurveyGeneratorController : ControllerBase
     {
         private readonly ISurveyGeneratorService _surveyGeneratorService;

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { generateSurvey } from '../services/aiAssistantApi';
 
 interface AIAssistantProps {
     onPromptSubmit?: (prompt: string) => void;
     messages: ChatMessage[];
     onMessagesChange: (messages: ChatMessage[]) => void;
+    currentSurveyJson?: string;
 }
 
 export interface ChatMessage {
@@ -13,10 +15,10 @@ export interface ChatMessage {
     isPending?: boolean;
 }
 
-export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messages, onMessagesChange }) => {
+export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messages, onMessagesChange, currentSurveyJson = '{}' }) => {
     const [prompt, setPrompt] = useState<string>('');    
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const userPrompt = prompt.trim();
         if (!userPrompt) return;
@@ -41,6 +43,32 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messag
         }
 
         setPrompt('');
+
+        try {
+            const response = await generateSurvey({
+                prompt: userPrompt,
+                currentSurveyJson: currentSurveyJson,
+                type: 0,
+            });
+
+            const updatedMessages = [...messages, userMessage];
+            const responseMessage: ChatMessage = {
+                id: aiMessage.id,
+                isUserMessage: false,
+                content: `Опрос успешно сгенерирован!\n\nНазвание: ${response.title}\nОписание: ${response.description}\nВопросов: ${response.questions.length}`,
+                isPending: false,
+            };
+            onMessagesChange([...updatedMessages, responseMessage]);
+        } catch (error) {
+            const updatedMessages = [...messages, userMessage];
+            const errorMessage: ChatMessage = {
+                id: aiMessage.id,
+                isUserMessage: false,
+                content: `Ошибка: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
+                isPending: false,
+            };
+            onMessagesChange([...updatedMessages, errorMessage]);
+        }
     };
 
     return (
