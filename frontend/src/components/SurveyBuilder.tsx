@@ -81,6 +81,10 @@ export const SurveyBuilder: React.FC = () => {
         console.log(prompt);
     };
 
+    const handleSurveyGenerated = (generatedSurvey: Survey) => {
+        setSurvey(generatedSurvey);
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 p-6">
             <div className="bg-white shadow rounded-lg p-6">
@@ -143,9 +147,9 @@ export const SurveyBuilder: React.FC = () => {
                         <AIAssistant                             
                             messages={aiMessages}                            
                             currentSurveyJson={jsonText}
-
                             onPromptSubmit={handleAIPrompt}
                             onMessagesChange={setAiMessages}
+                            onSurveyGenerated={handleSurveyGenerated}
                         />
                     </TabPanel>
                     <TabPanel>

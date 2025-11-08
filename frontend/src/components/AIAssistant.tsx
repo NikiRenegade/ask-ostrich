@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { generateSurvey } from '../services/aiAssistantApi';
+import type { GeneratedSurvey } from '../models/aiAssistantModels';
+import type { Survey } from '../types/Survey';
+import { v4 as uuidv4 } from 'uuid';
 
-interface AIAssistantProps {
-    onPromptSubmit?: (prompt: string) => void;
-    messages: ChatMessage[];
-    onMessagesChange: (messages: ChatMessage[]) => void;
+interface AIAssistantProps {    
+    messages: ChatMessage[];   
     currentSurveyJson?: string;
+    onPromptSubmit?: (prompt: string) => void;
+    onMessagesChange: (messages: ChatMessage[]) => void;
+    onSurveyGenerated?: (survey: Survey) => void;
 }
 
 export interface ChatMessage {
@@ -15,7 +19,7 @@ export interface ChatMessage {
     isPending?: boolean;
 }
 
-export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messages, onMessagesChange, currentSurveyJson = '{}' }) => {
+export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurveyJson = '{}', onPromptSubmit, onMessagesChange,onSurveyGenerated }) => {
     const [prompt, setPrompt] = useState<string>('');    
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -51,6 +55,12 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messag
                 type: 0,
             });
 
+            const convertedSurvey = convertToSurvey(response, currentSurveyJson);
+
+            if (onSurveyGenerated) {
+                onSurveyGenerated(convertedSurvey);
+            }
+
             const updatedMessages = [...messages, userMessage];
             const responseMessage: ChatMessage = {
                 id: aiMessage.id,
@@ -64,9 +74,10 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messag
             const errorMessage: ChatMessage = {
                 id: aiMessage.id,
                 isUserMessage: false,
-                content: `Ошибка: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
+                content: 'Ошибка получения ответа от ИИ-ассистента',
                 isPending: false,
             };
+            console.error('Ошибка получения ответа от ИИ-ассистента:', error);
             onMessagesChange([...updatedMessages, errorMessage]);
         }
     };
@@ -172,3 +183,47 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onPromptSubmit, messag
         </div>
     );
 };
+
+function convertToSurvey(generated: GeneratedSurvey, currentSurveyJson: string): Survey {
+    let currentSurvey: Partial<Survey> = {};
+    try {
+        currentSurvey = JSON.parse(currentSurveyJson || '{}');
+    } catch {
+    }
+
+    return {
+        SurveyId: currentSurvey.SurveyId || uuidv4(),
+        Title: generated.title || currentSurvey.Title || '',
+        Description: generated.description || currentSurvey.Description || '',
+        IsPublished: currentSurvey.IsPublished || false,
+        AuthorID: currentSurvey.AuthorID || uuidv4(),
+        CreatedAt: currentSurvey.CreatedAt || new Date().toISOString(),
+        ShortUrl: currentSurvey.ShortUrl || '',
+        Questions: generated.questions.map((q, index) => ({
+            QuestionId: uuidv4(),
+            Type: mapQuestionType(q.type),
+            Title: q.title,
+            Order: q.order || index + 1,
+            InnerText: q.innerText || '',
+            Options: q.options.map((opt, optIndex) => ({
+                Title: opt.title,
+                Value: opt.value,
+                Order: opt.order || optIndex + 1,
+                IsCorrect: opt.isCorrect || false,
+            })),
+        })),
+    };
+}
+
+function mapQuestionType(type: 0 | 1 | 2): 'text' | 'singleChoice' | 'multipleChoice' {
+    switch (type) {
+        case 0:
+            return 'text';
+        case 1:
+            return 'singleChoice';
+        case 2:
+            return 'multipleChoice';
+        default:
+            return 'text';
+    }
+}
