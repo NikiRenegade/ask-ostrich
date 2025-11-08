@@ -6,10 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 interface AIAssistantProps {    
     messages: ChatMessage[];   
-    currentSurveyJson?: string;
-    onPromptSubmit?: (prompt: string) => void;
+    currentSurveyJson?: string;    
     onMessagesChange: (messages: ChatMessage[]) => void;
-    onSurveyGenerated?: (survey: Survey) => void;
+    onSurveyGenerationStarted: () => void;
+    onSurveyGenerated: (survey: Survey | null) => void;
+    disabled?: boolean;
 }
 
 export interface ChatMessage {
@@ -19,7 +20,7 @@ export interface ChatMessage {
     isPending?: boolean;
 }
 
-export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurveyJson = '{}', onPromptSubmit, onMessagesChange,onSurveyGenerated }) => {
+export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurveyJson = '{}', onMessagesChange, onSurveyGenerationStarted, onSurveyGenerated, disabled }) => {
     const [prompt, setPrompt] = useState<string>('');    
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -41,14 +42,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
         };
 
         onMessagesChange([...messages, userMessage, aiMessage]);        
-
-        if (onPromptSubmit) {
-            onPromptSubmit(userPrompt);
-        }
-
         setPrompt('');
 
         try {
+            onSurveyGenerationStarted();            
+
             const response = await generateSurvey({
                 prompt: userPrompt,
                 currentSurveyJson: currentSurveyJson,
@@ -56,10 +54,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             });
 
             const convertedSurvey = convertToSurvey(response, currentSurveyJson);
-
-            if (onSurveyGenerated) {
-                onSurveyGenerated(convertedSurvey);
-            }
+            onSurveyGenerated(convertedSurvey);
 
             const updatedMessages = [...messages, userMessage];
             const responseMessage: ChatMessage = {
@@ -79,6 +74,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             };
             console.error('Ошибка получения ответа от ИИ-ассистента:', error);
             onMessagesChange([...updatedMessages, errorMessage]);
+        } finally {
+            onSurveyGenerated(null);
         }
     };
 
@@ -160,6 +157,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                         placeholder={messages.length === 0 ? "Например: Создай опрос пользовательской удовлетворенности сайтом с 5 вопросами разного типа..." : ""}
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
+                        disabled={disabled}
                     />
                 </div>
 
@@ -167,7 +165,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                     <button
                         type="submit"
                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                        disabled={!prompt.trim()}
+                        disabled={!prompt.trim() || disabled}
                     >
                         ✨ Отправить
                     </button>
@@ -175,6 +173,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                         type="button"
                         onClick={() => onMessagesChange([])}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+                        disabled={disabled}
                     >
                         🧹 Очистить диалог
                     </button>

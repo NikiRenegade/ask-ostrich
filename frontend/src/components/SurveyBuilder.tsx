@@ -28,6 +28,7 @@ export const SurveyBuilder: React.FC = () => {
     );
 
     const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     React.useEffect(() => {
         setJsonText(JSON.stringify(survey, null, 2));
@@ -77,17 +78,20 @@ export const SurveyBuilder: React.FC = () => {
         alert('Опрос создан! Посмотри результат в консоли.');
     };
 
-    const handleAIPrompt = (prompt: string) => {
-        console.log(prompt);
+    const handleSurveyGenerationStarted = () => {
+        setIsLoading(true);
     };
 
-    const handleSurveyGenerated = (generatedSurvey: Survey) => {
-        setSurvey(generatedSurvey);
+    const handleSurveyGenerated = (generatedSurvey: Survey | null) => {
+        if (generatedSurvey) {
+            setSurvey(generatedSurvey);
+        }
+        setIsLoading(false);
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 p-6">
-            <div className="bg-white shadow rounded-lg p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 p-6 relative">
+            <div className={`bg-white shadow rounded-lg p-6 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
                 <h2 className="text-2xl font-bold mb-4">Создать опрос</h2>
 
                 <input
@@ -146,14 +150,15 @@ export const SurveyBuilder: React.FC = () => {
                     <TabPanel>
                         <AIAssistant                             
                             messages={aiMessages}                            
-                            currentSurveyJson={jsonText}
-                            onPromptSubmit={handleAIPrompt}
+                            currentSurveyJson={jsonText}                            
                             onMessagesChange={setAiMessages}
+                            onSurveyGenerationStarted={handleSurveyGenerationStarted}
                             onSurveyGenerated={handleSurveyGenerated}
+                            disabled={isLoading} 
                         />
                     </TabPanel>
                     <TabPanel>
-                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} />
+                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} disabled={isLoading} />
                     </TabPanel>
                 </Tabs>
             </div>
