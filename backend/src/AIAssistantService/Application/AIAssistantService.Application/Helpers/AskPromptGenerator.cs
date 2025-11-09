@@ -4,17 +4,18 @@
     {
         protected override void AddPreparationInfo()
         {
-            Prompt += $"""
+            Prompt += 
+                """
                 You are an expert survey and quiz designer. Your task is to answer the user about the existing survey or relevant subjects. Ensure that the survey maintains clarity, relevance, and engagement for respondents.
-            """;
+                """;
         }
 
         protected override void AddMainTask()
         {
-            Prompt += $"""
-                Your main task is to provide a clear and concise answer to the user's question regarding the existing survey or related topic. Ensure that your response is informative and directly addresses the user's inquiry.
-                Your answer must be in the same language as the user’s request.
-            """;
+            Prompt += 
+                """
+                Your main task is to provide a clear and concise answer to the user's question regarding the existing survey or related topic. Ensure that your response is informative and directly addresses the user's inquiry.                
+                """;
         }
     }
 }

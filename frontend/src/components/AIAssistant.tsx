@@ -60,7 +60,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             const responseMessage: ChatMessage = {
                 id: aiMessage.id,
                 isUserMessage: false,
-                content: `Опрос успешно сгенерирован!\n\nНазвание: ${response.title}\nОписание: ${response.description}\nВопросов: ${response.questions.length}`,
+                content: `Опрос успешно сгенерирован.\n\nНазвание: ${response.title}\nОписание: ${response.description}\nВопросов: ${response.questions.length}`,
                 isPending: false,
             };
             onMessagesChange([...updatedMessages, responseMessage]);

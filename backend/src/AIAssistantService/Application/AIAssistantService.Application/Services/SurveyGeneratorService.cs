@@ -32,10 +32,18 @@ namespace AIAssistantService.Application.Services
                 PropertyNameCaseInsensitive = true
             };
 
-            var result = JsonSerializer.Deserialize<GeneratedSurveyDto>(response, options)
-                         ?? throw new InvalidOperationException("Failed to deserialize survey from LLM response.");
 
-            return result;
+            GeneratedSurveyDto? result = new();
+            try
+            {
+                result = JsonSerializer.Deserialize<GeneratedSurveyDto>(response, options);
+                    
+            } catch (Exception ex) 
+            {
+                throw new SerializationException("Failed to deserialize survey from LLM response.", ex);
+            }
+
+            return result!;
         }
     }
 }

@@ -12,6 +12,7 @@
             AddCurrentSurveyState(currentSurveyJson);
             AddStructureExplanation();
             AddMainTask();
+            AddLanguagePreferences();
             AddUserPrompt(userPrompt);
 
             return Prompt;
@@ -21,16 +22,18 @@
 
         protected void AddCurrentSurveyState(string currentSurveyJson)
         {
-            Prompt += $"""
+            Prompt += 
+                $"""
                 You are provided with an existing survey in JSON format:
                 {currentSurveyJson}                                           
-            """;
+                """;
         }
 
         protected virtual void AddStructureExplanation()
         {
             // TODO: use reflection
-            Prompt += $"""
+            Prompt += 
+                $"""
                 The structure of the survey includes the following fields:
                 title: The name of the survey.
                 description: A brief description of the survey.
@@ -44,18 +47,38 @@
                 value: Unique (machine-readable) value for the option
                 order: Option order number
                 isCorrect: true if the answer must be chosen as correct one, may be not set if the question doesn’t have any particular right answer.                                       
-            """;
+                """;
         }
 
         protected abstract void AddMainTask();
 
+        protected virtual void AddLanguagePreferences(string? language = null) 
+        {
+            if (!string.IsNullOrEmpty(language))
+            {
+                Prompt += 
+                    $"""
+                    Your answer must be in the following language: {language}.                
+                    """;
+            }
+            else
+            {
+                Prompt += 
+                    """
+                    Your answer must be in the same language as the user’s request.
+                    """;
+            }
+            
+        }
+
         protected virtual void AddUserPrompt(string userPrompt)
         {
-            Prompt += $"""
+            Prompt += 
+                $"""
                 If the user’s request doesn’t specify details, make reasonable assumptions.
                 User request:
                 {userPrompt}
-            """;
+                """;
         }
     }
 }
