@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AIAssistantService.Presentation.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SurveyGeneratorController : ControllerBase
     {
         private readonly ISurveyGeneratorService _surveyGeneratorService;
@@ -30,7 +30,7 @@ namespace AIAssistantService.Presentation.API.Controllers
                     return BadRequest(new { message = "Prompt is required." });
                 }
 
-                var result = await _surveyGeneratorService.GenerateSurveyAsync(request.Prompt, cancellationToken);
+                var result = await _surveyGeneratorService.GenerateSurveyAsync(request, cancellationToken);
 
                 return Ok(result);
             }
