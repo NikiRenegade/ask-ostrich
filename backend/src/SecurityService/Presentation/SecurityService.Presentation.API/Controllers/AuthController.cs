@@ -39,8 +39,10 @@ public class AuthController : ControllerBase
             protocol: HttpContext.Request.Scheme);
 
         await _emailConfirmationService.SendConfirmationLinkAsync(dto.Email, confirmLink);
+        
+        UserProfileDto user = await _authService.GetUserProfileAsync(dto.Email);
 
-        return CreatedAtAction(nameof(Register), new { email = dto.Email }, new AuthResponseDto { AccessToken = token });
+        return CreatedAtAction(nameof(Register), new { email = dto.Email }, new AuthResponseDto { AccessToken = token, UserProfile = user });
     }
 
     // Вход
@@ -54,11 +56,14 @@ public class AuthController : ControllerBase
 
         // Генерация JWT только если вход успешен
         var accessToken = await _jwtTokenService.GenerateJwtToken(dto.Email);
+        
+        UserProfileDto user = await _authService.GetUserProfileAsync(dto.Email);
 
         return Ok(new AuthResponseDto
         {
             AccessToken = accessToken,
-            ExpiresIn = 900
+            ExpiresIn = 900,
+            UserProfile = user
         });
     }
 

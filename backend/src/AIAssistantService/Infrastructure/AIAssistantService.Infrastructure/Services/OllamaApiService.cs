@@ -16,10 +16,10 @@ namespace AIAssistantService.Infrastructure.Services
 
         public async Task<string> GetResponse(string prompt, CancellationToken cancellationToken = default)
         {
-            var baseUrl = _configuration["Ollama:BaseUrl"] ?? "http://localhost:11434/";
-            var model = _configuration["Ollama:Model"] ?? "gpt-oss:20b";
+            var baseUrl = _configuration["Ollama:BaseUrl"];
+            var model = _configuration["Ollama:Model"];
             
-            using var client = new OllamaApiClient(new Uri(baseUrl), model);
+            using var client = new OllamaApiClient(new Uri(baseUrl!), model!);
             var chatresponse = client.GetStreamingResponseAsync(prompt, cancellationToken: cancellationToken);
             var result = await ProcessResponseAsync(chatresponse);
 

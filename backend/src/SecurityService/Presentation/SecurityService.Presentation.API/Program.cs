@@ -40,7 +40,7 @@ builder.Services.AddAuthorization();
 
 // ===== Controllers + OpenAPI =====
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 // ===== Application Services =====
 builder.Services.AddScoped<IIdentityService, IdentityService>();
@@ -58,7 +58,8 @@ var app = builder.Build();
 // ===== OpenAPI =====
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 // ===== Middleware =====
