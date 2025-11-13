@@ -1,24 +1,35 @@
 import React from 'react';
+import { TextField, Typography, Box } from '@mui/material';
 
 interface JsonEditorProps {
     jsonText: string;
-    onJsonChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+    onJsonChange: (text: string) => void;
     disabled?: boolean;
 }
 
 export const JsonEditor: React.FC<JsonEditorProps> = ({ jsonText, onJsonChange, disabled = false }) => {
     return (
-        <div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">JSON структуры</h3>
-            <textarea
-                className="w-full h-[600px] font-mono text-sm border border-gray-300 rounded p-2 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                value={jsonText}
-                onChange={onJsonChange}
-                disabled={disabled}
-            />
-            <p className="text-xs text-gray-500 mt-1">
+        <Box>
+            <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
+                JSON структуры
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
                 Изменяй JSON — изменения появятся в опросе (если JSON валидный)
-            </p>
-        </div>
+            </Typography>
+            <TextField
+                fullWidth
+                multiline
+                rows={25}
+                value={jsonText}
+                onChange={(e) => onJsonChange(e.target.value)}
+                disabled={disabled}
+                sx={{
+                    '& .MuiInputBase-input': {
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                    }
+                }}
+            />
+        </Box>
     );
 };

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
 import { generateSurvey } from '../services/aiAssistantApi';
 import type { GeneratedSurvey } from '../models/aiAssistantModels';
 import type { Survey } from '../types/Survey';
@@ -80,106 +81,90 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
     };
 
     return (
-        <div className="space-y-4">
-            <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box>
+                <Typography variant="h6" sx={{ mb: 1 }}>
                     ИИ Ассистент
-                </h3>
-                {messages.length === 0 && (<p className="text-sm text-gray-600 mb-4">
-                    Опишите, какие изменения необходимо внести в текущий опрос.
-                </p>)}
-            </div>
+                </Typography>
+                {messages.length === 0 && (
+                    <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                        Опишите, какие изменения необходимо внести в текущий опрос.
+                    </Typography>
+                )}
+            </Box>
 
             {messages.length > 0 && (
-                <div className="space-y-3">
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                     {messages.map((m) => {
                         return (
-                        <div
-                            key={m.id}
-                            className={
-                                m.isUserMessage
-                                    ? 'flex justify-start'
-                                    : 'flex justify-end'
-                            }
-                        >
-                            <div
-                                className={
-                                    (m.isUserMessage
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-100 text-gray-800') +
-                                    ' max-w-[85%] rounded-lg px-3 py-2 text-sm shadow'
-                                }
+                            <Box
+                                key={m.id}
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: m.isUserMessage ? 'flex-start' : 'flex-end',
+                                }}
                             >
-                                <div className="flex items-center gap-2">
-                                    {!m.isUserMessage && (
-                                        <span className="inline-flex items-center justify-center">
-                                            {m.isPending === true && (
-                                                <svg
-                                                    className="h-4 w-4 animate-spin text-gray-500"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    />
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                                                    />
-                                                </svg>
-                                            )}
-                                        </span>
-                                    )}
-                                    <span>{m.content}</span>
-                                </div>
-                            </div>
-                        </div>
+                                <Box
+                                    sx={{
+                                        maxWidth: '85%',
+                                        borderRadius: 1,
+                                        px: 1.5,
+                                        py: 1,
+                                        fontSize: '0.875rem',
+                                        boxShadow: 1,
+                                        bgcolor: m.isUserMessage ? 'primary.main' : 'grey.100',
+                                        color: m.isUserMessage ? 'primary.contrastText' : 'text.primary',
+                                    }}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        {!m.isUserMessage && m.isPending === true && (
+                                            <CircularProgress size={16} />
+                                        )}
+                                        <Typography component="span" variant="body2">
+                                            {m.content}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
                         );
                     })}
-                </div>
+                </Box>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="ai-prompt" className="block text-sm font-medium text-gray-700 mb-2">
-                        Ваш запрос:
-                    </label>
-                    <textarea
-                        id="ai-prompt"
-                        className="w-full h-32 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        placeholder={messages.length === 0 ? "Например: Создай опрос пользовательской удовлетворенности сайтом с 5 вопросами разного типа..." : ""}
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        disabled={disabled}
-                    />
-                </div>
+            <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TextField
+                    id="ai-prompt"
+                    fullWidth
+                    multiline
+                    rows={4}
+                    label="Ваш запрос:"
+                    placeholder={messages.length === 0 ? "Например: Создай опрос пользовательской удовлетворенности сайтом с 5 вопросами разного типа..." : ""}
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    disabled={disabled}
+                />
 
-                <div className="flex gap-3">
-                    <button
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
                         type="submit"
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                        disabled={!prompt.trim() || disabled}
-                    >
-                        ✨ Отправить
-                    </button>
-                    <button
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<span>✨</span>}
+                        disabled={!prompt.trim() || disabled}>
+                        Отправить
+                    </Button>
+                    <Button
                         type="button"
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<span>🧹</span>}
                         onClick={() => onMessagesChange([])}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                        disabled={disabled}
-                    >
-                        🧹 Очистить диалог
-                    </button>
-                </div>
-            </form>
-        </div>
+                        disabled={disabled}>
+                        Очистить диалог
+                    </Button>
+                </Box>
+            </Box>
+        </Box>
     );
 };
 

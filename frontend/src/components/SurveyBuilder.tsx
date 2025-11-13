@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton } from '@mui/material';
 import type { Question } from "../types/Question.ts";
 import type { Survey } from '../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
@@ -9,8 +9,7 @@ import { useAuth } from './auth/AuthProvider.tsx';
 import { JsonEditor } from './JsonEditor.tsx';
 import { AIAssistant } from './AIAssistant';
 import type { ChatMessage } from './AIAssistant';
-
-import 'react-tabs/style/react-tabs.css';
+import SaveIcon from '@mui/icons-material/Save';
 
 export const SurveyBuilder: React.FC = () => {
     
@@ -33,6 +32,7 @@ export const SurveyBuilder: React.FC = () => {
 
     const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [tabValue, setTabValue] = useState<number>(0);
 
     React.useEffect(() => {
         setJsonText(JSON.stringify(survey, null, 2));
@@ -49,8 +49,7 @@ export const SurveyBuilder: React.FC = () => {
         }
     }, [user]);
 
-    const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const text = e.target.value;
+    const handleJsonChange = (text: string) => {
         setJsonText(text);
 
         try {
@@ -104,85 +103,93 @@ export const SurveyBuilder: React.FC = () => {
         setIsLoading(false);
     };
 
+    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+    };
+
     return (
-        <div className="relative">
-            <div className="bg-white shadow rounded-lg p-4 mb-6 flex justify-end">
-                <button
-                    type="button"
-                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+        <Box sx={{ position: 'relative' }}>
+            <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+                <IconButton
+                    color="success"
                     onClick={handleSave}
                     disabled={!user}>
-                    💾 Сохранить опрос
-                </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className={`bg-white shadow rounded-lg p-6 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <h2 className="text-2xl font-bold mb-4">Создать опрос</h2>
+                        <SaveIcon />
+                </IconButton>
+            </Paper>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                <Paper sx={{ p: 3, opacity: isLoading ? 0.5 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}>
+                    <Typography variant="h4" component="h2" sx={{ mb: 3, fontWeight: 'bold' }}>
+                        Создать опрос
+                    </Typography>
 
-                    <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
+                    <TextField
+                        fullWidth
+                        label="Название опроса"
                         placeholder="Название опроса"
                         value={survey.Title}
-                        onChange={(e) => setSurvey({ ...survey, Title: e.target.value })}/>
+                        onChange={(e) => setSurvey({ ...survey, Title: e.target.value })}
+                        sx={{ mb: 2 }}
+                    />
 
-                    <textarea
-                        className="w-full border border-gray-300 rounded px-3 py-2 mb-3"
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={3}
+                        label="Описание"
                         placeholder="Описание"
                         value={survey.Description}
-                        onChange={(e) => setSurvey({ ...survey, Description: e.target.value })}/>
+                        onChange={(e) => setSurvey({ ...survey, Description: e.target.value })}
+                        sx={{ mb: 2 }}
+                    />
 
                     {[...survey.Questions].sort((a, b) => a.Order - b.Order).map(q => (
-                        <div key={q.QuestionId} className="flex items-center gap-2 mb-2">
+                        <Box key={q.QuestionId} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                             <OrderArrows item={q}
                                         list={survey.Questions}
                                         setList={(updated) => updateQuestionById(updated.QuestionId, updated)}/>
-                        <QuestionEditor
-                            question={q}
-                            onChange={(updated) => updateQuestionById(updated.QuestionId, updated)}
-                            onDelete={() => deleteQuestionById(q.QuestionId)}/>
-                        </div>
+                            <Box sx={{ flex: 1 }}>
+                                <QuestionEditor
+                                    question={q}
+                                    onChange={(updated) => updateQuestionById(updated.QuestionId, updated)}
+                                    onDelete={() => deleteQuestionById(q.QuestionId)}/>
+                            </Box>
+                        </Box>
                     ))}
 
-                    <div className="flex gap-3 mt-4">
-                        <button
-                            type="button"
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
                             onClick={addQuestion}
                             disabled={!user}>
                             + Добавить вопрос
-                        </button>
-                    </div>
-                </div>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <Tabs defaultIndex={0}>
-                        <TabList className="flex border-b border-gray-200 mb-4">
-                            <Tab className="flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 border-transparent cursor-pointer hover:text-gray-700 hover:border-gray-300 focus:outline-none ui-selected:border-blue-500 ui-selected:text-blue-600 ui-selected:bg-blue-50">
-                                <span className="text-lg">✨</span>
-                                AI
-                            </Tab>
-                            <Tab className="flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 border-transparent cursor-pointer hover:text-gray-700 hover:border-gray-300 focus:outline-none ui-selected:border-blue-500 ui-selected:text-blue-600 ui-selected:bg-blue-50">
-                                <span className="text-lg">📝</span>
-                                JSON
-                            </Tab>
-                        </TabList>
+                        </Button>
+                    </Box>
+                </Paper>
+                <Paper sx={{ p: 2 }}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                        <Tabs value={tabValue} onChange={handleTabChange}>
+                            <Tab icon={<span>✨</span>} iconPosition="start" label="AI" />
+                            <Tab icon={<span>📝</span>} iconPosition="start" label="JSON" />
+                        </Tabs>
+                    </Box>
 
-                        <TabPanel>
-                            <AIAssistant                             
-                                messages={aiMessages}                            
-                                currentSurveyJson={jsonText}                            
-                                onMessagesChange={setAiMessages}
-                                onSurveyGenerationStarted={handleSurveyGenerationStarted}
-                                onSurveyGenerated={handleSurveyGenerated}
-                                disabled={isLoading} 
-                            />
-                        </TabPanel>
-                        <TabPanel>
-                            <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} disabled={isLoading} />
-                        </TabPanel>
-                    </Tabs>
-                </div>
-            </div>
-        </div>
+                    {tabValue === 0 && (
+                        <AIAssistant                             
+                            messages={aiMessages}                            
+                            currentSurveyJson={jsonText}                            
+                            onMessagesChange={setAiMessages}
+                            onSurveyGenerationStarted={handleSurveyGenerationStarted}
+                            onSurveyGenerated={handleSurveyGenerated}
+                            disabled={isLoading} 
+                        />
+                    )}
+                    {tabValue === 1 && (
+                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} disabled={isLoading} />
+                    )}
+                </Paper>
+            </Box>
+        </Box>
     );
 };
