@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
-import { generateSurvey } from '../services/aiAssistantApi';
-import type { GeneratedSurvey } from '../models/aiAssistantModels';
-import type { Survey } from '../types/Survey';
+import { generateSurvey } from '../../services/aiAssistantApi';
+import type { GeneratedSurvey } from '../../models/aiAssistantModels';
+import type { Survey } from '../../types/Survey';
 import { v4 as uuidv4 } from 'uuid';
 
 interface AIAssistantProps {    
@@ -159,7 +159,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                         color="secondary"
                         startIcon={<span>🧹</span>}
                         onClick={() => onMessagesChange([])}
-                        disabled={disabled}>
+                        disabled={messages.length === 0 || disabled}>
                         Очистить диалог
                     </Button>
                 </Box>

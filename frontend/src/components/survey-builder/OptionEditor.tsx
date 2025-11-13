@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, Checkbox, IconButton, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import type {Option} from "../types/Option.ts";
+import type {Option} from "../../types/Option.ts";
 
 interface OptionEditorProps {
     option: Option;

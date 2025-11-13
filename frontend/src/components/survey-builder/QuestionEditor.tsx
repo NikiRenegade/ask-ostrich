@@ -2,9 +2,9 @@ import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Box, Paper, Typography, Select, MenuItem, FormControl, InputLabel, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import type {Option} from "../types/Option.ts";
-import type {Question} from "../types/Question.ts";
-import type { QuestionType } from "../types/QuestionType.ts";
+import type {Option} from "../../types/Option.ts";
+import type {Question} from "../../types/Question.ts";
+import type { QuestionType } from "../../types/QuestionType.ts";
 import { OptionEditor } from './OptionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
 

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton } from '@mui/material';
-import type { Question } from "../types/Question.ts";
-import type { Survey } from '../types/Survey.ts';
+import type { Question } from "../../types/Question.ts";
+import type { Survey } from '../../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
-import { useAuth } from './auth/AuthProvider.tsx';
+import { useAuth } from '../auth/AuthProvider.tsx';
 import { JsonEditor } from './JsonEditor.tsx';
 import { AIAssistant } from './AIAssistant';
 import type { ChatMessage } from './AIAssistant';
@@ -182,11 +182,11 @@ export const SurveyBuilder: React.FC = () => {
                             onMessagesChange={setAiMessages}
                             onSurveyGenerationStarted={handleSurveyGenerationStarted}
                             onSurveyGenerated={handleSurveyGenerated}
-                            disabled={isLoading} 
+                            disabled={!user || isLoading} 
                         />
                     )}
                     {tabValue === 1 && (
-                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} disabled={isLoading} />
+                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} disabled={!user || isLoading} />
                     )}
                 </Paper>
             </Box>
