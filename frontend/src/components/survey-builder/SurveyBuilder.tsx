@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton } from '@mui/material';
+import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import type { Question } from "../../types/Question.ts";
 import type { Survey } from '../../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
@@ -10,6 +10,9 @@ import { JsonEditor } from './JsonEditor.tsx';
 import { AIAssistant } from './AIAssistant';
 import type { ChatMessage } from './AIAssistant';
 import SaveIcon from '@mui/icons-material/Save';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloseIcon from '@mui/icons-material/Close';
+import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 
 export const SurveyBuilder: React.FC = () => {
     
@@ -33,6 +36,7 @@ export const SurveyBuilder: React.FC = () => {
     const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [tabValue, setTabValue] = useState<number>(0);
+    const [previewOpen, setPreviewOpen] = useState<boolean>(false);
 
     React.useEffect(() => {
         setJsonText(JSON.stringify(survey, null, 2));
@@ -109,14 +113,39 @@ export const SurveyBuilder: React.FC = () => {
 
     return (
         <Box sx={{ position: 'relative' }}>
-            <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                <IconButton
+                    onClick={() => setPreviewOpen(true)}
+                    title='Предпросмотр'
+                    disabled={!user}>
+                        <VisibilityIcon />
+                </IconButton>
+
                 <IconButton
                     color="success"
+                    title='Сохранить'
                     onClick={handleSave}
                     disabled={!user}>
                         <SaveIcon />
                 </IconButton>
             </Paper>
+
+            <Dialog
+                open={previewOpen}
+                onClose={() => setPreviewOpen(false)}
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="h6">Предпросмотр опроса</Typography>
+                    <IconButton onClick={() => setPreviewOpen(false)} size="small">
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    <SurveyViewer survey={survey} />
+                </DialogContent>
+            </Dialog>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
                 <Paper sx={{ p: 3, opacity: isLoading ? 0.5 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}>
                     <Typography variant="h4" component="h2" sx={{ mb: 3, fontWeight: 'bold' }}>
