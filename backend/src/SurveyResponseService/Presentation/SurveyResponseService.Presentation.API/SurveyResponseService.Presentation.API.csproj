@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\Application\SurveyResponseService.Application\SurveyResponseService.Application.csproj" />
     <ProjectReference Include="..\..\Domain\SurveyResponseService.Domain.Interfaces\SurveyResponseService.Domain.Interfaces.csproj" />
     <ProjectReference Include="..\..\Infrastructure\SurveyResponseService.Infrastructure.Repositories\SurveyResponseService.Infrastructure.Repositories.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\SurveyResponseService.Infrastructure\SurveyResponseService.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

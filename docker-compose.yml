@@ -1,7 +1,5 @@
-version: "3.9"
-
 services:
-  # ========== DATABASES ==========
+  # ========== databases ==========
   ao_security_db:
     image: postgres:16
     container_name: ao_security_db
@@ -47,7 +45,7 @@ services:
       - ../docker_data/ask-ostrich/ao_response_db_data:/data/db
       - ./backend/mongo-init-response.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  # ========== MIGRATIONS ==========
+  # ========== migration ==========
   ao_security_db_migrate:
     image: mcr.microsoft.com/dotnet/sdk:9.0
     container_name: ao_security_db_migrate
@@ -60,10 +58,30 @@ services:
     environment:
       ConnectionStrings__authdbconnection: "Host=ao_security_db;Port=5432;Database=AuthDb;Username=user;Password=password"
     command: >
-      sh -c "dotnet tool install --global dotnet-ef &&
+      sh -c "dotnet tool install --global dotnet-ef --version 9.0.1 &&
              export PATH=\"$PATH:/root/.dotnet/tools\" &&
              dotnet restore &&
              dotnet ef database update --context AuthDbContext"
+      
+  # ========== message broker =========
+  ao_message_broker:
+    image: rabbitmq:3.12-management
+    container_name: ao_message_broker
+    restart: always
+    ports:
+        - 5672:5672
+        - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - ../docker_data/ask-ostrich/ao_message_broker/rabbitmq:/var/lib/rabbitmq
+      - ../docker_data/ask-ostrich/ao_message_broker/rabbitmq_log:/var/log/rabbitmq
+    healthcheck:
+        test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+        interval: 5s
+        retries: 12
+        timeout: 5s
 
   # ========== microservices ==========
   ao_security_service:
@@ -74,9 +92,15 @@ services:
     depends_on:
       ao_security_db_migrate:
         condition: service_completed_successfully
+      ao_message_broker:
+        condition: service_healthy
     environment:
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Default: Host=ao_security_db;Port=5432;Database=AuthDb;Username=user;Password=password
+      ConnectionStrings__authdbconnection: Host=ao_security_db;Port=5432;Database=AuthDb;Username=user;Password=password
+      RABBITMQ__HOSTNAME: ao_message_broker
+      RABBITMQ__PORT: 5672
+      RABBITMQ__USERNAME: admin
+      RABBITMQ__PASSWORD: admin
     ports:
       - "5001:8080"
 
@@ -89,8 +113,14 @@ services:
       ASPNETCORE_URLS: http://+:8080
       MongoDb__ConnectionString: mongodb://user:password@ao_manage_db:27017/ao_survey_manage?authSource=ao_survey_manage
       MongoDb__Database: ao_survey_manage
+      RABBITMQ__HOSTNAME: ao_message_broker
+      RABBITMQ__PORT: 5672
+      RABBITMQ__USERNAME: admin
+      RABBITMQ__PASSWORD: admin
     depends_on:
       ao_manage_db:
+        condition: service_started
+      ao_security_service:
         condition: service_started
     ports:
       - "5002:8080"
@@ -104,8 +134,14 @@ services:
       ASPNETCORE_URLS: http://+:8080
       MongoDb__ConnectionString: mongodb://user:password@ao_response_db:27017/ao_survey_response?authSource=ao_survey_response
       MongoDb__Database: ao_survey_response
+      RABBITMQ__HOSTNAME: ao_message_broker
+      RABBITMQ__PORT: 5672
+      RABBITMQ__USERNAME: admin
+      RABBITMQ__PASSWORD: admin
     depends_on:
       ao_response_db:
+        condition: service_started
+      ao_security_service:
         condition: service_started
     ports:
       - "5003:8080"
@@ -120,7 +156,7 @@ services:
     ports:
       - "5004:8080"
 
-  # ========== GATEWAY ==========
+  # ========== gateway ==========
   ao_gateway_service:
     build:
       context: ./backend
@@ -137,9 +173,9 @@ services:
       ao_ai_assistant_service:
         condition: service_started
     ports:
-      - "8080:8080" # frontend talks to this
+      - "8080:8080"
 
-  # ========== FRONTEND ==========
+  # ========== frontend ==========
   ao_frontend:
     build: ./frontend
     container_name: ao_frontend

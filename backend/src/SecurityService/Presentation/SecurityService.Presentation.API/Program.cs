@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using SecurityService.Application.Interfaces;
 using SecurityService.Application.Services;
 using SecurityService.Domain.Entities;
 using SecurityService.Domain.Interfaces.Repositories;
 using SecurityService.Infrastructure.EntityFramework.Contexts;
 using SecurityService.Infrastructure.Repositories;
-
+using SecurityService.Domain.Interfaces.Publishers;
+using SecurityService.Infrastructure.Messaging;
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== DbContext =====
@@ -52,6 +54,31 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 // ===== Repositories =====
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// ===== RabbitMQ =====
+var rabbitConfig = builder.Configuration.GetSection("RabbitMQ");
+builder.Services.AddSingleton(async sp =>
+{
+    var factory = new ConnectionFactory
+    {
+        HostName = rabbitConfig["HostName"],
+        Port = int.Parse(rabbitConfig["Port"]!),
+        UserName = rabbitConfig["UserName"],
+        Password = rabbitConfig["Password"]
+    };
+    
+    var connection = await factory.CreateConnectionAsync(); 
+    return connection;
+});
+
+builder.Services.AddSingleton(async sp =>
+{
+    var connection = await sp.GetRequiredService<Task<IConnection>>();
+    var channel = await connection.CreateChannelAsync();
+    return channel;
+});
+builder.Services.AddScoped<IEventPublisher, RabbitMqEventPublisher>();
+builder.Services.AddScoped<IUserEventPublisher, RabbitMqUserEventPublisher>();
 
 var app = builder.Build();
 
