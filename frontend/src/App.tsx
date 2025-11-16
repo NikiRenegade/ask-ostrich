@@ -1,5 +1,5 @@
 import React from 'react';
-import {SurveyBuilder} from './components/SurveyBuilder.tsx'
+import {SurveyBuilder} from './components/survey-builder/SurveyBuilder.tsx'
 import './index.css';
 import Header from './components/Header.tsx';
 import {AuthProvider} from './components/auth/AuthProvider.tsx';
