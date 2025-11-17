@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using SurveyResponseService.Application.Services;
 using SurveyResponseService.Domain.Interfaces.Repositories;
 using SurveyResponseService.Domain.Interfaces.Services;
+using SurveyResponseService.Domain.Interfaces.Consumers;
 using SurveyResponseService.Infrastructure.EntityFramework;
 using SurveyResponseService.Infrastructure.Repositories;
+using SurveyResponseService.Infrastructure.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +40,31 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ISurveyService, SurveyService>();
 builder.Services.AddScoped<ISurveyResultService, SurveyResultService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+// Подключение к RabbitMQ
+var rabbitConfig = builder.Configuration.GetSection("RabbitMQ");
+
+builder.Services.AddSingleton(async sp =>
+{
+    var factory = new ConnectionFactory
+    {
+        HostName = rabbitConfig["HostName"],
+        Port = int.Parse(rabbitConfig["Port"]!),
+        UserName = rabbitConfig["UserName"],
+        Password = rabbitConfig["Password"]
+    };
+    return await factory.CreateConnectionAsync();
+});
+
+builder.Services.AddSingleton(async sp =>
+{
+    var connection = await sp.GetRequiredService<Task<IConnection>>();
+    var channel = await connection.CreateChannelAsync();
+    return channel;
+});
+builder.Services.AddSingleton<IEventConsumer, RabbitMqEventConsumer>();
+builder.Services.AddScoped<IUserEventConsumer, RabbitMqUserEventConsumer>();
+builder.Services.AddHostedService<UserEventsBackgroundService>();
 
 var app = builder.Build();
 
