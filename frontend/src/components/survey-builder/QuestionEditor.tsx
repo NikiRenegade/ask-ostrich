@@ -26,9 +26,17 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
     };
 
     const updateOptionByValue =  (value: string, updated: Option) => {
-        const newOptions = question.Options.map(o =>
-            o.Value === value ? updated : o
-        );
+
+        const newOptions = question.Options.map(option => {
+            if (option.Value === value) {
+                return { ...option, IsCorrect: updated.IsCorrect };
+            }
+            if (question.Type === 'singleChoice' && updated.IsCorrect) {
+                return { ...option, IsCorrect: false };
+            }
+
+            return option;
+        });
         onChange({ ...question, Options: newOptions });
     };
     const deleteOptionByValue =  (value: string) => {
