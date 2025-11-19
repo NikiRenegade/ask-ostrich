@@ -14,7 +14,8 @@ export function surveyToSurveyYamlConverter(survey: Survey): SurveyYaml {
                 Order: o.Order,
                 IsCorrect: o.IsCorrect,
 
-            }))
-        }))
+            })).sort((a, b) => a.Order - b.Order)
+        })
+        ).sort((a, b) => a.Order - b.Order)
     };
 }

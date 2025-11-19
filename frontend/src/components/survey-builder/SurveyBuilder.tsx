@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import type { Question } from "../../types/Question.ts";
@@ -40,10 +40,14 @@ export const SurveyBuilder: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [tabValue, setTabValue] = useState<number>(0);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+    const [isUserEditingYaml, setIsUserEditingYaml] = useState(false);
 
-    React.useEffect(() => {
-        setYamlText(objectToYaml(surveyToSurveyYamlConverter(survey)));
-    }, [survey]);
+    useEffect(() => {
+
+        if (!isUserEditingYaml) {
+            setYamlText(objectToYaml(surveyToSurveyYamlConverter(survey)));
+        }
+    }, [survey, isUserEditingYaml]);
 
     React.useEffect(() => {
         if (!user) {
@@ -61,8 +65,8 @@ export const SurveyBuilder: React.FC = () => {
 
         try {
             const parsedYaml = yamlToObject<SurveyYaml>(text);
-            const updatedSurvey = surveyYamlToSurveyConverter(parsedYaml, survey);
-            setSurvey(updatedSurvey);
+
+            setSurvey(prev => surveyYamlToSurveyConverter(parsedYaml, prev));
         } catch (e) {
             // YAML НЕ валиден — просто игнорируем
         }
@@ -215,7 +219,7 @@ export const SurveyBuilder: React.FC = () => {
                         />
                     )}
                     {tabValue === 1 && (
-                        <YamlEditor yamlText={yamlText} onYamlChange={handleYamlChange} disabled={!user || isLoading} />
+                        <YamlEditor yamlText={yamlText} onYamlChange={handleYamlChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml}/>
                     )}
                 </Paper>
             </Box>
