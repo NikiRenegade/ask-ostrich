@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import BuildIcon from '@mui/icons-material/Build';
-import { generateSurvey } from '../../services/aiAssistantApi';
+import { generateSurvey, askLLM } from '../../services/aiAssistantApi';
 import { AssistentMode, type ChatMessage, type GeneratedSurvey } from '../../models/aiAssistantModels';
 import type { Survey } from '../../types/Survey';
 import { v4 as uuidv4 } from 'uuid';
@@ -42,24 +42,46 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
         setPrompt('');
 
         try {
-            onSurveyGenerationStarted();            
-
-            const response = await generateSurvey({
-                prompt: userPrompt,
-                currentSurveyJson: currentSurveyJson,
-                type: assistentMode === AssistentMode.Ask ? 1 : 0,
-            });
-
-            const convertedSurvey = convertToSurvey(response, currentSurveyJson);
-            onSurveyGenerated(convertedSurvey);
+            const isAskMode = assistentMode === AssistentMode.Ask;
+            
+            if (!isAskMode) {
+                onSurveyGenerationStarted();
+            }
 
             const updatedMessages = [...messages, userMessage];
-            const responseMessage: ChatMessage = {
-                id: aiMessage.id,
-                isUserMessage: false,
-                content: `Опрос успешно сгенерирован.\n\nНазвание: ${response.title}\nОписание: ${response.description}\nВопросов: ${response.questions.length}`,
-                isPending: false,
-            };
+            let responseMessage: ChatMessage;
+
+            if (isAskMode) {
+                const answerText = await askLLM({
+                    prompt: userPrompt,
+                    currentSurveyJson: currentSurveyJson,
+                    type: 1,
+                });
+
+                responseMessage = {
+                    id: aiMessage.id,
+                    isUserMessage: false,
+                    content: answerText,
+                    isPending: false,
+                };
+            } else {
+                const response = await generateSurvey({
+                    prompt: userPrompt,
+                    currentSurveyJson: currentSurveyJson,
+                    type: 0,
+                });
+
+                const convertedSurvey = convertToSurvey(response, currentSurveyJson);
+                onSurveyGenerated(convertedSurvey);
+
+                responseMessage = {
+                    id: aiMessage.id,
+                    isUserMessage: false,
+                    content: 'Опрос успешно обновлен',
+                    isPending: false,
+                };
+            }
+
             onMessagesChange([...updatedMessages, responseMessage]);
         } catch (error) {
             const updatedMessages = [...messages, userMessage];
@@ -72,7 +94,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             console.error('Ошибка получения ответа от ИИ-ассистента:', error);
             onMessagesChange([...updatedMessages, errorMessage]);
         } finally {
-            onSurveyGenerated(null);
+            onSurveyGenerated(null);            
         }
     };
 
