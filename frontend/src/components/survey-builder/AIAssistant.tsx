@@ -63,6 +63,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                     isUserMessage: false,
                     content: answerText,
                     isPending: false,
+                    isHtml: true,
                 };
             } else {
                 const response = await generateSurvey({
@@ -138,9 +139,34 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                                         {!m.isUserMessage && m.isPending === true && (
                                             <CircularProgress size={16} />
                                         )}
-                                        <Typography component="span" variant="body2">
-                                            {m.content}
-                                        </Typography>
+                                        {m.isHtml && !m.isUserMessage ? (
+                                            <Box
+                                                component="div"
+                                                variant="body2"
+                                                sx={{
+                                                    '& p': { margin: '0.5em 0' },
+                                                    '& ul, & ol': { margin: '0.5em 0', paddingLeft: '1.5em' },
+                                                    '& h1, & h2, & h3, & h4, & h5, & h6': { margin: '0.5em 0' },
+                                                    '& code': { 
+                                                        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                                                        padding: '0.2em 0.4em',
+                                                        borderRadius: '3px',
+                                                        fontFamily: 'monospace',
+                                                    },
+                                                    '& pre': {
+                                                        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                                                        padding: '0.5em',
+                                                        borderRadius: '4px',
+                                                        overflow: 'auto',
+                                                    },
+                                                }}
+                                                dangerouslySetInnerHTML={{ __html: m.content }}
+                                            />
+                                        ) : (
+                                            <Typography component="span" variant="body2">
+                                                {m.content}
+                                            </Typography>
+                                        )}
                                     </Box>
                                 </Box>
                             </Box>

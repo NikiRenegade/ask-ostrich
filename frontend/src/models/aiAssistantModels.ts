@@ -30,6 +30,7 @@ export interface ChatMessage {
     isUserMessage: boolean;
     content: string;
     isPending?: boolean;
+    isHtml?: boolean;
 }
 
 export const AssistentMode = {
