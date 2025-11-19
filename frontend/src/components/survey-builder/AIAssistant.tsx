@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
+import { TextField, Button, Box, Typography, CircularProgress, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import BuildIcon from '@mui/icons-material/Build';
 import { generateSurvey } from '../../services/aiAssistantApi';
-import type { GeneratedSurvey } from '../../models/aiAssistantModels';
+import { AssistentMode, type ChatMessage, type GeneratedSurvey } from '../../models/aiAssistantModels';
 import type { Survey } from '../../types/Survey';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,15 +16,9 @@ interface AIAssistantProps {
     disabled?: boolean;
 }
 
-export interface ChatMessage {
-    id: string;
-    isUserMessage: boolean;
-    content: string;
-    isPending?: boolean;
-}
-
 export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurveyJson = '{}', onMessagesChange, onSurveyGenerationStarted, onSurveyGenerated, disabled }) => {
-    const [prompt, setPrompt] = useState<string>('');    
+    const [prompt, setPrompt] = useState<string>('');
+    const [assistentMode, setAssistentMode] = useState<AssistentMode>(AssistentMode.Construct);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,7 +47,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             const response = await generateSurvey({
                 prompt: userPrompt,
                 currentSurveyJson: currentSurveyJson,
-                type: 0,
+                type: assistentMode === AssistentMode.Ask ? 1 : 0,
             });
 
             const convertedSurvey = convertToSurvey(response, currentSurveyJson);
@@ -132,6 +128,37 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             )}
 
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                    <ToggleButtonGroup
+                        value={assistentMode}
+                        exclusive
+                        onChange={(_, newMode) => {
+                            if (newMode !== null) {
+                                setAssistentMode(newMode);
+                            }
+                        }}
+                        aria-label="assistent mode"
+                        size="small"
+                        disabled={disabled}
+                    >
+                        <ToggleButton value={AssistentMode.Construct} aria-label="construct mode">
+                            <Tooltip title="Конструировать опрос">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                    <BuildIcon fontSize="small" />
+                                    <Typography variant="body2">Конструктор</Typography>
+                                </Box>
+                            </Tooltip>
+                        </ToggleButton>
+                        <ToggleButton value={AssistentMode.Ask} aria-label="ask mode">
+                            <Tooltip title="Задать вопрос">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                    <QuestionAnswerIcon fontSize="small" />
+                                    <Typography variant="body2">Консультант</Typography>
+                                </Box>
+                            </Tooltip>
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
                 <TextField
                     id="ai-prompt"
                     fullWidth

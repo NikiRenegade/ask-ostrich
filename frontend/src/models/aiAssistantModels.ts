@@ -25,3 +25,16 @@ export interface OptionDto {
     isCorrect?: boolean;
 }
 
+export interface ChatMessage {
+    id: string;
+    isUserMessage: boolean;
+    content: string;
+    isPending?: boolean;
+}
+
+export const AssistentMode = {
+    Construct: 'construct',
+    Ask: 'ask'
+} as const;
+
+export type AssistentMode = typeof AssistentMode[keyof typeof AssistentMode];
