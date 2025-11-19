@@ -1,18 +1,18 @@
-import type {Option, OptionYaml} from "./Option.ts";
+import type {Option, OptionEdit} from "./Option.ts";
 import type { QuestionType } from "./QuestionType.ts";
 export interface Question {
     QuestionId: string;
-    Type: QuestionType;
     Title: string;
+    Type: QuestionType;
     Order: number;
     InnerText: string;
     Options: Option[];
 }
 
-export interface QuestionYaml {
-    Type: QuestionType;
+export interface QuestionEdit {
     Title: string;
+    Type: QuestionType;
     Order: number;
     InnerText: string;
-    Options?: OptionYaml[];
+    Options?: OptionEdit[];
 }

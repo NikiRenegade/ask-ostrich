@@ -5,7 +5,7 @@ export interface Option {
     IsCorrect: boolean;
 }
 
-export interface OptionYaml {
+export interface OptionEdit {
     Title: string;
     Order: number;
     IsCorrect: boolean;

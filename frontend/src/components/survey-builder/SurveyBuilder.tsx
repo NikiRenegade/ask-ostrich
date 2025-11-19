@@ -6,7 +6,7 @@ import type {Survey, SurveyYaml} from '../../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
 import { useAuth } from '../auth/AuthProvider.tsx';
-import { YamlEditor } from './YamlEditor.tsx';
+import { CodeEditor } from './CodeEditor.tsx';
 import { AIAssistant } from './AIAssistant';
 import type { ChatMessage } from './AIAssistant';
 import SaveIcon from '@mui/icons-material/Save';
@@ -14,9 +14,14 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import {yamlToObject, objectToYaml} from "../../services/Converters/yamlConverter.ts";
-import {surveyToSurveyYamlConverter} from "../../services/Converters/surveyToSurveyYamlConverter.ts";
-import {surveyYamlToSurveyConverter} from "../../services/Converters/surveyYamlToSurveyConverter.ts";
+import {surveyToSurveyEditConverter} from "../../services/Converters/surveyToSurveyEditConverter.ts";
+import {surveyEditToSurveyConverter} from "../../services/Converters/surveyEditToSurveyConverter.ts";
 
+enum TabValues{
+    AIAssistant,
+    YamlEditor,
+    JsonEditor,
+}
 export const SurveyBuilder: React.FC = () => {
     
     const { user } = useAuth();
@@ -33,7 +38,10 @@ export const SurveyBuilder: React.FC = () => {
     });
 
     const [yamlText, setYamlText] = useState<string>(
-        objectToYaml(surveyToSurveyYamlConverter(survey))
+        objectToYaml(surveyToSurveyEditConverter(survey))
+    );
+    const [jsonText, setJsonText] = useState<string>(
+        JSON.stringify(surveyToSurveyEditConverter(survey), null, 2)
     );
 
     const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
@@ -45,7 +53,8 @@ export const SurveyBuilder: React.FC = () => {
     useEffect(() => {
 
         if (!isUserEditingYaml) {
-            setYamlText(objectToYaml(surveyToSurveyYamlConverter(survey)));
+            setYamlText(objectToYaml(surveyToSurveyEditConverter(survey)));
+            setJsonText(JSON.stringify(surveyToSurveyEditConverter(survey), null, 2));
         }
     }, [survey, isUserEditingYaml]);
 
@@ -66,7 +75,18 @@ export const SurveyBuilder: React.FC = () => {
         try {
             const parsedYaml = yamlToObject<SurveyYaml>(text);
 
-            setSurvey(prev => surveyYamlToSurveyConverter(parsedYaml, prev));
+            setSurvey(prev => surveyEditToSurveyConverter(parsedYaml, prev));
+        } catch (e) {
+            // YAML НЕ валиден — просто игнорируем
+        }
+    };
+    const handleJsonChange = (text: string) => {
+        setJsonText(text);
+
+        try {
+            const parsedJson = JSON.parse(text);
+
+            setSurvey(prev => surveyEditToSurveyConverter(parsedJson, prev));
         } catch (e) {
             // YAML НЕ валиден — просто игнорируем
         }
@@ -205,10 +225,11 @@ export const SurveyBuilder: React.FC = () => {
                         <Tabs value={tabValue} onChange={handleTabChange}>
                             <Tab icon={<span>✨</span>} iconPosition="start" label="AI" />
                             <Tab icon={<span>📝</span>} iconPosition="start" label="YAML" />
+                            <Tab icon={<span>📄</span>} iconPosition="start" label="JSON" />
                         </Tabs>
                     </Box>
 
-                    {tabValue === 0 && (
+                    {tabValue === TabValues.AIAssistant && (
                         <AIAssistant                             
                             messages={aiMessages}                            
                             currentSurveyJson={JSON.stringify(survey, null, 2)}
@@ -218,8 +239,11 @@ export const SurveyBuilder: React.FC = () => {
                             disabled={!user || isLoading} 
                         />
                     )}
-                    {tabValue === 1 && (
-                        <YamlEditor yamlText={yamlText} onYamlChange={handleYamlChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml}/>
+                    {tabValue === TabValues.YamlEditor && (
+                        <CodeEditor codeText={yamlText} onCodeChange={handleYamlChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType = "Yaml"/>
+                    )}
+                    {tabValue === TabValues.JsonEditor && (
+                        <CodeEditor codeText={jsonText} onCodeChange={handleJsonChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType = "Json"/>
                     )}
                 </Paper>
             </Box>
