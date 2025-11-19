@@ -4,3 +4,9 @@ export interface Option {
     Order: number;
     IsCorrect: boolean;
 }
+
+export interface OptionYaml {
+    Title: string;
+    Order: number;
+    IsCorrect: boolean;
+}

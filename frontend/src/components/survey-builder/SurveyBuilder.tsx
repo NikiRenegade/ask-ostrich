@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import type { Question } from "../../types/Question.ts";
-import type { Survey } from '../../types/Survey.ts';
+import type {Survey, SurveyYaml} from '../../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
 import { useAuth } from '../auth/AuthProvider.tsx';
-import { JsonEditor } from './JsonEditor.tsx';
+import { YamlEditor } from './YamlEditor.tsx';
 import { AIAssistant } from './AIAssistant';
 import type { ChatMessage } from './AIAssistant';
 import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
+import {yamlToObject, objectToYaml} from "../../services/Converters/yamlConverter.ts";
+import {surveyToSurveyYamlConverter} from "../../services/Converters/surveyToSurveyYamlConverter.ts";
+import {surveyYamlToSurveyConverter} from "../../services/Converters/surveyYamlToSurveyConverter.ts";
 
 export const SurveyBuilder: React.FC = () => {
     
@@ -29,8 +32,8 @@ export const SurveyBuilder: React.FC = () => {
         Questions: [],
     });
 
-    const [jsonText, setJsonText] = useState<string>(
-        JSON.stringify(survey, null, 2)
+    const [yamlText, setYamlText] = useState<string>(
+        objectToYaml(surveyToSurveyYamlConverter(survey))
     );
 
     const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
@@ -39,7 +42,7 @@ export const SurveyBuilder: React.FC = () => {
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
 
     React.useEffect(() => {
-        setJsonText(JSON.stringify(survey, null, 2));
+        setYamlText(objectToYaml(surveyToSurveyYamlConverter(survey)));
     }, [survey]);
 
     React.useEffect(() => {
@@ -53,18 +56,15 @@ export const SurveyBuilder: React.FC = () => {
         }
     }, [user]);
 
-    const handleJsonChange = (text: string) => {
-        setJsonText(text);
+    const handleYamlChange = (text: string) => {
+        setYamlText(text);
 
         try {
-            const parsed = JSON.parse(text);
-            setSurvey((prev) => ({
-                ...prev,
-                Title: parsed.Title || prev.Title,
-                Description: parsed.Description || prev.Description,
-                Questions: Array.isArray(parsed.Questions) ? parsed.Questions : prev.Questions,
-            }));
-        } catch {
+            const parsedYaml = yamlToObject<SurveyYaml>(text);
+            const updatedSurvey = surveyYamlToSurveyConverter(parsedYaml, survey);
+            setSurvey(updatedSurvey);
+        } catch (e) {
+            // YAML НЕ валиден — просто игнорируем
         }
     };
 
@@ -200,14 +200,14 @@ export const SurveyBuilder: React.FC = () => {
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
                         <Tabs value={tabValue} onChange={handleTabChange}>
                             <Tab icon={<span>✨</span>} iconPosition="start" label="AI" />
-                            <Tab icon={<span>📝</span>} iconPosition="start" label="JSON" />
+                            <Tab icon={<span>📝</span>} iconPosition="start" label="YAML" />
                         </Tabs>
                     </Box>
 
                     {tabValue === 0 && (
                         <AIAssistant                             
                             messages={aiMessages}                            
-                            currentSurveyJson={jsonText}                            
+                            currentSurveyJson={JSON.stringify(survey, null, 2)}
                             onMessagesChange={setAiMessages}
                             onSurveyGenerationStarted={handleSurveyGenerationStarted}
                             onSurveyGenerated={handleSurveyGenerated}
@@ -215,7 +215,7 @@ export const SurveyBuilder: React.FC = () => {
                         />
                     )}
                     {tabValue === 1 && (
-                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} disabled={!user || isLoading} />
+                        <YamlEditor yamlText={yamlText} onYamlChange={handleYamlChange} disabled={!user || isLoading} />
                     )}
                 </Paper>
             </Box>

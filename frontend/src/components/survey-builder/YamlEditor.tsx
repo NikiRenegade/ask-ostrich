@@ -2,12 +2,12 @@ import React from 'react';
 import { TextField, Typography, Box } from '@mui/material';
 
 interface JsonEditorProps {
-    jsonText: string;
-    onJsonChange: (text: string) => void;
+    yamlText: string;
+    onYamlChange: (text: string) => void;
     disabled?: boolean;
 }
 
-export const JsonEditor: React.FC<JsonEditorProps> = ({ jsonText, onJsonChange, disabled = false }) => {
+export const YamlEditor: React.FC<JsonEditorProps> = ({ yamlText, onYamlChange: onYamlChange, disabled = false }) => {
     return (
         <Box>
             <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
@@ -20,8 +20,8 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({ jsonText, onJsonChange, 
                 fullWidth
                 multiline
                 rows={25}
-                value={jsonText}
-                onChange={(e) => onJsonChange(e.target.value)}
+                value={yamlText}
+                onChange={(e) => onYamlChange(e.target.value)}
                 disabled={disabled}
                 sx={{
                     '& .MuiInputBase-input': {

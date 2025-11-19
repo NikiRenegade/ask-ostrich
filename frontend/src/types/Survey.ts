@@ -1,4 +1,4 @@
-import type {Question} from "./Question.ts";
+import type {Question, QuestionYaml} from "./Question.ts";
 
 export interface Survey {
     SurveyId: string;
@@ -9,4 +9,10 @@ export interface Survey {
     CreatedAt: string;
     ShortUrl: string;
     Questions: Question[];
+}
+
+export interface SurveyYaml {
+    Title: string;
+    Description: string;
+    Questions: QuestionYaml[];
 }
