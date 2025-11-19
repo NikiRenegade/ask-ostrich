@@ -2,7 +2,7 @@ import { API_BASE_URL } from '../config/api';
 import type { GenerateSurveyRequest, GeneratedSurvey } from '../models/aiAssistantModels';
 
 export async function generateSurvey(request: GenerateSurveyRequest): Promise<GeneratedSurvey> {
-    const response = await fetch(`${API_BASE_URL}/ai-assistant/api/SurveyGenerator`, {
+    const response = await fetch(`${API_BASE_URL}/ai-assistant/api/AIAssistant`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

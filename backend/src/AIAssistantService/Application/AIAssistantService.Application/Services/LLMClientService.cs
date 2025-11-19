@@ -1,4 +1,4 @@
-﻿using AIAssistantService.Application.Helpers;
+using AIAssistantService.Application.Helpers;
 using AIAssistantService.Domain.DTO;
 using AIAssistantService.Domain.Interfaces.Services;
 using System.Runtime.Serialization;
@@ -6,19 +6,19 @@ using System.Text.Json;
 
 namespace AIAssistantService.Application.Services
 {
-    public class SurveyGeneratorService: ISurveyGeneratorService
+    public class LLMClientService: ILLMClientService
     {
         private readonly ILLMChatApiService _chatService;
 
-        public SurveyGeneratorService(ILLMChatApiService chatService)
+        public LLMClientService(ILLMChatApiService chatService)
         {
             _chatService = chatService;
         }
 
-        public async Task<GeneratedSurveyDto> GenerateSurveyAsync(GenerateSurveyRequestDto request, CancellationToken cancellationToken = default)
+        public async Task<GeneratedSurveyDto> GenerateSurveyAsync(string prompt, string currentSurveyJson, CancellationToken cancellationToken = default)
         {
-            string prompt = PromptGenerationHelper.GeneratePrompt(request.Prompt, request.CurrentSurveyJson, request.Type);
-            var response = await _chatService.GetResponse(prompt, cancellationToken);
+            string generatedPrompt = PromptGenerationHelper.GeneratePrompt(prompt, currentSurveyJson, PromptType.UpdateSurvey);
+            var response = await _chatService.GetResponse(generatedPrompt, cancellationToken);
 
             response = response.Replace("```json", "").Replace("`","");
 
@@ -45,5 +45,19 @@ namespace AIAssistantService.Application.Services
 
             return result!;
         }
+
+        public async Task<string> AskLLMAsync(string prompt, string currentSurveyJson, CancellationToken cancellationToken = default)
+        {
+            string generatedPrompt = PromptGenerationHelper.GeneratePrompt(prompt, currentSurveyJson, PromptType.Ask);
+            var response = await _chatService.GetResponse(generatedPrompt, cancellationToken);
+
+            if (string.IsNullOrWhiteSpace(response))
+            {
+                throw new InvalidOperationException("LLM returned an empty response.");
+            }
+
+            return response;
+        }
     }
 }
+
