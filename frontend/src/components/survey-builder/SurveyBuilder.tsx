@@ -1,19 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import type { Question } from "../../types/Question.ts";
-import type { Survey } from '../../types/Survey.ts';
+import type {Survey, SurveyEdit} from '../../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
 import { useAuth } from '../auth/AuthProvider.tsx';
-import { JsonEditor } from './JsonEditor.tsx';
+import { CodeEditor } from './CodeEditor.tsx';
 import { AIAssistant } from './AIAssistant';
 import type { ChatMessage } from './AIAssistant';
 import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
+import {yamlToObject, objectToYaml} from "../../services/Converters/yamlConverter.ts";
+import {surveyToSurveyEditConverter} from "../../services/Converters/surveyToSurveyEditConverter.ts";
+import {surveyEditToSurveyConverter} from "../../services/Converters/surveyEditToSurveyConverter.ts";
 
+enum TabValues{
+    AIAssistant,
+    YamlEditor,
+    JsonEditor,
+}
 export const SurveyBuilder: React.FC = () => {
     
     const { user } = useAuth();
@@ -29,18 +37,26 @@ export const SurveyBuilder: React.FC = () => {
         Questions: [],
     });
 
+    const [yamlText, setYamlText] = useState<string>(
+        objectToYaml(surveyToSurveyEditConverter(survey))
+    );
     const [jsonText, setJsonText] = useState<string>(
-        JSON.stringify(survey, null, 2)
+        JSON.stringify(surveyToSurveyEditConverter(survey), null, 2)
     );
 
     const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [tabValue, setTabValue] = useState<number>(0);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+    const [isUserEditingYaml, setIsUserEditingYaml] = useState(false);
 
-    React.useEffect(() => {
-        setJsonText(JSON.stringify(survey, null, 2));
-    }, [survey]);
+    useEffect(() => {
+
+        if (!isUserEditingYaml) {
+            setYamlText(objectToYaml(surveyToSurveyEditConverter(survey)));
+            setJsonText(JSON.stringify(surveyToSurveyEditConverter(survey), null, 2));
+        }
+    }, [survey, isUserEditingYaml]);
 
     React.useEffect(() => {
         if (!user) {
@@ -53,18 +69,24 @@ export const SurveyBuilder: React.FC = () => {
         }
     }, [user]);
 
+    const handleYamlChange = (text: string) => {
+        setYamlText(text);
+
+        try {
+            const parsedYaml = yamlToObject<SurveyEdit>(text);
+
+            setSurvey(prev => surveyEditToSurveyConverter(parsedYaml, prev));
+        } catch (e) {
+        }
+    };
     const handleJsonChange = (text: string) => {
         setJsonText(text);
 
         try {
-            const parsed = JSON.parse(text);
-            setSurvey((prev) => ({
-                ...prev,
-                Title: parsed.Title || prev.Title,
-                Description: parsed.Description || prev.Description,
-                Questions: Array.isArray(parsed.Questions) ? parsed.Questions : prev.Questions,
-            }));
-        } catch {
+            const parsedJson = JSON.parse(text);
+
+            setSurvey(prev => surveyEditToSurveyConverter(parsedJson, prev));
+        } catch (e) {
         }
     };
 
@@ -200,22 +222,26 @@ export const SurveyBuilder: React.FC = () => {
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
                         <Tabs value={tabValue} onChange={handleTabChange}>
                             <Tab icon={<span>✨</span>} iconPosition="start" label="AI" />
-                            <Tab icon={<span>📝</span>} iconPosition="start" label="JSON" />
+                            <Tab icon={<span>📝</span>} iconPosition="start" label="YAML" />
+                            <Tab icon={<span>📄</span>} iconPosition="start" label="JSON" />
                         </Tabs>
                     </Box>
 
-                    {tabValue === 0 && (
+                    {tabValue === TabValues.AIAssistant && (
                         <AIAssistant                             
                             messages={aiMessages}                            
-                            currentSurveyJson={jsonText}                            
+                            currentSurveyJson={JSON.stringify(survey, null, 2)}
                             onMessagesChange={setAiMessages}
                             onSurveyGenerationStarted={handleSurveyGenerationStarted}
                             onSurveyGenerated={handleSurveyGenerated}
                             disabled={!user || isLoading} 
                         />
                     )}
-                    {tabValue === 1 && (
-                        <JsonEditor jsonText={jsonText} onJsonChange={handleJsonChange} disabled={!user || isLoading} />
+                    {tabValue === TabValues.YamlEditor && (
+                        <CodeEditor codeText={yamlText} onCodeChange={handleYamlChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType = "Yaml"/>
+                    )}
+                    {tabValue === TabValues.JsonEditor && (
+                        <CodeEditor codeText={jsonText} onCodeChange={handleJsonChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType = "Json"/>
                     )}
                 </Paper>
             </Box>

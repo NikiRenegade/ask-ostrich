@@ -4,3 +4,9 @@ export interface Option {
     Order: number;
     IsCorrect: boolean;
 }
+
+export interface OptionEdit {
+    Title: string;
+    Order: number;
+    IsCorrect: boolean;
+}
