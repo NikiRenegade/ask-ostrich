@@ -13,7 +13,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
-import api from '../../api/axios';
+import api from '../../services/axios';
 
 export const SurveyBuilder: React.FC = () => {
     
@@ -24,11 +24,21 @@ export const SurveyBuilder: React.FC = () => {
         Title: '',
         Description: '',
         IsPublished: false,
-        AuthorGuid: user?.id,
+        AuthorGuid: '',
         CreatedAt: new Date().toISOString(),
         ShortUrl: '',
         Questions: [],
     });
+
+    
+    React.useEffect(() => {
+        if (user) {
+            setSurvey({
+                ...survey,
+                AuthorGuid: user.id
+            });
+        }
+    }, [user]);
 
     const [jsonText, setJsonText] = useState<string>(
         JSON.stringify(survey, null, 2)

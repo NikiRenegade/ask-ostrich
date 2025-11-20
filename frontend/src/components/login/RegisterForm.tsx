@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography, CircularProgress } from "@mui/material";
 import type { LoginProps } from "../../types/LoginProps";
-import api from "../../api/axios";
+import api from "../../services/axios";
 
  const RegisterForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
   const [email, setEmail] = useState("");

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography, Alert } from "@mui/material";
 import type { LoginProps } from "../../types/LoginProps";
-import api from "../../api/axios";
+import api from "../../services/axios";
 
 const LoginForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
   
