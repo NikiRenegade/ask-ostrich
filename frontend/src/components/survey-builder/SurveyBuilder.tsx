@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import type { Question } from "../../types/Question.ts";
-import type {Survey, SurveyYaml} from '../../types/Survey.ts';
+import type {Survey, SurveyEdit} from '../../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
 import {OrderArrows} from "./OrderArrows.tsx";
 import { useAuth } from '../auth/AuthProvider.tsx';
@@ -73,11 +73,10 @@ export const SurveyBuilder: React.FC = () => {
         setYamlText(text);
 
         try {
-            const parsedYaml = yamlToObject<SurveyYaml>(text);
+            const parsedYaml = yamlToObject<SurveyEdit>(text);
 
             setSurvey(prev => surveyEditToSurveyConverter(parsedYaml, prev));
         } catch (e) {
-            // YAML НЕ валиден — просто игнорируем
         }
     };
     const handleJsonChange = (text: string) => {
@@ -88,7 +87,6 @@ export const SurveyBuilder: React.FC = () => {
 
             setSurvey(prev => surveyEditToSurveyConverter(parsedJson, prev));
         } catch (e) {
-            // YAML НЕ валиден — просто игнорируем
         }
     };
 
