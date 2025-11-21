@@ -255,7 +255,7 @@ function convertToSurvey(generated: GeneratedSurvey, currentSurveyJson: string):
         Title: generated.title || currentSurvey.Title || '',
         Description: generated.description || currentSurvey.Description || '',
         IsPublished: currentSurvey.IsPublished || false,
-        AuthorID: currentSurvey.AuthorID || uuidv4(),
+        AuthorGuid: currentSurvey.AuthorGuid || uuidv4(),
         CreatedAt: currentSurvey.CreatedAt || new Date().toISOString(),
         ShortUrl: currentSurvey.ShortUrl || '',
         Questions: generated.questions.map((q, index) => ({
@@ -274,15 +274,15 @@ function convertToSurvey(generated: GeneratedSurvey, currentSurveyJson: string):
     };
 }
 
-function mapQuestionType(type: 0 | 1 | 2): 'text' | 'singleChoice' | 'multipleChoice' {
+function mapQuestionType(type: 0 | 1 | 2): 'Text' | 'SingleChoice' | 'MultipleChoice' {
     switch (type) {
         case 0:
-            return 'text';
+            return 'Text';
         case 1:
-            return 'singleChoice';
+            return 'SingleChoice';
         case 2:
-            return 'multipleChoice';
+            return 'MultipleChoice';
         default:
-            return 'text';
+            return 'Text';
     }
 }

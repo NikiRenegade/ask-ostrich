@@ -3,6 +3,7 @@ import {SurveyBuilder} from './components/survey-builder/SurveyBuilder.tsx'
 import './index.css';
 import Header from './components/Header.tsx';
 import {AuthProvider} from './components/auth/AuthProvider.tsx';
+import Footer from './components/Footer.tsx';
 
 const App: React.FC = () => (
     <>
@@ -11,6 +12,7 @@ const App: React.FC = () => (
             <div className="min-h-screen bg-gray-100 p-6">
                 <SurveyBuilder />
             </div>
+            <Footer/>
         </AuthProvider>
     </>
 );

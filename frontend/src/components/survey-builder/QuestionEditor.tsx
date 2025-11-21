@@ -69,11 +69,11 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                         onChange({
                             ...question,
                             Type: e.target.value as QuestionType,
-                            Options: e.target.value === 'text' ? [] : question.Options
+                            Options: e.target.value === 'Text' ? [] : question.Options
                         })}>
-                    <MenuItem value="text">Текстовый ответ</MenuItem>
-                    <MenuItem value="singleChoice">Один выбор</MenuItem>
-                    <MenuItem value="multipleChoice">Множественный выбор</MenuItem>
+                    <MenuItem value="Text">Текстовый ответ</MenuItem>
+                    <MenuItem value="SingleChoice">Один выбор</MenuItem>
+                    <MenuItem value="MultipleChoice">Множественный выбор</MenuItem>
                 </Select>
             </FormControl>
 
@@ -88,7 +88,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
                 sx={{ mb: 2 }}
             />
 
-            {(question.Type === 'singleChoice' || question.Type === 'multipleChoice') && (
+            {(question.Type === 'SingleChoice' || question.Type === 'MultipleChoice') && (
                 <Box>
                     <Typography variant="body2" sx={{ fontWeight: 'medium', mb: 1 }}>
                         Варианты:
