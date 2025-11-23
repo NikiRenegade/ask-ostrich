@@ -65,10 +65,10 @@ namespace SurveyManageService.Application.Services
             return await _repository.DeleteAsync(id, cancellationToken);
         }
 
-        public async Task<IList<SurveyDto>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+        public async Task<IList<SurveyShortDto>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
         {
             var surveys = await _repository.GetExsistingByUserIdAsync(userId, cancellationToken);
-            return surveys.Select(SurveyMapper.ToDto).ToList();
+            return surveys.Select(SurveyMapper.ToShortDto).ToList();
         }
     }
 }

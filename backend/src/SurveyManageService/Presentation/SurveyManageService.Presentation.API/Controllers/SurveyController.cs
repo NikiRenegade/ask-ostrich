@@ -48,10 +48,9 @@ public class SurveyController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while retrieving the survey", error = ex.Message });
         }
     }
-
     [Authorize]
     [HttpGet("existing/{userId}")]
-    public async Task<ActionResult<IList<SurveyDto>>> GetExsistingByUserId(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IList<SurveyShortDto>>> GetExsistingByUserId(Guid userId, CancellationToken cancellationToken = default)
     {
         try
         {

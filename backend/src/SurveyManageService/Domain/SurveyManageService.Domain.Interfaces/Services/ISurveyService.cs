@@ -6,7 +6,7 @@ public interface ISurveyService
 {
     Task<IList<SurveyDto>> GetAllAsync(CancellationToken cancellationToken);
 
-    Task<IList<SurveyDto>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IList<SurveyShortDto>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 
     Task<SurveyDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SurveyManageService.Domain.Entities;
 using SurveyManageService.Domain.Interfaces.Repositories;
-using SurveyManageService.Infrastructure.EntityFramework;
+using SurveyManageService.Infrastructure.EntityFramework.Context;
 
-namespace SurveyManageService.Infrastructure.Repositories;
+namespace SurveyManageService.Infrastructure.Repositories.Repositories;
 
 public class SurveyRepository: ISurveyRepository
 {
@@ -73,7 +73,7 @@ public class SurveyRepository: ISurveyRepository
     {
         return await _dbContext.Surveys
             .AsNoTracking()
-            .Where(x => x.Author != null && x.Author.Id == userId)
+            .Where(x => x.AuthorId == userId)
             .ToListAsync(cancellationToken);
     }
 }
