@@ -1,14 +1,120 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
+import {
+  AppBar,
+  Toolbar,
+  Container,
+  Typography,
+  Button,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import LoginForm from './login/LoginForm';
+import RegisterForm from './login/RegisterForm';
+import { useAuth } from './auth/AuthProvider'; 
 
-interface HeaderProps {
-  title: string;
-}
+const Header: React.FC = () => {
+  
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [loginMode, setLoginMode] = useState("login");
+  const {user, token, login, logout} = useAuth();
+ 
+  const handleLoginSubmit = (data:any) => {
+    setOpenLogin(false);
+    login(data.userProfile, data.accessToken, data.expiresIn);
+  };
 
-const Header: React.FC<HeaderProps> = ({ title }) => {
+  const handleLoginClick = () => setOpenLogin(true);
+  const handleLoginClose = () => {
+    setOpenLogin(false);
+    setTimeout(() => setLoginMode("login"), 300);
+  }
+
+  const handleOpenConfirm = () => setOpenConfirm(true);
+  const handleCloseConfirm = () => setOpenConfirm(false);
+
+  const handleLogoutConfirm = () => {
+    logout();
+    handleCloseConfirm();
+  };
+
   return (
-    <header className="">
-      <h1 className="">{title}</h1>
-    </header>
+    <>
+      <AppBar position="static" color="primary">
+        <Toolbar sx={{display: "flex",  alignItems: "center"}}>
+          
+          <Box sx={{ flex: 1 }} />
+
+          <Typography variant="h6" component="div" sx={{ flex: 1, textAlign: "center" }}>
+            <img src="/src/assets/header_logo.png" alt="Logo" className="logo-img"/>
+          </Typography>
+
+          <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+            {user ? (
+              <Button color="inherit" onClick={handleOpenConfirm}>
+                Выйти
+              </Button>
+            ) : (
+              <Button color="inherit" onClick={handleLoginClick}>
+                Войти
+              </Button>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Dialog open={openLogin} onClose={handleLoginClose}>
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            pr: 1,
+          }}
+        >
+          {loginMode === "login" ? "Вход" : "Регистрация"}
+          <IconButton aria-label="close" onClick={handleLoginClose}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+           {loginMode === "login" ? (
+            <LoginForm
+              onSubmit={handleLoginSubmit}
+              onChangeMode={() => setLoginMode("register")}
+            />
+          ) : (
+            <RegisterForm 
+              onSubmit={handleLoginSubmit}
+              onChangeMode={() => setLoginMode("login")}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+      <Container sx={{ flex: 1, textAlign: "left", marginLeft: 0 }}>
+        {user ? (
+          <Typography variant="h6">Привет, {user.firstName}! Чем сегодня займемся?</Typography>
+        ) : (
+          <Typography variant="h6">Пожалуйста, войдите или зарегистрируйтесь</Typography>
+        )}
+      </Container>
+      <Dialog open={openConfirm} onClose={handleCloseConfirm}>
+        <DialogTitle>Подтверждение выхода</DialogTitle>
+        <DialogContent>
+          <Typography>Вы уверены, что хотите выйти из аккаунта?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirm}>Отмена</Button>
+          <Button onClick={handleLogoutConfirm} color="error" variant="contained">
+            Выйти
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

@@ -1,11 +1,20 @@
 import React from 'react';
-import {SurveyBuilder} from './components/SurveyBuilder.tsx'
+import {SurveyBuilder} from './components/survey-builder/SurveyBuilder.tsx'
 import './index.css';
+import Header from './components/Header.tsx';
+import {AuthProvider} from './components/auth/AuthProvider.tsx';
+import Footer from './components/Footer.tsx';
 
 const App: React.FC = () => (
-    <div className="min-h-screen bg-gray-100 p-6">
-        <SurveyBuilder />
-    </div>
+    <>
+        <AuthProvider>
+            <Header/>
+            <div className="min-h-screen bg-gray-100 p-6">
+                <SurveyBuilder />
+            </div>
+            <Footer/>
+        </AuthProvider>
+    </>
 );
 
 export default App;

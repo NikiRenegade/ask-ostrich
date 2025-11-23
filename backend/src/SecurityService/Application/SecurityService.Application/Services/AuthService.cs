@@ -1,7 +1,9 @@
 ﻿using SecurityService.Application.DTOs.Auth;
 using SecurityService.Application.Interfaces;
+using SecurityService.Application.Mappers;
 using SecurityService.Domain.Entities;
 using SecurityService.Domain.Interfaces.Repositories;
+using SecurityService.Domain.Interfaces.Publishers;
 
 namespace SecurityService.Application.Services
 {
@@ -9,11 +11,13 @@ namespace SecurityService.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IIdentityService _identityService;
+        private readonly IUserEventPublisher _userEventPublisher;
 
-        public AuthService(IUserRepository userRepository, IIdentityService identityService)
+        public AuthService(IUserRepository userRepository, IIdentityService identityService, IUserEventPublisher userEventPublisher)
         {
             _userRepository = userRepository;
             _identityService = identityService;
+            _userEventPublisher = userEventPublisher;
         }
 
         public async Task<string> RegisterUserAsync(RegisterUserDto dto)
@@ -27,7 +31,7 @@ namespace SecurityService.Application.Services
             var created = await _identityService.CreateUserAsync(user, dto.Password);
             if (!created)
                 throw new InvalidOperationException("Не удалось создать пользователя.");
-
+            _userEventPublisher.PublishUserCreated(user.ToUserCreatedEvent());
             return await _identityService.GenerateEmailConfirmationTokenAsync(user);
         }
 
