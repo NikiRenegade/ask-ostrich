@@ -8,7 +8,7 @@ import {OrderArrows} from "./OrderArrows.tsx";
 import { useAuth } from '../auth/AuthProvider.tsx';
 import { JsonEditor } from './JsonEditor.tsx';
 import { AIAssistant } from './AIAssistant';
-import type { ChatMessage } from './AIAssistant';
+import type { ChatMessage } from '../../models/aiAssistantModels';
 import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
@@ -44,13 +44,15 @@ export const SurveyBuilder: React.FC = () => {
         JSON.stringify(survey, null, 2)
     );
 
+    type SnackSeverity = 'error' | 'warning' | 'info' | 'success'
+
     const [aiMessages, setAiMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [tabValue, setTabValue] = useState<number>(0);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [openedSnack, setOpenedSnack] = useState<boolean>(false);
     const [snackMessage, setSnackMessage] = useState<string>();
-    const [snackSeverity, setSnackSeverity] = useState<string>();
+    const [snackSeverity, setSnackSeverity] = useState<SnackSeverity>();
 
     const handleCloseSnack = () => {
         setOpenedSnack(false);
@@ -120,21 +122,25 @@ export const SurveyBuilder: React.FC = () => {
         setSurvey({...survey, Questions: newQuestions});
     };
     
-    const handleSave = async (e) => {
+    const handleSave = async (e: React.SyntheticEvent) => {
         e.preventDefault();
 
         setIsLoading(true);
         
         try {
           
-          const res = await api.post("/survey-manage/api/survey", {
+          await api.post("/survey-manage/api/survey", {
             ...survey
           });
               
           showSuccess("Данные успешно сохранены!");
     
-        } catch (err) {
-          showError(err.message);
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            showError(err.message);
+          } else {
+            showError("Неизвестная ошибка");
+          }
         } finally {
             setIsLoading(false);
         }

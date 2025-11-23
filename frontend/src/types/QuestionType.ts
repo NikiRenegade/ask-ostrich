@@ -1,1 +1,1 @@
-export type QuestionType = '0' | 'SingleChoice' | 'MultipleChoice';
+export type QuestionType = 'Text' | 'SingleChoice' | 'MultipleChoice';

@@ -16,6 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import LoginForm from './login/LoginForm';
 import RegisterForm from './login/RegisterForm';
 import { useAuth } from './auth/AuthProvider'; 
+import logoImage from '../assets/header_logo.png'; 
 
 const Header: React.FC = () => {
   
@@ -51,7 +52,7 @@ const Header: React.FC = () => {
           <Box sx={{ flex: 1 }} />
 
           <Typography variant="h6" component="div" sx={{ flex: 1, textAlign: "center" }}>
-            <img src="/src/assets/header_logo.png" alt="Logo" className="logo-img"/>
+            <img src={logoImage} alt="Logo" className="logo-img"/>
           </Typography>
 
           <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
