@@ -1,5 +1,6 @@
 using SurveyResponseService.Domain.DTOs.Survey;
 using SurveyResponseService.Domain.Entities;
+using SurveyResponseService.Domain.Events;
 
 namespace SurveyResponseService.Application.Mappers
 {
@@ -60,5 +61,28 @@ namespace SurveyResponseService.Application.Mappers
 
             return survey;
         }
+
+        public static SurveyCreatedEvent ToSurveyCreatedEvent(this Survey source) => new()
+        {
+            Id = source.Id,
+            Title = source.Title,
+            Description = source.Description,
+            Author = source.Author,
+            CreatedAt = source.CreatedAt,
+            IsPublished = source.IsPublished,
+            ShortUrl = source.ShortUrl
+        };
+
+        public static SurveyUpdatedEvent ToSurveyUpdatedEvent(this Survey source, Survey old) => new()
+        {
+            Id = source.Id,
+            Changes =
+            {
+                { nameof(source.Title), old.Title },
+                { nameof(source.Description), old.Description },
+                { nameof(source.IsPublished), old.IsPublished },
+                { nameof(source.Questions), old.Questions }
+            }
+        };
     }
 }
