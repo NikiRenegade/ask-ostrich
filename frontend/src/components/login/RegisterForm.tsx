@@ -13,7 +13,7 @@ import api from "../../services/axios";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.SyntheticEvent) => {
     e.preventDefault();
     if (password !== confirm) {
       setError("Пароли не совпадают");
@@ -29,8 +29,15 @@ import api from "../../services/axios";
 
       onSubmit(res.data);
 
-    } catch (err) {
-      setError(err.message);
+    } catch (err : unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз."
+        );
+      }
+      
     } finally {
       setLoading(false);
     }

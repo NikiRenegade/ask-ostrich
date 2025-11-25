@@ -7,9 +7,9 @@ const LoginForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.SyntheticEvent) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -28,8 +28,14 @@ const LoginForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
 
       onSubmit(res.data);
 
-    } catch (err) {
-      setError(err.message);
+    } catch (err : unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Произошла ошибка при входе. Пожалуйста, попробуйте еще раз."
+        );
+      }
     }
   };
 

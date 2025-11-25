@@ -1,11 +1,30 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 
-const AuthContext = createContext(null);
+export interface User {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+}
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [expiresAt, setExpiresAt] = useState(null);
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  login: (user: User, token: string, expiresIn: number) => void;
+  logout: () => void;
+}
+
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
 
   // При старте проверяем localStorage
   useEffect(() => {
@@ -24,14 +43,14 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const login = (userData, token, expiresIn) => {
+  const login = (userData: User, token: string, expiresIn: number) => {
     const expiresAt = Date.now() + expiresIn * 60 * 1000;
     setUser(userData);
     setToken(token);
     setExpiresAt(expiresAt);
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("expiresAt", expiresAt);
+    localStorage.setItem("expiresAt", String(expiresAt));
   };
 
   const logout = () => {
@@ -50,4 +69,13 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  
+  if (!ctx) {
+    throw new Error(
+      "useAuth должен использоваться внутри компонента AuthProvider"
+    );
+  }
+  return ctx;
+}
