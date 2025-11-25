@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography, CircularProgress } from "@mui/material";
 import type { LoginProps } from "../../types/LoginProps";
+import api from "../../services/axios";
 
  const RegisterForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
   const [email, setEmail] = useState("");
@@ -23,17 +24,10 @@ import type { LoginProps } from "../../types/LoginProps";
     setError("");
 
     try {
-      const res = await fetch("/api/Auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, userName, firstName, lastName })
-      });
 
-      const data:any = await res.json();
+      const res = await api.post("/security/api/Auth/register", { email, password, userName, firstName, lastName });
 
-      if (!res.ok) throw new Error(data.message);
-
-      onSubmit(data);
+      onSubmit(res.data);
 
     } catch (err) {
       setError(err.message);

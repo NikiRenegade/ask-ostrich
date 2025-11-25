@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle } from '@mui/material';
+import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle, Snackbar, Alert } from '@mui/material';
 import type { Question } from "../../types/Question.ts";
 import type {Survey, SurveyEdit} from '../../types/Survey.ts';
 import { QuestionEditor } from './QuestionEditor';
@@ -13,6 +13,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
+import api from '../../services/axios';
 import {yamlToObject, objectToYaml} from "../../services/Converters/yamlConverter.ts";
 import {surveyToSurveyEditConverter} from "../../services/Converters/surveyToSurveyEditConverter.ts";
 import {surveyEditToSurveyConverter} from "../../services/Converters/surveyEditToSurveyConverter.ts";
@@ -31,7 +32,7 @@ export const SurveyBuilder: React.FC = () => {
         Title: '',
         Description: '',
         IsPublished: false,
-        AuthorID: uuidv4(),
+        AuthorGuid: '',
         CreatedAt: new Date().toISOString(),
         ShortUrl: '',
         Questions: [],
@@ -40,6 +41,16 @@ export const SurveyBuilder: React.FC = () => {
     const [yamlText, setYamlText] = useState<string>(
         objectToYaml(surveyToSurveyEditConverter(survey))
     );
+
+    React.useEffect(() => {
+        if (user) {
+            setSurvey({
+                ...survey,
+                AuthorGuid: user.id
+            });
+        }
+    }, [user]);
+
     const [jsonText, setJsonText] = useState<string>(
         JSON.stringify(surveyToSurveyEditConverter(survey), null, 2)
     );
@@ -49,6 +60,23 @@ export const SurveyBuilder: React.FC = () => {
     const [tabValue, setTabValue] = useState<number>(0);
     const [previewOpen, setPreviewOpen] = useState<boolean>(false);
     const [isUserEditingYaml, setIsUserEditingYaml] = useState(false);
+    const [openedSnack, setOpenedSnack] = useState<boolean>(false);
+    const [snackMessage, setSnackMessage] = useState<string>();
+    const [snackSeverity, setSnackSeverity] = useState<string>();
+
+    const handleCloseSnack = () => {
+        setOpenedSnack(false);
+    };
+    const showSuccess = (msg: string) => {
+        setSnackMessage(msg);
+        setSnackSeverity("success")
+        setOpenedSnack(true);
+    };
+    const showError = (msg: string) => {
+        setSnackMessage(msg);
+        setSnackSeverity("error")
+        setOpenedSnack(true);
+    };
 
     useEffect(() => {
 
@@ -93,7 +121,7 @@ export const SurveyBuilder: React.FC = () => {
     const addQuestion = () => {
         const newQuestion: Question = {
             QuestionId: uuidv4(),
-            Type: 'text',
+            Type: 'Text',
             Title: '',
             Order: survey.Questions.length + 1,
             InnerText: '',
@@ -113,9 +141,25 @@ export const SurveyBuilder: React.FC = () => {
                 map((q, i) => ({ ...q, Order : i + 1}));
         setSurvey({...survey, Questions: newQuestions});
     };
-    const handleSave = () => {
-        console.log('Survey JSON:', survey);
-        alert('Опрос создан! Посмотри результат в консоли.');
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+
+        setIsLoading(true);
+
+        try {
+
+          const res = await api.post("/survey-manage/api/survey", {
+            ...survey
+          });
+
+          showSuccess("Данные успешно сохранены!");
+
+        } catch (err) {
+          showError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSurveyGenerationStarted = () => {
@@ -245,6 +289,16 @@ export const SurveyBuilder: React.FC = () => {
                     )}
                 </Paper>
             </Box>
+            <Snackbar
+                open={openedSnack}
+                autoHideDuration={3000}
+                onClose={handleCloseSnack}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseSnack} severity={snackSeverity} variant="filled">
+                    {snackMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

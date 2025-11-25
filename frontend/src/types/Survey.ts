@@ -5,7 +5,7 @@ export interface Survey {
     Title: string;
     Description: string;
     IsPublished: boolean;
-    AuthorID: string;
+    AuthorGuid: string;
     CreatedAt: string;
     ShortUrl: string;
     Questions: Question[];

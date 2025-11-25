@@ -60,7 +60,7 @@ export const SurveyViewer: React.FC<SurveyViewerProps> = ({ survey }) => {
                         </Typography>
                     )}
 
-                    {question.Type === 'text' && (
+                    {question.Type === 'Text' && (
                         <TextField
                             fullWidth
                             multiline
@@ -71,7 +71,7 @@ export const SurveyViewer: React.FC<SurveyViewerProps> = ({ survey }) => {
                         />
                     )}
 
-                    {question.Type === 'singleChoice' && (
+                    {question.Type === 'SingleChoice' && (
                         <FormControl component="fieldset" fullWidth>
                             <RadioGroup
                                 value={answers[question.QuestionId] || ''}
@@ -89,7 +89,7 @@ export const SurveyViewer: React.FC<SurveyViewerProps> = ({ survey }) => {
                         </FormControl>
                     )}
 
-                    {question.Type === 'multipleChoice' && (
+                    {question.Type === 'MultipleChoice' && (
                         <FormControl component="fieldset" fullWidth>
                             <FormGroup>
                                 {[...question.Options].sort((a, b) => a.Order - b.Order).map((option) => (

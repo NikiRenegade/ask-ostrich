@@ -12,9 +12,10 @@
 
         protected override void AddMainTask()
         {
-            Prompt += 
+            Prompt +=
                 """
-                Your main task is to provide a clear and concise answer to the user's question regarding the existing survey or related topic. Ensure that your response is informative and directly addresses the user's inquiry.                
+                Your main task is to provide a clear and concise answer to the user's question regarding the existing survey or related topic. Ensure that your response is informative and directly addresses the user's inquiry.
+                Format the answer in HTML, using appropriate tags such as <b>, <i>, <ul>, <ol>, and <li> to enhance readability.
                 """;
         }
     }
