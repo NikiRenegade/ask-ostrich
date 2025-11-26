@@ -18,21 +18,38 @@ export const SurveyUserForm: React.FC = () => {
     const [survey, setSurvey] = useState<Survey | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
     const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+    
+    type SnackSeverity = 'error' | 'warning' | 'info' | 'success';
+    const [openedSnack, setOpenedSnack] = useState<boolean>(false);
+    const [snackMessage, setSnackMessage] = useState<string>();
+    const [snackSeverity, setSnackSeverity] = useState<SnackSeverity>();
+
+    const handleCloseSnack = () => {
+        setOpenedSnack(false);
+    };
+    const showSuccess = (msg: string) => {
+        setSnackMessage(msg);
+        setSnackSeverity("success");
+        setOpenedSnack(true);
+    };
+    const showError = (msg: string) => {
+        setSnackMessage(msg);
+        setSnackSeverity("error");
+        setOpenedSnack(true);
+    };
 
     useEffect(() => {
         const loadSurvey = async () => {
             if (!id) {
-                setError('ID опроса не указан');
+                showError('ID опроса не указан');
                 setLoading(false);
                 return;
             }
 
             try {
                 setLoading(true);
-                const res = await api.get(`/survey-response/api/survey/${id}`);
+                const res = await api.get(`/survey-manage/api/Survey/${id}`);
                 const loadedSurvey = res.data;
 
                 setSurvey({
@@ -57,10 +74,9 @@ export const SurveyUserForm: React.FC = () => {
                         })),
                     })),
                 });
-                setError(null);
             } catch (err: unknown) {
                 console.error('Failed to load survey:', err);
-                setError(err instanceof Error ? err.message : 'Не удалось загрузить опрос');
+                showError(err instanceof Error ? err.message : 'Не удалось загрузить опрос');
             } finally {
                 setLoading(false);
             }
@@ -95,10 +111,10 @@ export const SurveyUserForm: React.FC = () => {
                 })),
             });
 
-            setSuccess(true);
+            showSuccess('Ваши ответы успешно отправлены!');
         } catch (err: unknown) {
             console.error('Failed to submit survey:', err);
-            setError(err instanceof Error ? err.message : 'Не удалось отправить ответы');
+            showError('Не удалось отправить ответы');
         } finally {
             setSubmitting(false);
         }
@@ -112,39 +128,19 @@ export const SurveyUserForm: React.FC = () => {
         );
     }
 
-    if (error && !survey) {
-        return (
-            <Box sx={{ p: 3 }}>
-                <Alert severity="error">{error}</Alert>
-            </Box>
-        );
-    }
-
     if (!survey) {
-        return (
-            <Box sx={{ p: 3 }}>
-                <Alert severity="warning">Опрос не найден</Alert>
-            </Box>
-        );
+        return null;
     }
 
     return (
         <Box>
-            {error && (
-                <Box sx={{ p: 3 }}>
-                    <Alert severity="error" onClose={() => setError(null)}>
-                        {error}
-                    </Alert>
-                </Box>
-            )}
-
             {survey && (
                 <>
                     <SurveyViewer 
                         survey={survey} 
                         answers={answers}
                         onAnswersChange={setAnswers}
-                        disabled={submitting || success}
+                        disabled={submitting || (openedSnack && snackSeverity === 'success')}
                     />
                     
                     {survey.Questions.length > 0 && (
@@ -154,10 +150,10 @@ export const SurveyUserForm: React.FC = () => {
                                 color="primary"
                                 size="large"
                                 onClick={handleSubmit}
-                                disabled={submitting || success}
+                                disabled={submitting || (openedSnack && snackSeverity === 'success')}
                                 sx={{ minWidth: 200 }}
                             >
-                                {submitting ? <CircularProgress size={24} /> : success ? 'Отправлено!' : 'Отправить ответы'}
+                                {submitting ? <CircularProgress size={24} /> : (openedSnack && snackSeverity === 'success') ? 'Отправлено!' : 'Отправить ответы'}
                             </Button>
                         </Box>
                     )}
@@ -165,13 +161,13 @@ export const SurveyUserForm: React.FC = () => {
             )}
 
             <Snackbar
-                open={success}
-                autoHideDuration={2000}
-                onClose={() => setSuccess(false)}
+                open={openedSnack}
+                autoHideDuration={3000}
+                onClose={handleCloseSnack}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
-                <Alert severity="success" variant="filled">
-                    Ваши ответы успешно отправлены!
+                <Alert onClose={handleCloseSnack} severity={snackSeverity} variant="filled">
+                    {snackMessage}
                 </Alert>
             </Snackbar>
         </Box>
