@@ -15,7 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
-import api from '../../services/axios';
+import { loadSurveyById, createSurvey, updateSurvey } from '../../services/surveyBuilderApi';
 import {yamlToObject, objectToYaml} from "../../services/Converters/yamlConverter.ts";
 import {surveyToSurveyEditConverter} from "../../services/Converters/surveyToSurveyEditConverter.ts";
 import {surveyEditToSurveyConverter} from "../../services/Converters/surveyEditToSurveyConverter.ts";
@@ -91,31 +91,8 @@ export const SurveyBuilder: React.FC = () => {
             
             setIsLoading(true);
             try {
-                const res = await api.get(`/survey-manage/api/Survey/${id}`);
-                const loadedSurvey = res.data;
-                console.log ('Loaded survey:', loadedSurvey);
-                setSurvey({
-                    SurveyId: loadedSurvey.id || id,
-                    Title: loadedSurvey.title ||'',
-                    Description: loadedSurvey.description || '',
-                    IsPublished: loadedSurvey.isPublished !== undefined ? loadedSurvey.isPublished : false,
-                    AuthorGuid: loadedSurvey.authorGuid || loadedSurvey.author?.id || user.id,
-                    CreatedAt: loadedSurvey.createdAt || new Date().toISOString(),
-                    ShortUrl: loadedSurvey.shortUrl  || '',
-                    Questions: (loadedSurvey.questions  || []).map((q: any) => ({
-                        QuestionId: q.questionId || uuidv4(),
-                        Type: (q.type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',
-                        Title: q.title || '',
-                        Order: q.order || 1,
-                        InnerText: q.innerText || '',
-                        Options: (q.options || []).map((opt: any) => ({
-                            Title: opt.title || '',
-                            Value: opt.value || uuidv4(),
-                            IsCorrect: opt.isCorrect !== undefined ? opt.isCorrect : false,
-                            Order: opt.order || 1,
-                        })),
-                    })),
-                });
+                const loadedSurvey = await loadSurveyById(id, user.id);
+                setSurvey(loadedSurvey);
             } catch (err) {
                 console.error('Failed to load survey:', err);
                 showError('Не удалось загрузить опрос');
@@ -198,47 +175,13 @@ export const SurveyBuilder: React.FC = () => {
         
         try {
           if (isEditMode) {
-            await api.put("/survey-manage/api/survey", {
-              Id: survey.SurveyId,
-              Title: survey.Title,
-              Description: survey.Description,
-              IsPublished: survey.IsPublished,
-              AuthorGuid: survey.AuthorGuid,
-              Questions: survey.Questions.map(q => ({
-                Type: q.Type,
-                Title: q.Title,
-                Order: q.Order,
-                InnerText: q.InnerText,
-                Options: q.Options.map(opt => ({
-                  Title: opt.Title,
-                  Value: opt.Value,
-                  IsCorrect: opt.IsCorrect,
-                  Order: opt.Order,
-                })),
-              })),
-            });
+            await updateSurvey(survey);
             showSuccess("Опрос успешно обновлен!");
           } else {
-            const response = await api.post("/survey-manage/api/survey", {
-              Title: survey.Title,
-              Description: survey.Description,
-              AuthorGuid: survey.AuthorGuid,
-              Questions: survey.Questions.map(q => ({
-                Type: q.Type,
-                Title: q.Title,
-                Order: q.Order,
-                InnerText: q.InnerText,
-                Options: q.Options.map(opt => ({
-                  Title: opt.Title,
-                  Value: opt.Value,
-                  IsCorrect: opt.IsCorrect,
-                  Order: opt.Order,
-                })),
-              })),
-            });
+            const response = await createSurvey(survey);
             
             showSuccess("Опрос успешно создан!");            
-            navigate(`/edit/${response.data.id}`);
+            navigate(`/edit/${response.id}`);
           }
     
         } catch (err: unknown) {

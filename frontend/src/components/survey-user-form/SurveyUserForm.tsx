@@ -8,7 +8,7 @@ import {
     Snackbar
 } from '@mui/material';
 import type { Survey } from '../../types/Survey.ts';
-import api from '../../services/axios';
+import { loadSurveyById, submitSurveyResult } from '../../services/surveyUserFormApi';
 import { useAuth } from '../auth/AuthProvider.tsx';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 
@@ -49,31 +49,8 @@ export const SurveyUserForm: React.FC = () => {
 
             try {
                 setLoading(true);
-                const res = await api.get(`/survey-manage/api/Survey/${id}`);
-                const loadedSurvey = res.data;
-
-                setSurvey({
-                    SurveyId: loadedSurvey.id || id,
-                    Title: loadedSurvey.title || '',
-                    Description: loadedSurvey.description || '',
-                    IsPublished: loadedSurvey.isPublished !== undefined ? loadedSurvey.isPublished : false,
-                    AuthorGuid: loadedSurvey.authorGuid || '',
-                    CreatedAt: loadedSurvey.createdAt || new Date().toISOString(),
-                    ShortUrl: loadedSurvey.shortUrl || '',
-                    Questions: (loadedSurvey.questions || []).map((q: any) => ({
-                        QuestionId: q.questionId || '',
-                        Type: (q.type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',
-                        Title: q.title || '',
-                        Order: q.order || 1,
-                        InnerText: q.innerText || '',
-                        Options: (q.options || []).map((opt: any) => ({
-                            Title: opt.title || '',
-                            Value: opt.value || '',
-                            IsCorrect: opt.isCorrect !== undefined ? opt.isCorrect : false,
-                            Order: opt.order || 1,
-                        })),
-                    })),
-                });
+                const loadedSurvey = await loadSurveyById(id);
+                setSurvey(loadedSurvey);
             } catch (err: unknown) {
                 console.error('Failed to load survey:', err);
                 showError(err instanceof Error ? err.message : 'Не удалось загрузить опрос');
@@ -94,21 +71,17 @@ export const SurveyUserForm: React.FC = () => {
             const answersArray = survey.Questions.map(question => {
                 const answer = answers[question.QuestionId];
                 return {
-                    QuestionId: question.QuestionId,
-                    QuestionTitle: question.Title,
-                    Values: Array.isArray(answer) ? answer : (answer ? [answer] : []),
+                    questionId: question.QuestionId,
+                    questionTitle: question.Title,
+                    values: Array.isArray(answer) ? answer : (answer ? [answer] : []),
                 };
             });
 
-            await api.post('/survey-response/api/SurveyResult', {
-                userId: user?.id, 
+            await submitSurveyResult({
+                userId: user?.id,
                 surveyId: id,
                 datePassed: new Date().toISOString(),
-                answers: answersArray.map(a => ({
-                    questionId: a.QuestionId,
-                    questionTitle: a.QuestionTitle,
-                    values: a.Values,
-                })),
+                answers: answersArray,
             });
 
             showSuccess('Ваши ответы успешно отправлены!');
