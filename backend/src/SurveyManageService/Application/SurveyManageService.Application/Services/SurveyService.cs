@@ -67,7 +67,7 @@ namespace SurveyManageService.Application.Services
 
         public async Task<IList<SurveyShortDto>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
         {
-            var surveys = await _repository.GetExsistingByUserIdAsync(userId, cancellationToken);
+            var surveys = await _repository.GetExistingByUserIdAsync(userId, cancellationToken);
             return surveys.Select(SurveyMapper.ToShortDto).ToList();
         }
     }

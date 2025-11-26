@@ -49,7 +49,7 @@ public class SurveyController : ControllerBase
         }
     }
     [HttpGet("existing/{userId}")]
-    public async Task<ActionResult<IList<SurveyShortDto>>> GetExsistingByUserId(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IList<SurveyShortDto>>> GetExistingByUserId(Guid userId, CancellationToken cancellationToken = default)
     {
         try
         {

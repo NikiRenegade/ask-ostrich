@@ -69,7 +69,7 @@ public class SurveyRepository: ISurveyRepository
         return true;
     }
 
-    public async Task<IList<Survey>> GetExsistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<IList<Survey>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
         return await _dbContext.Surveys
             .AsNoTracking()
