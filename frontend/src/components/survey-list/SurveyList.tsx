@@ -72,7 +72,8 @@ export const SurveyList: React.FC = () => {
                 <SurveyShortCard
                     key={s.id}
                     survey={s}
-                    onDelete={() => setDeleteId(s.id)}/>
+                    onDelete={() => setDeleteId(s.id)}
+                    onEdit={() => navigate(`/edit/${s.id}`)}/>
             ))}
 
             {surveys.length === 0 && !loading && (

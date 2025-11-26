@@ -16,6 +16,7 @@ const App: React.FC = () => (
                     <Routes>
                         <Route path="/" element={<SurveyList />} />
                         <Route path="/create" element={<SurveyBuilder />} />
+                        <Route path="/edit/:id" element={<SurveyBuilder />} />
                     </Routes>
                 </div>
                 <Footer/>

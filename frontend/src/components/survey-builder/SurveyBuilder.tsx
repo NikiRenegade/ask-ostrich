@@ -13,7 +13,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import api from '../../services/axios';
 import {yamlToObject, objectToYaml} from "../../services/Converters/yamlConverter.ts";
@@ -29,9 +29,11 @@ export const SurveyBuilder: React.FC = () => {
     
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { id } = useParams<{ id?: string }>();
+    const isEditMode = !!id;
     
     const [survey, setSurvey] = useState<Survey>({
-        SurveyId: uuidv4(),
+        SurveyId: id || uuidv4(),
         Title: '',
         Description: '',
         IsPublished: false,
@@ -47,10 +49,10 @@ export const SurveyBuilder: React.FC = () => {
 
     React.useEffect(() => {
         if (user) {
-            setSurvey({
-                ...survey,
+            setSurvey(prev => ({
+                ...prev,
                 AuthorGuid: user.id
-            });
+            }));
         }
     }, [user]);
 
@@ -82,6 +84,48 @@ export const SurveyBuilder: React.FC = () => {
         setSnackSeverity("error")
         setOpenedSnack(true);
     };
+
+    useEffect(() => {
+        const loadSurvey = async () => {
+            if (!id || !user) return;
+            
+            setIsLoading(true);
+            try {
+                const res = await api.get(`/survey-manage/api/Survey/${id}`);
+                const loadedSurvey = res.data;
+                
+                setSurvey({
+                    SurveyId: loadedSurvey.id || loadedSurvey.Id || id,
+                    Title: loadedSurvey.title || loadedSurvey.Title || '',
+                    Description: loadedSurvey.description || loadedSurvey.Description || '',
+                    IsPublished: loadedSurvey.isPublished !== undefined ? loadedSurvey.isPublished : (loadedSurvey.IsPublished !== undefined ? loadedSurvey.IsPublished : false),
+                    AuthorGuid: loadedSurvey.authorGuid || loadedSurvey.AuthorGuid || (loadedSurvey.author?.id || loadedSurvey.Author?.id) || user.id,
+                    CreatedAt: loadedSurvey.createdAt || loadedSurvey.CreatedAt || new Date().toISOString(),
+                    ShortUrl: loadedSurvey.shortUrl || loadedSurvey.ShortUrl || '',
+                    Questions: (loadedSurvey.questions || loadedSurvey.Questions || []).map((q: any) => ({
+                        QuestionId: q.questionId || q.QuestionId || uuidv4(),
+                        Type: (q.type || q.Type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',
+                        Title: q.title || q.Title || '',
+                        Order: q.order || q.Order || 1,
+                        InnerText: q.innerText || q.InnerText || '',
+                        Options: (q.options || q.Options || []).map((opt: any) => ({
+                            Title: opt.title || opt.Title || '',
+                            Value: opt.value || opt.Value || uuidv4(),
+                            IsCorrect: opt.isCorrect !== undefined ? opt.isCorrect : (opt.IsCorrect !== undefined ? opt.IsCorrect : false),
+                            Order: opt.order || opt.Order || 1,
+                        })),
+                    })),
+                });
+            } catch (err) {
+                console.error('Failed to load survey:', err);
+                showError('Не удалось загрузить опрос');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadSurvey();
+    }, [id, user]);
 
     useEffect(() => {
 
@@ -153,12 +197,49 @@ export const SurveyBuilder: React.FC = () => {
         setIsLoading(true);
         
         try {
-          
-          await api.post("/survey-manage/api/survey", {
-            ...survey
-          });
-
-          showSuccess("Данные успешно сохранены!");
+          if (isEditMode) {
+            // Update existing survey - use PascalCase to match UpdateSurveyDto
+            await api.put("/survey-manage/api/survey", {
+              Id: survey.SurveyId,
+              Title: survey.Title,
+              Description: survey.Description,
+              IsPublished: survey.IsPublished,
+              AuthorGuid: survey.AuthorGuid,
+              Questions: survey.Questions.map(q => ({
+                Type: q.Type,
+                Title: q.Title,
+                Order: q.Order,
+                InnerText: q.InnerText,
+                Options: q.Options.map(opt => ({
+                  Title: opt.Title,
+                  Value: opt.Value,
+                  IsCorrect: opt.IsCorrect,
+                  Order: opt.Order,
+                })),
+              })),
+            });
+            showSuccess("Опрос успешно обновлен!");
+          } else {
+            // Create new survey - use PascalCase to match CreateSurveyDto
+            await api.post("/survey-manage/api/survey", {
+              Title: survey.Title,
+              Description: survey.Description,
+              AuthorGuid: survey.AuthorGuid,
+              Questions: survey.Questions.map(q => ({
+                Type: q.Type,
+                Title: q.Title,
+                Order: q.Order,
+                InnerText: q.InnerText,
+                Options: q.Options.map(opt => ({
+                  Title: opt.Title,
+                  Value: opt.Value,
+                  IsCorrect: opt.IsCorrect,
+                  Order: opt.Order,
+                })),
+              })),
+            });
+            showSuccess("Опрос успешно создан!");
+          }
     
         } catch (err: unknown) {
           if (err instanceof Error) {
@@ -189,7 +270,7 @@ export const SurveyBuilder: React.FC = () => {
     return (
         <Box sx={{ position: 'relative' }}>
             <Typography variant="h4" sx={{mb: 3, fontWeight: "bold"}}>
-                Создать опрос
+                {isEditMode ? 'Редактировать опрос' : 'Создать опрос'}
             </Typography>
 
             <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
