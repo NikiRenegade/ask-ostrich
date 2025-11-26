@@ -5,7 +5,7 @@ import './index.css';
 import Header from './components/Header.tsx';
 import {AuthProvider} from './components/auth/AuthProvider.tsx';
 import Footer from './components/Footer.tsx';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => (
     <>
@@ -13,7 +13,10 @@ const App: React.FC = () => (
             <AuthProvider>
                 <Header/>
                 <div className="min-h-screen bg-gray-100 p-6">
-                    <SurveyList />
+                    <Routes>
+                        <Route path="/" element={<SurveyList />} />
+                        <Route path="/create" element={<SurveyBuilder />} />
+                    </Routes>
                 </div>
                 <Footer/>
             </AuthProvider>
