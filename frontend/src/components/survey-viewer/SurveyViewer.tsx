@@ -4,28 +4,41 @@ import type { Survey } from '../../types/Survey.ts';
 
 interface SurveyViewerProps {
     survey: Survey;
+    answers?: Record<string, string | string[]>;
+    onAnswersChange?: (answers: Record<string, string | string[]>) => void;
+    disabled?: boolean;
 }
 
-export const SurveyViewer: React.FC<SurveyViewerProps> = ({ survey }) => {
-    const [answers, setAnswers] = useState<Record<string, string | string[]>>({});    
+export const SurveyViewer: React.FC<SurveyViewerProps> = ({ 
+    survey, 
+    answers: controlledAnswers, 
+    onAnswersChange,
+    disabled = false 
+}) => {
+    const [internalAnswers, setInternalAnswers] = useState<Record<string, string | string[]>>({});
+    
+    const answers = controlledAnswers !== undefined ? controlledAnswers : internalAnswers;
+    const setAnswers = onAnswersChange || setInternalAnswers;    
 
     const handleTextChange = (questionId: string, value: string) => {
-        setAnswers(prev => ({ ...prev, [questionId]: value }));
+        const newAnswers = { ...answers, [questionId]: value };
+        setAnswers(newAnswers);
     };
 
     const handleSingleChoiceChange = (questionId: string, value: string) => {
-        setAnswers(prev => ({ ...prev, [questionId]: value }));
+        const newAnswers = { ...answers, [questionId]: value };
+        setAnswers(newAnswers);
     };
 
     const handleMultipleChoiceChange = (questionId: string, optionValue: string, checked: boolean) => {
-        setAnswers(prev => {
-            const current = (prev[questionId] as string[]) || [];
-            if (checked) {
-                return { ...prev, [questionId]: [...current, optionValue] };
-            } else {
-                return { ...prev, [questionId]: current.filter(v => v !== optionValue) };
-            }
-        });
+        const current = (answers[questionId] as string[]) || [];
+        const newAnswers = {
+            ...answers,
+            [questionId]: checked 
+                ? [...current, optionValue] 
+                : current.filter(v => v !== optionValue)
+        };
+        setAnswers(newAnswers);
     };
 
     return (
@@ -68,11 +81,12 @@ export const SurveyViewer: React.FC<SurveyViewerProps> = ({ survey }) => {
                             placeholder="Введите ваш ответ..."
                             value={answers[question.QuestionId] || ''}
                             onChange={(e) => handleTextChange(question.QuestionId, e.target.value)}
+                            disabled={disabled}
                         />
                     )}
 
                     {question.Type === 'SingleChoice' && (
-                        <FormControl component="fieldset" fullWidth>
+                        <FormControl component="fieldset" fullWidth disabled={disabled}>
                             <RadioGroup
                                 value={answers[question.QuestionId] || ''}
                                 onChange={(e) => handleSingleChoiceChange(question.QuestionId, e.target.value)}
@@ -90,7 +104,7 @@ export const SurveyViewer: React.FC<SurveyViewerProps> = ({ survey }) => {
                     )}
 
                     {question.Type === 'MultipleChoice' && (
-                        <FormControl component="fieldset" fullWidth>
+                        <FormControl component="fieldset" fullWidth disabled={disabled}>
                             <FormGroup>
                                 {[...question.Options].sort((a, b) => a.Order - b.Order).map((option) => (
                                     <FormControlLabel

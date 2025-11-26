@@ -93,26 +93,26 @@ export const SurveyBuilder: React.FC = () => {
             try {
                 const res = await api.get(`/survey-manage/api/Survey/${id}`);
                 const loadedSurvey = res.data;
-                
+                console.log ('Loaded survey:', loadedSurvey);
                 setSurvey({
-                    SurveyId: loadedSurvey.id || loadedSurvey.Id || id,
-                    Title: loadedSurvey.title || loadedSurvey.Title || '',
-                    Description: loadedSurvey.description || loadedSurvey.Description || '',
-                    IsPublished: loadedSurvey.isPublished !== undefined ? loadedSurvey.isPublished : (loadedSurvey.IsPublished !== undefined ? loadedSurvey.IsPublished : false),
-                    AuthorGuid: loadedSurvey.authorGuid || loadedSurvey.AuthorGuid || (loadedSurvey.author?.id || loadedSurvey.Author?.id) || user.id,
-                    CreatedAt: loadedSurvey.createdAt || loadedSurvey.CreatedAt || new Date().toISOString(),
-                    ShortUrl: loadedSurvey.shortUrl || loadedSurvey.ShortUrl || '',
-                    Questions: (loadedSurvey.questions || loadedSurvey.Questions || []).map((q: any) => ({
-                        QuestionId: q.questionId || q.QuestionId || uuidv4(),
-                        Type: (q.type || q.Type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',
-                        Title: q.title || q.Title || '',
-                        Order: q.order || q.Order || 1,
-                        InnerText: q.innerText || q.InnerText || '',
-                        Options: (q.options || q.Options || []).map((opt: any) => ({
-                            Title: opt.title || opt.Title || '',
-                            Value: opt.value || opt.Value || uuidv4(),
-                            IsCorrect: opt.isCorrect !== undefined ? opt.isCorrect : (opt.IsCorrect !== undefined ? opt.IsCorrect : false),
-                            Order: opt.order || opt.Order || 1,
+                    SurveyId: loadedSurvey.id || id,
+                    Title: loadedSurvey.title ||'',
+                    Description: loadedSurvey.description || '',
+                    IsPublished: loadedSurvey.isPublished !== undefined ? loadedSurvey.isPublished : false,
+                    AuthorGuid: loadedSurvey.authorGuid || loadedSurvey.author?.id || user.id,
+                    CreatedAt: loadedSurvey.createdAt || new Date().toISOString(),
+                    ShortUrl: loadedSurvey.shortUrl  || '',
+                    Questions: (loadedSurvey.questions  || []).map((q: any) => ({
+                        QuestionId: q.questionId || uuidv4(),
+                        Type: (q.type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',
+                        Title: q.title || '',
+                        Order: q.order || 1,
+                        InnerText: q.innerText || '',
+                        Options: (q.options || []).map((opt: any) => ({
+                            Title: opt.title || '',
+                            Value: opt.value || uuidv4(),
+                            IsCorrect: opt.isCorrect !== undefined ? opt.isCorrect : false,
+                            Order: opt.order || 1,
                         })),
                     })),
                 });
@@ -198,7 +198,6 @@ export const SurveyBuilder: React.FC = () => {
         
         try {
           if (isEditMode) {
-            // Update existing survey - use PascalCase to match UpdateSurveyDto
             await api.put("/survey-manage/api/survey", {
               Id: survey.SurveyId,
               Title: survey.Title,
@@ -220,7 +219,6 @@ export const SurveyBuilder: React.FC = () => {
             });
             showSuccess("Опрос успешно обновлен!");
           } else {
-            // Create new survey - use PascalCase to match CreateSurveyDto
             await api.post("/survey-manage/api/survey", {
               Title: survey.Title,
               Description: survey.Description,
