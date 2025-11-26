@@ -21,6 +21,7 @@
     "dotenv": "^17.2.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.6",
     "react-tabs": "^6.1.0",
     "uuid": "^13.0.0"
   },

@@ -1,19 +1,23 @@
 import React from 'react';
 import {SurveyBuilder} from './components/survey-builder/SurveyBuilder.tsx'
+import {SurveyList} from './components/survey-list/SurveyList.tsx'
 import './index.css';
 import Header from './components/Header.tsx';
 import {AuthProvider} from './components/auth/AuthProvider.tsx';
 import Footer from './components/Footer.tsx';
+import { BrowserRouter } from "react-router-dom";
 
 const App: React.FC = () => (
     <>
-        <AuthProvider>
-            <Header/>
-            <div className="min-h-screen bg-gray-100 p-6">
-                <SurveyBuilder />
-            </div>
-            <Footer/>
-        </AuthProvider>
+        <BrowserRouter>
+            <AuthProvider>
+                <Header/>
+                <div className="min-h-screen bg-gray-100 p-6">
+                    <SurveyList />
+                </div>
+                <Footer/>
+            </AuthProvider>
+        </BrowserRouter>
     </>
 );
 

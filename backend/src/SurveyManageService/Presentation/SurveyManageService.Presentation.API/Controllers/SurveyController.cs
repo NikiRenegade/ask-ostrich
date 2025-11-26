@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver.Core.Misc;
 using SurveyManageService.Domain.DTO;
 using SurveyManageService.Domain.Interfaces.Services;
 
@@ -44,6 +46,23 @@ public class SurveyController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "An error occurred while retrieving the survey", error = ex.Message });
+        }
+    }
+    [HttpGet("existing/{userId}")]
+    public async Task<ActionResult<IList<SurveyShortDto>>> GetExistingByUserId(Guid userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var surveys = await _surveyService.GetExistingByUserIdAsync(userId, cancellationToken);
+            if (surveys.Count == 0)
+            {
+                return NotFound(new { message = $"Surveys with User ID {userId} not found" });
+            }
+            return Ok(surveys);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while retrieving surveys", error = ex.Message });
         }
     }
 

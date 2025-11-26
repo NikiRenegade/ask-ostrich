@@ -2,7 +2,7 @@
 using MongoDB.EntityFrameworkCore.Extensions;
 using SurveyManageService.Domain.Entities;
 
-namespace SurveyManageService.Infrastructure.EntityFramework;
+namespace SurveyManageService.Infrastructure.EntityFramework.Context;
 
 public class SurveyManageDbContext : DbContext
 {

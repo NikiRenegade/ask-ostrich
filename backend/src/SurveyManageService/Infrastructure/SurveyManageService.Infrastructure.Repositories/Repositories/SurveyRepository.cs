@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SurveyManageService.Domain.Entities;
 using SurveyManageService.Domain.Interfaces.Repositories;
-using SurveyManageService.Infrastructure.EntityFramework;
+using SurveyManageService.Infrastructure.EntityFramework.Context;
 
-namespace SurveyManageService.Infrastructure.Repositories;
+namespace SurveyManageService.Infrastructure.Repositories.Repositories;
 
 public class SurveyRepository: ISurveyRepository
 {
@@ -67,5 +67,13 @@ public class SurveyRepository: ISurveyRepository
         _dbContext.Surveys.Remove(entity);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return true;
+    }
+
+    public async Task<IList<Survey>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Surveys
+            .AsNoTracking()
+            .Where(x => x.AuthorId == userId)
+            .ToListAsync(cancellationToken);
     }
 }

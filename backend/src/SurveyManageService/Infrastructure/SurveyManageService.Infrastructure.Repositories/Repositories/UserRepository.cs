@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SurveyManageService.Domain.Entities;
 using SurveyManageService.Domain.Interfaces.Repositories;
-using SurveyManageService.Infrastructure.EntityFramework;
+using SurveyManageService.Infrastructure.EntityFramework.Context;
 
-namespace SurveyManageService.Infrastructure.Repositories;
+namespace SurveyManageService.Infrastructure.Repositories.Repositories;
 
 public class UserRepository: IUserRepository
 {
