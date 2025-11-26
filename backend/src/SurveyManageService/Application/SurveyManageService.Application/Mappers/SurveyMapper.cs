@@ -33,7 +33,7 @@ public static class SurveyMapper
             Title = survey.Title,
             Description = survey.Description,
             IsPublished = survey.IsPublished,
-            Author = survey.AuthorId,
+            AuthorGuid = survey.AuthorId,
             CreatedAt = survey.CreatedAt,
             QuestionCount = survey.Questions.Count()
         };
