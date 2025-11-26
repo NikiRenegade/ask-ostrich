@@ -219,7 +219,7 @@ export const SurveyBuilder: React.FC = () => {
             });
             showSuccess("Опрос успешно обновлен!");
           } else {
-            await api.post("/survey-manage/api/survey", {
+            const response = await api.post("/survey-manage/api/survey", {
               Title: survey.Title,
               Description: survey.Description,
               AuthorGuid: survey.AuthorGuid,
@@ -236,7 +236,9 @@ export const SurveyBuilder: React.FC = () => {
                 })),
               })),
             });
-            showSuccess("Опрос успешно создан!");
+            
+            showSuccess("Опрос успешно создан!");            
+            navigate(`/edit/${response.data.id}`);
           }
     
         } catch (err: unknown) {
