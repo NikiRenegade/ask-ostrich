@@ -31,7 +31,7 @@ namespace SecurityService.Application.Services
             var created = await _identityService.CreateUserAsync(user, dto.Password);
             if (!created)
                 throw new InvalidOperationException("Не удалось создать пользователя.");
-            _userEventPublisher.PublishUserCreated(user.ToUserCreatedEvent());
+            await _userEventPublisher.PublishUserCreated(user.ToUserCreatedEvent());
             return await _identityService.GenerateEmailConfirmationTokenAsync(user);
         }
 

@@ -7,8 +7,9 @@ import type { SurveyShort } from "../../types/SurveyShort";
 interface Props {
     survey: SurveyShort;
     onDelete: () => void;
+    onEdit: () => void;
 }
-export const SurveyShortCard: React.FC<Props> = ({ survey, onDelete }) => {
+export const SurveyShortCard: React.FC<Props> = ({ survey, onDelete, onEdit }) => {
     return (
         <Paper sx={{ p: 2, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Box>
@@ -38,7 +39,7 @@ export const SurveyShortCard: React.FC<Props> = ({ survey, onDelete }) => {
             <Box sx={{ display: "flex", gap: 1 }}>
 
                 <Tooltip title="Редактировать">
-                    <IconButton color="secondary">
+                    <IconButton color="secondary" onClick={onEdit}>
                         <EditIcon />
                     </IconButton>
                 </Tooltip>
