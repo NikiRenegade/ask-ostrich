@@ -1,6 +1,6 @@
-using SurveyResponseService.Domain.Events;
+using SurveyManageService.Domain.Events;
 
-namespace SurveyResponseService.Domain.Interfaces.Publishers;
+namespace SurveyManageService.Domain.Interfaces.Publishers;
 
 public interface ISurveyEventPublisher
 {

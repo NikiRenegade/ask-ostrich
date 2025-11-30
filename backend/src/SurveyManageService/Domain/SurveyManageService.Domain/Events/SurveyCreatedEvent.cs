@@ -1,6 +1,6 @@
-using SurveyResponseService.Domain.Entities;
+using SurveyManageService.Domain.Entities;
 
-namespace SurveyResponseService.Domain.Events;
+namespace SurveyManageService.Domain.Events;
 
 public class SurveyCreatedEvent
 {

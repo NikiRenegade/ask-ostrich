@@ -1,4 +1,4 @@
-namespace SurveyResponseService.Domain.Events;
+namespace SurveyManageService.Domain.Events;
 
 public record SurveyUpdatedEvent
 {

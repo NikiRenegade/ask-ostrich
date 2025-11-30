@@ -7,7 +7,6 @@ using SurveyResponseService.Domain.Interfaces.Consumers;
 using SurveyResponseService.Infrastructure.EntityFramework;
 using SurveyResponseService.Infrastructure.Repositories;
 using SurveyResponseService.Infrastructure.Messaging;
-using SurveyResponseService.Domain.Interfaces.Publishers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,11 +62,11 @@ builder.Services.AddSingleton(async sp =>
     var channel = await connection.CreateChannelAsync();
     return channel;
 });
-builder.Services.AddScoped<IEventPublisher, RabbitMqEventPublisher>();
-builder.Services.AddScoped<ISurveyEventPublisher, RabbitMqSurveyEventPublisher>();
 builder.Services.AddSingleton<IEventConsumer, RabbitMqEventConsumer>();
 builder.Services.AddScoped<IUserEventConsumer, RabbitMqUserEventConsumer>();
+builder.Services.AddScoped<ISurveyEventConsumer, RabbitMqSurveyEventConsumer>();
 builder.Services.AddHostedService<UserEventsBackgroundService>();
+builder.Services.AddHostedService<SurveyEventsBackgroundService>();
 
 var app = builder.Build();
 

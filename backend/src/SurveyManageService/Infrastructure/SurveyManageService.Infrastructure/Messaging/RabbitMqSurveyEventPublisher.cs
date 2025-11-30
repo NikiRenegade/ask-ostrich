@@ -1,7 +1,7 @@
-using SurveyResponseService.Domain.Events;
-using SurveyResponseService.Domain.Interfaces.Publishers;
+using SurveyManageService.Domain.Events;
+using SurveyManageService.Domain.Interfaces.Publishers;
 
-namespace SurveyResponseService.Infrastructure.Messaging;
+namespace SurveyManageService.Infrastructure.Messaging;
 
 public class RabbitMqSurveyEventPublisher : ISurveyEventPublisher
 {

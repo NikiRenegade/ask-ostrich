@@ -1,4 +1,4 @@
-namespace SurveyResponseService.Domain.Interfaces.Publishers;
+namespace SurveyManageService.Domain.Interfaces.Publishers;
 
 public interface IEventPublisher
 {

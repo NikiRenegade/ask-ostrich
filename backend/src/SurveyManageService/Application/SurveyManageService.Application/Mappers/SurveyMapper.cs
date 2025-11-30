@@ -1,5 +1,6 @@
 using SurveyManageService.Domain.DTO;
 using SurveyManageService.Domain.Entities;
+using SurveyManageService.Domain.Events;
 
 namespace SurveyManageService.Application.Mappers;
 
@@ -60,4 +61,27 @@ public static class SurveyMapper
 
         return survey;
     }
+
+    public static SurveyCreatedEvent ToSurveyCreatedEvent(this Survey source) => new()
+    {
+        Id = source.Id,
+        Title = source.Title,
+        Description = source.Description,
+        Author = source.Author,
+        CreatedAt = source.CreatedAt,
+        IsPublished = source.IsPublished,
+        ShortUrl = source.ShortUrl
+    };
+
+    public static SurveyUpdatedEvent ToSurveyUpdatedEvent(this Survey source, Survey old) => new()
+    {
+        Id = source.Id,
+        Changes =
+            {
+                { nameof(source.Title), old.Title },
+                { nameof(source.Description), old.Description },
+                { nameof(source.IsPublished), old.IsPublished },
+                { nameof(source.Questions), old.Questions }
+            }
+    };
 }
