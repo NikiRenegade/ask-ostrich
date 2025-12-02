@@ -12,6 +12,7 @@ namespace SurveyResponseService.Application.Mappers
 
             return new QuestionDto
             {
+                Id = question.Id,
                 Type = question.Type,
                 Title = question.Title,
                 Order = question.Order,
@@ -20,7 +21,7 @@ namespace SurveyResponseService.Application.Mappers
             };
         }
 
-        public static Question ToEntity(QuestionDto questionDto)
+        public static Question ToEntity(CreateQuestionDto questionDto)
         {
             if (questionDto == null)
                 throw new ArgumentNullException(nameof(questionDto));
@@ -31,6 +32,28 @@ namespace SurveyResponseService.Application.Mappers
                 questionDto.Order,
                 questionDto.InnerText
             );
+
+            if (questionDto.Options.Any())
+            {
+                question.AddOptions(questionDto.Options.ToList());
+            }
+
+            return question;
+        }
+        
+        public static Question ToEntity(QuestionDto questionDto)
+        {
+            if (questionDto == null)
+                throw new ArgumentNullException(nameof(questionDto));
+
+            var question = new Question()
+            {
+                Id = questionDto.Id,
+                InnerText = questionDto.InnerText,
+                Title = questionDto.Title,
+                Order = questionDto.Order,
+                Type = questionDto.Type
+            };
 
             if (questionDto.Options.Any())
             {

@@ -2,9 +2,8 @@
 
 namespace SurveyResponseService.Domain.DTOs.Survey
 {
-    public class QuestionDto
+    public class CreateQuestionDto
     {
-        public Guid Id { get; set; }
         public QuestionType Type { get; set; }
         public required string Title { get; set; }
         public int Order { get; set; } = 0;

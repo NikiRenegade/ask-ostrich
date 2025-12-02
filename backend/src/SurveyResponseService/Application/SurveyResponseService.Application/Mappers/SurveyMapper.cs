@@ -16,21 +16,19 @@ namespace SurveyResponseService.Application.Mappers
                 Title = survey.Title,
                 Description = survey.Description,
                 IsPublished = survey.IsPublished,
-                Author = survey.Author != null ? UserMapper.ToDto(survey.Author) : null,
+                AuthorId = survey.AuthorId,
                 CreatedAt = survey.CreatedAt,
                 LastUpdateAt = survey.LastUpdateAt,
                 Questions = survey.Questions.Select(QuestionMapper.ToDto).ToList()
             };
         }
 
-        public static Survey ToEntity(CreateSurveyDto createSurveyDto, User author)
+        public static Survey ToEntity(CreateSurveyDto createSurveyDto)
         {
             if (createSurveyDto == null)
                 throw new ArgumentNullException(nameof(createSurveyDto));
-            if (author == null)
-                throw new ArgumentNullException(nameof(author));
 
-            var survey = new Survey(createSurveyDto.Title, createSurveyDto.Description, author);
+            var survey = new Survey(createSurveyDto.Title, createSurveyDto.Description, createSurveyDto.AuthorGuid);
 
             if (createSurveyDto.Questions.Any())
             {
@@ -40,15 +38,39 @@ namespace SurveyResponseService.Application.Mappers
 
             return survey;
         }
+        
+        public static Survey ToEntity(SurveyDto surveyDto)
+        {
+            if (surveyDto == null)
+                throw new ArgumentNullException(nameof(surveyDto));
 
-        public static Survey ToEntity(UpdateSurveyDto updateSurveyDto, User author)
+            var survey = new Survey()
+            {
+                Id = surveyDto.Id,
+                Description = surveyDto.Description,
+                AuthorId = surveyDto.AuthorId,
+                CreatedAt = surveyDto.CreatedAt,
+                IsPublished = surveyDto.IsPublished,
+                LastUpdateAt = surveyDto.LastUpdateAt,
+                ShortUrl = surveyDto.ShortUrl,
+                Title = surveyDto.Title,
+            };
+
+            if (surveyDto.Questions.Any())
+            {
+                var questions = surveyDto.Questions.Select(QuestionMapper.ToEntity).ToList();
+                survey.AddQuestions(questions);
+            }
+
+            return survey;
+        }
+
+        public static Survey ToEntity(UpdateSurveyDto updateSurveyDto)
         {
             if (updateSurveyDto == null)
                 throw new ArgumentNullException(nameof(updateSurveyDto));
-            if (author == null)
-                throw new ArgumentNullException(nameof(author));
 
-            var survey = new Survey(updateSurveyDto.Title, updateSurveyDto.Description, author);
+            var survey = new Survey(updateSurveyDto.Title, updateSurveyDto.Description, updateSurveyDto.AuthorGuid);
             survey.Id = updateSurveyDto.Id;
             survey.IsPublished = updateSurveyDto.IsPublished;
 

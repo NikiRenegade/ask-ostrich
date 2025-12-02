@@ -42,13 +42,10 @@ namespace SurveyManageService.Application.Services
 
         public async Task<SurveyCreatedDto> AddAsync(CreateSurveyDto request, CancellationToken cancellationToken = default)
         {
-            var author = await _userRepository.GetByIdAsync(request.AuthorGuid, cancellationToken);
-            if (author == null)
-            {
-                throw new ArgumentException("Author not found", nameof(request.AuthorGuid));
-            }
+            var author = await _userRepository.GetByIdAsync(request.AuthorGuid, cancellationToken) 
+                ?? throw new ArgumentException("Author not found", nameof(request.AuthorGuid));
 
-            var survey = SurveyMapper.ToEntity(request, author);
+            var survey = SurveyMapper.ToEntity(request);
             await _repository.AddAsync(survey, cancellationToken);
 
             await _surveyEventPublisher.PublishSurveyCreated(survey.ToSurveyCreatedEvent());
@@ -63,7 +60,7 @@ namespace SurveyManageService.Application.Services
             var existingSurvey = await _repository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new ArgumentException("Survey not found", nameof(request.Id));
 
-            var updatedSurvey = SurveyMapper.ToEntity(request, author);
+            var updatedSurvey = SurveyMapper.ToEntity(request);
             bool isUpdated = await _repository.UpdateAsync(updatedSurvey, cancellationToken);
 
             if (isUpdated)

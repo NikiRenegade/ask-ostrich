@@ -17,21 +17,19 @@ public static class SurveyMapper
             Title = survey.Title,
             Description = survey.Description,
             IsPublished = survey.IsPublished,
-            Author = survey.Author != null ? UserMapper.ToDto(survey.Author) : null,
+            AuthorId = survey.AuthorId,
             CreatedAt = survey.CreatedAt,
             LastUpdateAt = survey.LastUpdateAt,
             Questions = survey.Questions.Select(QuestionMapper.ToDto).ToList()
         };
     }
 
-    public static Survey ToEntity(CreateSurveyDto createSurveyDto, User author)
+    public static Survey ToEntity(CreateSurveyDto createSurveyDto)
     {
         if (createSurveyDto == null)
             throw new ArgumentNullException(nameof(createSurveyDto));
-        if (author == null)
-            throw new ArgumentNullException(nameof(author));
 
-        var survey = new Survey(createSurveyDto.Title, createSurveyDto.Description, author);
+        var survey = new Survey(createSurveyDto.Title, createSurveyDto.Description, createSurveyDto.AuthorGuid);
         
         if (createSurveyDto.Questions.Any())
         {
@@ -42,14 +40,12 @@ public static class SurveyMapper
         return survey;
     }
 
-    public static Survey ToEntity(UpdateSurveyDto updateSurveyDto, User author)
+    public static Survey ToEntity(UpdateSurveyDto updateSurveyDto)
     {
         if (updateSurveyDto == null)
             throw new ArgumentNullException(nameof(updateSurveyDto));
-        if (author == null)
-            throw new ArgumentNullException(nameof(author));
 
-        var survey = new Survey(updateSurveyDto.Title, updateSurveyDto.Description, author);
+        var survey = new Survey(updateSurveyDto.Title, updateSurveyDto.Description, updateSurveyDto.AuthorGuid);
         survey.Id = updateSurveyDto.Id;
         survey.IsPublished = updateSurveyDto.IsPublished;
         
@@ -67,21 +63,23 @@ public static class SurveyMapper
         Id = source.Id,
         Title = source.Title,
         Description = source.Description,
-        Author = source.Author,
+        AuthorId = source.AuthorId,
         CreatedAt = source.CreatedAt,
+        LastUpdateAt = source.LastUpdateAt,
         IsPublished = source.IsPublished,
-        ShortUrl = source.ShortUrl
+        ShortUrl = source.ShortUrl,
+        Questions = source.Questions
     };
 
     public static SurveyUpdatedEvent ToSurveyUpdatedEvent(this Survey source, Survey old) => new()
     {
         Id = source.Id,
         Changes =
-            {
-                { nameof(source.Title), old.Title },
-                { nameof(source.Description), old.Description },
-                { nameof(source.IsPublished), old.IsPublished },
-                { nameof(source.Questions), old.Questions }
-            }
+        {
+            { nameof(source.Title), old.Title },
+            { nameof(source.Description), old.Description },
+            { nameof(source.IsPublished), old.IsPublished },
+            { nameof(source.Questions), old.Questions }
+        }
     };
 }
