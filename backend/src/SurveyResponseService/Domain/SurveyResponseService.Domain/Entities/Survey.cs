@@ -13,6 +13,8 @@
         public string ShortUrl { get; set; } = string.Empty;
         public IEnumerable<Question> Questions => _questions.ToList();
 
+        public virtual User? Author { get; set; }
+
         public Survey()
         {
             Id = Guid.NewGuid();

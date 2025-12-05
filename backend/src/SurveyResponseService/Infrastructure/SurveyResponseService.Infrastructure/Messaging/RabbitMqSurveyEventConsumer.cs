@@ -18,7 +18,7 @@ public class RabbitMqSurveyEventConsumer : ISurveyEventConsumer
 
     public async Task StartAsync()
     {
-        await _consumer.SubscribeAsync<SurveyDto>("survey.created", ExchangeName, async @event =>
+        await _consumer.SubscribeAsync<CreateSurveyDto>("survey.created", ExchangeName, async @event =>
         {
             await _surveyService.AddAsync(@event, CancellationToken.None);
         });

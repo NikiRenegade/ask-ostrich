@@ -32,21 +32,18 @@ public class SurveyRepository: ISurveyRepository
 
     public async Task<bool> UpdateAsync(Survey survey, CancellationToken cancellationToken = default)
     {
-        var existingSurvey = await _dbContext.Surveys.FirstOrDefaultAsync(s => s.Id == survey.Id, cancellationToken);
+        var existingSurvey = await _dbContext.Surveys
+            .FirstOrDefaultAsync(s => s.Id == survey.Id, cancellationToken);
         if (existingSurvey == null)
-        {
             return false;
-        }
 
-        // Update properties manually to avoid shadow property issues
         existingSurvey.Title = survey.Title;
         existingSurvey.Description = survey.Description;
         existingSurvey.IsPublished = survey.IsPublished;
         existingSurvey.AuthorId = survey.AuthorId;
-        existingSurvey.LastUpdateAt = DateTime.Now;
+        existingSurvey.LastUpdateAt = survey.LastUpdateAt;
         existingSurvey.ShortUrl = survey.ShortUrl;
 
-        // Update questions and their options
         existingSurvey.UpdateQuestions(survey.Questions.ToList());
 
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -55,11 +52,11 @@ public class SurveyRepository: ISurveyRepository
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var entity = await _dbContext.Surveys.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        var entity = await _dbContext.Surveys
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         if (entity is null)
-        {
             return false;
-        }
+
         _dbContext.Surveys.Remove(entity);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return true;

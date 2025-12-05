@@ -38,15 +38,13 @@ namespace SurveyResponseService.Infrastructure.Repositories
                 return false;
             }
 
-            // Update properties manually to avoid shadow property issues
             existingSurvey.Title = survey.Title;
             existingSurvey.Description = survey.Description;
             existingSurvey.IsPublished = survey.IsPublished;
             existingSurvey.AuthorId = survey.AuthorId;
-            existingSurvey.LastUpdateAt = DateTime.Now;
+            existingSurvey.LastUpdateAt = survey.LastUpdateAt;
             existingSurvey.ShortUrl = survey.ShortUrl;
 
-            // Update questions and their options
             existingSurvey.UpdateQuestions(survey.Questions.ToList());
 
             await _dbContext.SaveChangesAsync(cancellationToken);

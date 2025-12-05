@@ -8,8 +8,7 @@ namespace SurveyResponseService.Domain.Interfaces.Services
 
         Task<SurveyDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-        Task<SurveyCreatedDto> CreateAsync(CreateSurveyDto request, CancellationToken cancellationToken);
-        Task<SurveyCreatedDto> AddAsync(SurveyDto request, CancellationToken cancellationToken);
+        Task<SurveyCreatedDto> AddAsync(CreateSurveyDto request, CancellationToken cancellationToken);
 
         Task<bool> UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken);
 

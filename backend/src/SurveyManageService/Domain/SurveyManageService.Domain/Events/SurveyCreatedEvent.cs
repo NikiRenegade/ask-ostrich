@@ -1,4 +1,4 @@
-using SurveyManageService.Domain.Entities;
+using SurveyManageService.Domain.DTO;
 
 namespace SurveyManageService.Domain.Events;
 
@@ -12,5 +12,5 @@ public class SurveyCreatedEvent
     public DateTime CreatedAt { get; set; }
     public DateTime LastUpdateAt { get; set; }
     public string ShortUrl { get; set; } = null!;
-    public IEnumerable<Question> Questions { get; set; } = null!;
+    public IEnumerable<QuestionDto> Questions { get; set; } = null!;
 }

@@ -7,8 +7,7 @@ namespace SurveyResponseService.Application.Mappers
     {
         public static QuestionDto ToDto(Question question)
         {
-            if (question == null)
-                throw new ArgumentNullException(nameof(question));
+            ArgumentNullException.ThrowIfNull(question);
 
             return new QuestionDto
             {
@@ -21,10 +20,9 @@ namespace SurveyResponseService.Application.Mappers
             };
         }
 
-        public static Question ToEntity(CreateQuestionDto questionDto)
+        public static Question ToEntity(QuestionDto questionDto)
         {
-            if (questionDto == null)
-                throw new ArgumentNullException(nameof(questionDto));
+            ArgumentNullException.ThrowIfNull(questionDto);
 
             var question = new Question(
                 questionDto.Type,
@@ -33,27 +31,10 @@ namespace SurveyResponseService.Application.Mappers
                 questionDto.InnerText
             );
 
-            if (questionDto.Options.Any())
+            if (questionDto.Id != Guid.Empty)
             {
-                question.AddOptions(questionDto.Options.ToList());
+                question.Id = questionDto.Id;
             }
-
-            return question;
-        }
-        
-        public static Question ToEntity(QuestionDto questionDto)
-        {
-            if (questionDto == null)
-                throw new ArgumentNullException(nameof(questionDto));
-
-            var question = new Question()
-            {
-                Id = questionDto.Id,
-                InnerText = questionDto.InnerText,
-                Title = questionDto.Title,
-                Order = questionDto.Order,
-                Type = questionDto.Type
-            };
 
             if (questionDto.Options.Any())
             {

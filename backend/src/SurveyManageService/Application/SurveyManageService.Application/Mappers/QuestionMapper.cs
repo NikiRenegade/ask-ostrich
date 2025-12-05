@@ -12,6 +12,7 @@ public static class QuestionMapper
 
         return new QuestionDto
         {
+            Id = question.Id,
             Type = question.Type,
             Title = question.Title,
             Order = question.Order,
@@ -20,7 +21,7 @@ public static class QuestionMapper
         };
     }
 
-    public static Question ToEntity(QuestionDto questionDto)
+    public static Question ToEntity(CreateQuestionDto questionDto)
     {
         if (questionDto == null)
             throw new ArgumentNullException(nameof(questionDto));

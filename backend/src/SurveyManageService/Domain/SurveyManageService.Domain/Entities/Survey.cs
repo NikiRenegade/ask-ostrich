@@ -13,6 +13,8 @@ public class Survey : BaseEntity
     public string ShortUrl { get; set; } = string.Empty; 
     public IEnumerable<Question> Questions => _questions.ToList();
 
+    public virtual User? Author { get; set; }
+
     // Parameterless constructor for Entity Framework
     public Survey()
     {

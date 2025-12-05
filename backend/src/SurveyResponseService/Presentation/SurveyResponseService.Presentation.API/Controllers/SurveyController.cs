@@ -57,7 +57,7 @@ namespace SurveyResponseService.Presentation.API.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await _surveyService.CreateAsync(request, cancellationToken);
+                var result = await _surveyService.AddAsync(request, cancellationToken);
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (ArgumentException ex)

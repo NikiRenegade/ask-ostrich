@@ -30,26 +30,12 @@ namespace SurveyResponseService.Application.Services
             return survey != null ? SurveyMapper.ToDto(survey) : null;
         }
 
-        public async Task<SurveyCreatedDto> CreateAsync(CreateSurveyDto request, CancellationToken cancellationToken = default)
-        {
-            var author = await _userRepository.GetByIdAsync(request.AuthorGuid, cancellationToken);
-            if (author == null)
-            {
-                throw new ArgumentException("Author not found", nameof(request.AuthorGuid));
-            }
-
-            var survey = SurveyMapper.ToEntity(request);
-            await _repository.AddAsync(survey, cancellationToken);
-
-            return new SurveyCreatedDto { Id = survey.Id };
-        }
-        
-        public async Task<SurveyCreatedDto> AddAsync(SurveyDto request, CancellationToken cancellationToken = default)
+        public async Task<SurveyCreatedDto> AddAsync(CreateSurveyDto request, CancellationToken cancellationToken = default)
         {
             var author = await _userRepository.GetByIdAsync(request.AuthorId, cancellationToken) 
                 ?? throw new ArgumentException("Author not found", nameof(request.AuthorId));
 
-            var survey = SurveyMapper.ToEntity(request);
+            var survey = SurveyMapper.ToEntity(request, author);
             await _repository.AddAsync(survey, cancellationToken);
 
             return new SurveyCreatedDto { Id = survey.Id };
@@ -57,10 +43,10 @@ namespace SurveyResponseService.Application.Services
 
         public async Task<bool> UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken = default)
         {
-            var author = await _userRepository.GetByIdAsync(request.AuthorGuid, cancellationToken)
-                ?? throw new ArgumentException("Author not found", nameof(request.AuthorGuid));
+            var author = await _userRepository.GetByIdAsync(request.AuthorId, cancellationToken)
+                ?? throw new ArgumentException("Author not found", nameof(request.AuthorId));
 
-            var updatedSurvey = SurveyMapper.ToEntity(request);
+            var updatedSurvey = SurveyMapper.ToEntity(request, author);
             return await _repository.UpdateAsync(updatedSurvey, cancellationToken);
         }
 
