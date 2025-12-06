@@ -1,4 +1,4 @@
-﻿namespace SurveyManageService.Domain.Entities;
+namespace SurveyManageService.Domain.Entities;
 
 public class Survey : BaseEntity
 {

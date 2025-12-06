@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode dev",
+    "test": "vite --mode test",
     "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -15,13 +16,19 @@
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
     "@types/react-tabs": "^5.0.4",
+    "js-yaml": "^4.1.1",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.6",
     "react-tabs": "^6.1.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.10.1",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@typescript-eslint/eslint-plugin": "^8.46.0",

@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography, Alert } from "@mui/material";
 import type { LoginProps } from "../../types/LoginProps";
+import api from "../../services/axios";
 
 const LoginForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.SyntheticEvent) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -19,20 +20,22 @@ const LoginForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
     setError(null);
 
     try {
-      const res = await fetch("/api/Auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+      
+      const res = await api.post("/security/api/Auth/login", {
+        email,
+        password
       });
 
-      const data:any = await res.json();
+      onSubmit(res.data);
 
-      if (!res.ok) throw new Error(data.message);
-
-      onSubmit(data);
-
-    } catch (err) {
-      setError(err.message);
+    } catch (err : unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Произошла ошибка при входе. Пожалуйста, попробуйте еще раз."
+        );
+      }
     }
   };
 

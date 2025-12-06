@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, Typography, CircularProgress } from "@mui/material";
 import type { LoginProps } from "../../types/LoginProps";
+import api from "../../services/axios";
 
  const RegisterForm : React.FC<LoginProps> = ({onSubmit, onChangeMode}) => {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ import type { LoginProps } from "../../types/LoginProps";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.SyntheticEvent) => {
     e.preventDefault();
     if (password !== confirm) {
       setError("Пароли не совпадают");
@@ -23,20 +24,20 @@ import type { LoginProps } from "../../types/LoginProps";
     setError("");
 
     try {
-      const res = await fetch("/api/Auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, userName, firstName, lastName })
-      });
 
-      const data:any = await res.json();
+      const res = await api.post("/security/api/Auth/register", { email, password, userName, firstName, lastName });
 
-      if (!res.ok) throw new Error(data.message);
+      onSubmit(res.data);
 
-      onSubmit(data);
-
-    } catch (err) {
-      setError(err.message);
+    } catch (err : unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(
+          "Произошла ошибка при регистрации. Пожалуйста, попробуйте еще раз."
+        );
+      }
+      
     } finally {
       setLoading(false);
     }

@@ -11,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // Register services
-builder.Services.AddScoped<ISurveyGeneratorService, SurveyGeneratorService>();
+builder.Services.AddScoped<ILLMClientService, LLMClientService>();
 builder.Services.AddScoped<ILLMChatApiService, OllamaApiService>();
 
 var app = builder.Build();

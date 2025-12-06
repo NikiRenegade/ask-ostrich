@@ -1,23 +1,33 @@
-import { API_BASE_URL } from '../config/api';
 import type { GenerateSurveyRequest, GeneratedSurvey } from '../models/aiAssistantModels';
+import api from './axios';
 
 export async function generateSurvey(request: GenerateSurveyRequest): Promise<GeneratedSurvey> {
-    const response = await fetch(`${API_BASE_URL}/ai-assistant/api/SurveyGenerator`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+
+    try {
+        const response = await api.post("/ai-assistant/api/AIAssistant/generate", {
             prompt: request.prompt,
             currentSurveyJson: request.currentSurveyJson,
-            type: request.type,
-        }),
-    });
+            type: request.type
+        });
+        return await response.data;
 
-    if (!response.ok) {
+    } catch (error) {
         throw new Error('Ошибка получения ответа от ИИ-ассистента');
     }
+}
 
-    return await response.json();
+export async function askLLM(request: GenerateSurveyRequest): Promise<string> {
+
+    try {
+        const response = await api.post("/ai-assistant/api/AIAssistant/ask", {
+            prompt: request.prompt,
+            currentSurveyJson: request.currentSurveyJson,
+            type: request.type
+        });
+        return await response.data;
+
+    } catch (error) {
+        throw new Error('Ошибка получения ответа от ИИ-ассистента');
+    }
 }
 

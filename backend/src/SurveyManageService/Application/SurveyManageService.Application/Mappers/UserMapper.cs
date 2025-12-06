@@ -25,12 +25,17 @@ public static class UserMapper
         if (createUserDto == null)
             throw new ArgumentNullException(nameof(createUserDto));
 
-        return new User(
+        var user = new User(
             createUserDto.UserName,
             createUserDto.Email,
             createUserDto.FirstName,
             createUserDto.LastName
         );
+        if (createUserDto.Id != null)
+        {
+            user.Id = (Guid)createUserDto.Id;
+        }
+        return user;
     }
 
     public static User ToEntity(UpdateUserDto updateUserDto)

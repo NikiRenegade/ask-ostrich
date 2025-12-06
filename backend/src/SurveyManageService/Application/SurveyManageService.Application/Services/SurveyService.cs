@@ -79,5 +79,11 @@ namespace SurveyManageService.Application.Services
 
             return isDeleted;
         }
+
+        public async Task<IList<SurveyShortDto>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var surveys = await _repository.GetExistingByUserIdAsync(userId, cancellationToken);
+            return surveys.Select(SurveyMapper.ToShortDto).ToList();
+        }
     }
 }

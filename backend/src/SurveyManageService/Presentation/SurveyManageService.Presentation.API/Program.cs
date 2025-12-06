@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using SurveyManageService.Application.Services;
@@ -5,14 +6,18 @@ using SurveyManageService.Domain.Interfaces.Consumers;
 using SurveyManageService.Domain.Interfaces.Publishers;
 using SurveyManageService.Domain.Interfaces.Repositories;
 using SurveyManageService.Domain.Interfaces.Services;
-using SurveyManageService.Infrastructure.EntityFramework;
+using SurveyManageService.Infrastructure.EntityFramework.Context;
 using SurveyManageService.Infrastructure.Messaging;
-using SurveyManageService.Infrastructure.Repositories;
+using SurveyManageService.Infrastructure.Repositories.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -24,6 +24,22 @@ public static class SurveyMapper
             Questions = survey.Questions.Select(QuestionMapper.ToDto).ToList()
         };
     }
+    public static SurveyShortDto ToShortDto(Survey survey)
+    {
+        if (survey == null)
+            throw new ArgumentNullException(nameof(survey));
+
+        return new SurveyShortDto
+        { 
+            Id = survey.Id,
+            Title = survey.Title,
+            Description = survey.Description,
+            IsPublished = survey.IsPublished,
+            AuthorGuid = survey.AuthorId,
+            CreatedAt = survey.CreatedAt,
+            QuestionCount = survey.Questions.Count()
+        };
+    }
 
     public static Survey ToEntity(CreateSurveyDto createSurveyDto, User author)
     {
