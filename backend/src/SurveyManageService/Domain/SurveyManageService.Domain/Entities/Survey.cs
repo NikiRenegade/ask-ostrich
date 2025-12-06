@@ -1,4 +1,4 @@
-﻿namespace SurveyManageService.Domain.Entities;
+namespace SurveyManageService.Domain.Entities;
 
 public class Survey : BaseEntity
 {
@@ -8,11 +8,12 @@ public class Survey : BaseEntity
     public string Description { get; set; } = string.Empty;
     public bool IsPublished { get; set; }
     public Guid AuthorId { get; set; }
-    public User? Author { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime LastUpdateAt { get; set; }
     public string ShortUrl { get; set; } = string.Empty; 
     public IEnumerable<Question> Questions => _questions.ToList();
+
+    public virtual User? Author { get; set; }
 
     // Parameterless constructor for Entity Framework
     public Survey()
@@ -24,13 +25,13 @@ public class Survey : BaseEntity
         LastUpdateAt = DateTime.Now;
     }
 
-    public Survey(string title, string description, User author)
+    public Survey(string title, string description, Guid authorId)
     {
         Id = Guid.NewGuid();
         Title = title;
         Description = description;
         ShortUrl = string.Empty;
-        Author = author;
+        AuthorId = authorId;
         IsPublished = false;
         CreatedAt = DateTime.Now;
         LastUpdateAt = DateTime.Now;

@@ -1,6 +1,6 @@
-using SurveyResponseService.Domain.Entities;
+using SurveyManageService.Domain.DTO;
 
-namespace SurveyResponseService.Domain.Events;
+namespace SurveyManageService.Domain.Events;
 
 public class SurveyCreatedEvent
 {
@@ -8,7 +8,9 @@ public class SurveyCreatedEvent
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
     public bool IsPublished { get; set; }
-    public User? Author { get; set; }
+    public Guid AuthorId { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime LastUpdateAt { get; set; }
     public string ShortUrl { get; set; } = null!;
+    public IEnumerable<QuestionDto> Questions { get; set; } = null!;
 }

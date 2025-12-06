@@ -7,11 +7,13 @@
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public bool IsPublished { get; set; }
-        public User? Author { get; set; }
+        public Guid AuthorId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdateAt { get; set; }
         public string ShortUrl { get; set; } = string.Empty;
         public IEnumerable<Question> Questions => _questions.ToList();
+
+        public virtual User? Author { get; set; }
 
         public Survey()
         {
@@ -22,13 +24,13 @@
             LastUpdateAt = DateTime.Now;
         }
 
-        public Survey(string title, string description, User author)
+        public Survey(string title, string description, Guid authorId)
         {
             Id = Guid.NewGuid();
             Title = title;
             Description = description;
             ShortUrl = string.Empty;
-            Author = author;
+            AuthorId = authorId;
             IsPublished = false;
             CreatedAt = DateTime.Now;
             LastUpdateAt = DateTime.Now;

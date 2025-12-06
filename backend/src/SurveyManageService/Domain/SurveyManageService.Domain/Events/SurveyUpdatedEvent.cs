@@ -1,6 +1,8 @@
-﻿namespace SurveyResponseService.Domain.DTOs.Survey;
+using SurveyManageService.Domain.DTO;
 
-public class UpdateSurveyDto
+namespace SurveyManageService.Domain.Events;
+
+public record SurveyUpdatedEvent
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = null!;

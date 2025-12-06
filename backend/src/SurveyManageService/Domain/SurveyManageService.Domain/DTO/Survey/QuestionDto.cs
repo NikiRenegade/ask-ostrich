@@ -3,7 +3,8 @@
 namespace SurveyManageService.Domain.DTO;
 
 public class QuestionDto
-{    
+{
+    public required Guid Id { get; set; }
     public QuestionType Type { get; set; }
     public required string Title { get; set; }
     public int Order { get; set; } = 0;

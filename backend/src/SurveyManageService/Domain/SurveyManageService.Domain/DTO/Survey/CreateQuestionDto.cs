@@ -1,10 +1,9 @@
-﻿using SurveyResponseService.Domain.Entities;
+﻿using SurveyManageService.Domain.Entities;
 
-namespace SurveyResponseService.Domain.DTOs.Survey;
+namespace SurveyManageService.Domain.DTO;
 
-public class QuestionDto
+public class CreateQuestionDto
 {
-    public Guid Id { get; set; }
     public QuestionType Type { get; set; }
     public required string Title { get; set; }
     public int Order { get; set; } = 0;

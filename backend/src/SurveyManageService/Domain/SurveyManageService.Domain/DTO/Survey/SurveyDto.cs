@@ -6,7 +6,7 @@ public class SurveyDto
     public required string Title { get; set; }
     public string Description { get; set; } = string.Empty;
     public bool IsPublished { get; set; }
-    public UserDto? Author { get; set; }
+    public UserDto Author { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
     public DateTime LastUpdateAt { get; set; }
     public List<QuestionDto> Questions { get; set; } = [];

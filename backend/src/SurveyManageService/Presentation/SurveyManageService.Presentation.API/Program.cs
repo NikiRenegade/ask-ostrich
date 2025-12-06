@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using SurveyManageService.Application.Services;
 using SurveyManageService.Domain.Interfaces.Consumers;
+using SurveyManageService.Domain.Interfaces.Publishers;
 using SurveyManageService.Domain.Interfaces.Repositories;
 using SurveyManageService.Domain.Interfaces.Services;
 using SurveyManageService.Infrastructure.EntityFramework.Context;
@@ -65,6 +66,8 @@ builder.Services.AddSingleton(async sp =>
     var channel = await connection.CreateChannelAsync();
     return channel;
 });
+builder.Services.AddScoped<IEventPublisher, RabbitMqEventPublisher>();
+builder.Services.AddScoped<ISurveyEventPublisher, RabbitMqSurveyEventPublisher>();
 builder.Services.AddSingleton<IEventConsumer, RabbitMqEventConsumer>();
 builder.Services.AddScoped<IUserEventConsumer, RabbitMqUserEventConsumer>();
 builder.Services.AddHostedService<UserEventsBackgroundService>();

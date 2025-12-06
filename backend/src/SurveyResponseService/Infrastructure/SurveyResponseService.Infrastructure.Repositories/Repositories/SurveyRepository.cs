@@ -26,10 +26,6 @@ namespace SurveyResponseService.Infrastructure.Repositories
 
         public async Task AddAsync(Survey survey, CancellationToken cancellationToken = default)
         {
-            if (survey.Author != null)
-            {
-                _dbContext.Entry(survey.Author).State = EntityState.Unchanged;
-            }
             await _dbContext.Surveys.AddAsync(survey, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -42,15 +38,13 @@ namespace SurveyResponseService.Infrastructure.Repositories
                 return false;
             }
 
-            // Update properties manually to avoid shadow property issues
             existingSurvey.Title = survey.Title;
             existingSurvey.Description = survey.Description;
             existingSurvey.IsPublished = survey.IsPublished;
-            existingSurvey.Author = survey.Author;
-            existingSurvey.LastUpdateAt = DateTime.Now;
+            existingSurvey.AuthorId = survey.AuthorId;
+            existingSurvey.LastUpdateAt = survey.LastUpdateAt;
             existingSurvey.ShortUrl = survey.ShortUrl;
 
-            // Update questions and their options
             existingSurvey.UpdateQuestions(survey.Questions.ToList());
 
             await _dbContext.SaveChangesAsync(cancellationToken);

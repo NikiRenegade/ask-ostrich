@@ -7,11 +7,11 @@ namespace SurveyResponseService.Application.Mappers
     {
         public static QuestionDto ToDto(Question question)
         {
-            if (question == null)
-                throw new ArgumentNullException(nameof(question));
+            ArgumentNullException.ThrowIfNull(question);
 
             return new QuestionDto
             {
+                Id = question.Id,
                 Type = question.Type,
                 Title = question.Title,
                 Order = question.Order,
@@ -22,8 +22,7 @@ namespace SurveyResponseService.Application.Mappers
 
         public static Question ToEntity(QuestionDto questionDto)
         {
-            if (questionDto == null)
-                throw new ArgumentNullException(nameof(questionDto));
+            ArgumentNullException.ThrowIfNull(questionDto);
 
             var question = new Question(
                 questionDto.Type,
@@ -31,6 +30,11 @@ namespace SurveyResponseService.Application.Mappers
                 questionDto.Order,
                 questionDto.InnerText
             );
+
+            if (questionDto.Id != Guid.Empty)
+            {
+                question.Id = questionDto.Id;
+            }
 
             if (questionDto.Options.Any())
             {
