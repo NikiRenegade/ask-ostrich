@@ -60,7 +60,7 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
             InnerText: q.innerText || '',
             Options: (q.options || []).map((opt: any) => ({
                 Title: opt.title || '',
-                Value: opt.value || '',
+                Value: opt.value || uuidv4(),
                 IsCorrect: opt.isCorrect !== undefined ? opt.isCorrect : false,
                 Order: opt.order || 1,
             })),
@@ -70,7 +70,7 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
 
 export async function loadSurveyById(id: string): Promise<Survey> {
     try {        
-        const response = await api.get<SurveyResponse>(`/survey-reponse/api/Survey/${id}`);
+        const response = await api.get<SurveyResponse>(`/survey-response/api/Survey/${id}`);
         return mapSurveyResponseToSurvey(response.data, id);
     } catch (error) {
         throw new Error('Не удалось загрузить опрос');
