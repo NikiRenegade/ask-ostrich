@@ -55,8 +55,8 @@ namespace SurveyManageService.Application.Services
 
         public async Task<bool> UpdateAsync(UpdateSurveyDto request, CancellationToken cancellationToken = default)
         {
-            var author = await _userRepository.GetByIdAsync(request.AuthorId, cancellationToken)
-                ?? throw new ArgumentException("Author not found", nameof(request.AuthorId));
+            var author = await _userRepository.GetByIdAsync(request.AuthorGuid, cancellationToken)
+                ?? throw new ArgumentException("Author not found", nameof(request.AuthorGuid));
             var existingSurvey = await _repository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new ArgumentException("Survey not found", nameof(request.Id));
 
