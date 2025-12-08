@@ -1,0 +1,31 @@
+[
+  {
+    "Name": "All Services",
+    "Projects": [
+      {
+        "Path": "src\\SecurityService\\Presentation\\SecurityService.Presentation.API\\SecurityService.Presentation.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "src\\SurveyManageService\\Presentation\\SurveyManageService.Presentation.API\\SurveyManageService.Presentation.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "src\\GatewayService\\GatewayService.API\\GatewayService.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "src\\AIAssistantService\\Presentation\\AIAssistantService.Presentation.API\\AIAssistantService.Presentation.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "src\\SurveyResponseService\\Presentation\\SurveyResponseService.Presentation.API\\SurveyResponseService.Presentation.API.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

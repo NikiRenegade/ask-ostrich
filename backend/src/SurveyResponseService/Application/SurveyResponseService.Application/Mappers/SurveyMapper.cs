@@ -20,6 +20,7 @@ namespace SurveyResponseService.Application.Mappers
                     : throw new ArgumentNullException(nameof(survey.Author), "Author must exist!"),
                 CreatedAt = survey.CreatedAt,
                 LastUpdateAt = survey.LastUpdateAt,
+                ShortUrl = survey.ShortUrl,
                 Questions = survey.Questions.Select(QuestionMapper.ToDto).ToList()
             };
         }

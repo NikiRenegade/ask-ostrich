@@ -21,7 +21,12 @@ namespace SurveyResponseService.Infrastructure.Repositories
 
         public async Task<Survey?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _dbContext.Surveys.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+            var survey = await _dbContext.Surveys.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+            if (survey != null)
+            {
+                survey.Author = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == survey.AuthorId, cancellationToken);
+            }
+            return survey;
         }
 
         public async Task AddAsync(Survey survey, CancellationToken cancellationToken = default)

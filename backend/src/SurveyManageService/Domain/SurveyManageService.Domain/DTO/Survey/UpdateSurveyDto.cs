@@ -6,7 +6,7 @@ public class UpdateSurveyDto
     public required string Title { get; set; }
     public string Description { get; set; } = string.Empty;
     public bool IsPublished { get; set; }
-    public Guid AuthorId { get; set; }
+    public Guid AuthorGuid { get; set; }
     public List<CreateQuestionDto> Questions { get; set; } = [];
     public string ShortUrl { get; set; } = string.Empty;
 }

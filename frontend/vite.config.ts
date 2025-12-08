@@ -22,6 +22,11 @@ export default ({ mode }) => {
           target: env.VITE_API_URL,
           changeOrigin: true,
           secure: false,
+        },
+        '/survey-response': {
+          target: env.VITE_API_URL,
+          changeOrigin: true,
+          secure: false,
         }
       }
     },

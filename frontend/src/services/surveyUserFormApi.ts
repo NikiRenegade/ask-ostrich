@@ -7,11 +7,18 @@ export interface SurveyResponse {
     title: string;
     description: string;
     isPublished: boolean;
-    authorGuid?: string;
+    author: {
+        id: string;
+        userName: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+    };
     createdAt: string;
+    lastUpdateAt: string;
     shortUrl: string;
     questions: Array<{
-        questionId: string;
+        id: string;
         type: string;
         title: string;
         order: number;
@@ -42,18 +49,18 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
         Title: response.title || '',
         Description: response.description || '',
         IsPublished: response.isPublished !== undefined ? response.isPublished : false,
-        AuthorGuid: response.authorGuid || '',
+        AuthorGuid: response.author?.id || '',
         CreatedAt: response.createdAt || new Date().toISOString(),
         ShortUrl: response.shortUrl || '',
         Questions: (response.questions || []).map((q: any) => ({
-            QuestionId: q.questionId || uuidv4(),
+            QuestionId: q.id || uuidv4(),
             Type: (q.type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',
             Title: q.title || '',
             Order: q.order || 1,
             InnerText: q.innerText || '',
             Options: (q.options || []).map((opt: any) => ({
                 Title: opt.title || '',
-                Value: opt.value || '',
+                Value: opt.value || uuidv4(),
                 IsCorrect: opt.isCorrect !== undefined ? opt.isCorrect : false,
                 Order: opt.order || 1,
             })),
@@ -63,8 +70,7 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
 
 export async function loadSurveyById(id: string): Promise<Survey> {
     try {        
-        // TODO: change to survey-response api after fixing broker issues
-        const response = await api.get<SurveyResponse>(`/survey-manage/api/Survey/${id}`);
+        const response = await api.get<SurveyResponse>(`/survey-response/api/Survey/${id}`);
         return mapSurveyResponseToSurvey(response.data, id);
     } catch (error) {
         throw new Error('Не удалось загрузить опрос');
@@ -73,7 +79,6 @@ export async function loadSurveyById(id: string): Promise<Survey> {
 
 export async function submitSurveyResult(request: SubmitSurveyResultRequest): Promise<void> {
     try {
-        // TODO: implement after fixing broker issues
         await api.post('/survey-response/api/SurveyResult', {
             userId: request.userId,
             surveyId: request.surveyId,
