@@ -115,17 +115,17 @@ namespace SurveyResponseService.Presentation.API.Controllers
             }
         }
 
-        [HttpGet("user-surveys/{userId}")]
-        public async Task<ActionResult<IList<Domain.DTOs.Survey.SurveyDto>>> GetSurveysPassedByUserId(Guid userId, CancellationToken cancellationToken = default)
+        [HttpGet("user-passed-surveys/{userId}")]
+        public async Task<ActionResult<IList<Domain.DTOs.SurveyResults.PassedSurveyDto>>> GetPassedSurveysByUserId(Guid userId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var surveys = await _surveyResultService.GetSurveysPassedByUserIdAsync(userId, cancellationToken);
-                return Ok(surveys);
+                var passedSurveys = await _surveyResultService.GetPassedSurveysByUserIdAsync(userId, cancellationToken);
+                return Ok(passedSurveys);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving surveys passed by user", error = ex.Message });
+                return StatusCode(500, new { message = "An error occurred while retrieving passed surveys", error = ex.Message });
             }
         }
     }

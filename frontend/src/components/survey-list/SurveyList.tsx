@@ -61,7 +61,17 @@ export const SurveyList: React.FC = () => {
     return (
         <Box sx={{ position: 'relative' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-                <Tabs value={activeTab} onChange={handleTabChange}>
+                <Tabs 
+                    value={activeTab} 
+                    onChange={handleTabChange}
+                    sx={{
+                        '& .MuiTab-root': {
+                            fontSize: '1.5rem',
+                            fontWeight: 'bold',
+                            minHeight: '64px',
+                            textTransform: 'none',
+                        }
+                    }}>
                     <Tab label="Мои опросы" />
                     <Tab label="Пройденные мной" />
                 </Tabs>

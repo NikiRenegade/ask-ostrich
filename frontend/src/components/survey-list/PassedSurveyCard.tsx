@@ -1,14 +1,14 @@
 import React from "react";
 import { Paper, Typography, Box, IconButton, Tooltip } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
-import type { SurveyShort } from "../../types/SurveyShort";
+import type { PassedSurveyResponse } from "../../services/surveyUserFormApi";
 
 interface Props {
-    survey: SurveyShort;
+    survey: PassedSurveyResponse;
 }
 export const PassedSurveyCard: React.FC<Props> = ({ survey }) => {
     const handleTakeSurvey = () => {
-        const surveyFormUrl = `${window.location.origin}/survey-form/${survey.id}`;
+        const surveyFormUrl = `${window.location.origin}/survey-form/${survey.surveyId}`;
         window.open(surveyFormUrl, '_blank');
     };
 
@@ -23,11 +23,11 @@ export const PassedSurveyCard: React.FC<Props> = ({ survey }) => {
                 </Typography>
 
                 <Typography variant="caption" sx={{ display: "block", opacity: 0.7 }}>
-                    Вопросов: {survey.questionCount}
+                    Пройден: {new Date(survey.datePassed).toLocaleString()}
                 </Typography>
 
                 <Typography variant="caption" sx={{ display: "block", opacity: 0.7 }}>
-                    Создан: {new Date(survey.createdAt).toLocaleString()}
+                    Результат: {(survey.correctAnswers / survey.totalQuestions * 100).toFixed()}% ({survey.correctAnswers} из {survey.totalQuestions})
                 </Typography>
             </Box>
 

@@ -95,5 +95,69 @@ namespace SurveyResponseService.Application.Services
 
             return result;
         }
+
+        public async Task<IList<PassedSurveyDto>> GetPassedSurveysByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var userResponses = await _repository.GetByUserIdAsync(userId, cancellationToken);
+            var result = new List<PassedSurveyDto>();
+
+            var surveyGroups = userResponses
+                .GroupBy(r => r.SurveyId)
+                .Select(g => g.OrderByDescending(r => r.DatePassed).First())
+                .ToList();
+
+            foreach (var surveyResultEntity in surveyGroups)
+            {
+                var survey = await _surveyRepository.GetByIdAsync(surveyResultEntity.SurveyId, cancellationToken);
+                if (survey == null) continue;
+
+                var surveyResultDto = SurveyResultMapper.ToDto(surveyResultEntity);
+
+                var totalQuestions = survey.Questions.Count();
+                var correctAnswers = 0;
+
+                foreach (var question in survey.Questions)
+                {
+                    var hasCorrectOptions = question.Options.Any(o => o.IsCorrect);
+                    if (!hasCorrectOptions)
+                    {
+                        correctAnswers++;
+                        continue;
+                    }
+
+                    var userAnswer = surveyResultDto.Answers.FirstOrDefault(a => a.QuestionId == question.Id);
+                    if (userAnswer == null) continue;
+
+                    var correctOptionValues = question.Options
+                        .Where(o => o.IsCorrect)
+                        .Select(o => o.Value)
+                        .ToList();
+
+                    var userValues = userAnswer.Values ?? new List<string>();
+                    var isCorrect = question.Type == Domain.Entities.QuestionType.MultipleChoice
+                        ? correctOptionValues.Count == userValues.Count && 
+                          correctOptionValues.All(userValues.Contains) &&
+                          userValues.All(correctOptionValues.Contains)
+                        : userValues.Count == 1 && correctOptionValues.Contains(userValues[0]);
+
+                    if (isCorrect)
+                    {
+                        correctAnswers++;
+                    }
+                }
+
+                result.Add(new PassedSurveyDto
+                {
+                    SurveyId = survey.Id,
+                    Title = survey.Title,
+                    Description = survey.Description,
+                    DatePassed = surveyResultEntity.DatePassed,
+                    CorrectAnswers = correctAnswers,
+                    TotalQuestions = totalQuestions
+                });
+            }
+
+            return result;
+        }
     }
 }

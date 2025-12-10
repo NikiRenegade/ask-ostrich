@@ -16,5 +16,7 @@ namespace SurveyResponseService.Domain.Interfaces.Services
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 
         Task<IList<SurveyDto>> GetSurveysPassedByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+
+        Task<IList<PassedSurveyDto>> GetPassedSurveysByUserIdAsync(Guid userId, CancellationToken cancellationToken);
     }
 }
