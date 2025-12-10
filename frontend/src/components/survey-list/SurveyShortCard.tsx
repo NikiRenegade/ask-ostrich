@@ -2,6 +2,7 @@ import React from "react";
 import { Paper, Typography, Box, Chip, IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LaunchIcon from "@mui/icons-material/Launch";
 import type { SurveyShort } from "../../types/SurveyShort";
 
 interface Props {
@@ -10,6 +11,11 @@ interface Props {
     onEdit: () => void;
 }
 export const SurveyShortCard: React.FC<Props> = ({ survey, onDelete, onEdit }) => {
+    const handleTakeSurvey = () => {
+        const surveyFormUrl = `${window.location.origin}/survey-form/${survey.id}`;
+        window.open(surveyFormUrl, '_blank');
+    };
+
     return (
         <Paper sx={{ p: 2, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Box>
@@ -37,6 +43,11 @@ export const SurveyShortCard: React.FC<Props> = ({ survey, onDelete, onEdit }) =
             </Box>
 
             <Box sx={{ display: "flex", gap: 1 }}>
+                <Tooltip title="Пройти опрос">
+                    <IconButton color="primary" onClick={handleTakeSurvey}>
+                        <LaunchIcon />
+                    </IconButton>
+                </Tooltip>
 
                 <Tooltip title="Редактировать">
                     <IconButton color="secondary" onClick={onEdit}>
