@@ -1,4 +1,5 @@
 ﻿using SurveyResponseService.Application.Mappers;
+using SurveyResponseService.Domain.DTOs.Survey;
 using SurveyResponseService.Domain.DTOs.SurveyResults;
 using SurveyResponseService.Domain.Interfaces.Repositories;
 using SurveyResponseService.Domain.Interfaces.Services;
@@ -75,6 +76,24 @@ namespace SurveyResponseService.Application.Services
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _repository.DeleteAsync(id, cancellationToken);
+        }
+
+        public async Task<IList<SurveyDto>> GetSurveysPassedByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var userReponses = await _repository.GetByUserIdAsync(userId, cancellationToken);
+            var surveyIds = userReponses.Select(r => r.SurveyId).Distinct().ToList();
+            
+            var result = new List<SurveyDto>();
+            foreach (var surveyId in surveyIds)
+            {
+                var survey = await _surveyRepository.GetByIdAsync(surveyId, cancellationToken);
+                if (survey != null)
+                {
+                    result.Add(SurveyMapper.ToDto(survey));
+                }
+            }
+
+            return result;
         }
     }
 }

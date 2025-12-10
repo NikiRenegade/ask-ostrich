@@ -90,3 +90,12 @@ export async function submitSurveyResult(request: SubmitSurveyResultRequest): Pr
     }
 }
 
+export async function getPassedSurveysByUserId(userId: string): Promise<SurveyResponse[]> {
+    try {
+        const response = await api.get<SurveyResponse[]>(`/survey-response/api/SurveyResult/user-surveys/${userId}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Не удалось загрузить пройденные опросы');
+    }
+}
+
