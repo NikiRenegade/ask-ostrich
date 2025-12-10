@@ -6,7 +6,7 @@ public class PassedSurveyDto
     public required string Title { get; set; }
     public string Description { get; set; } = string.Empty;
     public DateTime DatePassed { get; set; }
-    public int CorrectAnswers { get; set; }
     public int TotalQuestions { get; set; }
+    public List<AnswerDto> Answers { get; set; } = new();
 }
 

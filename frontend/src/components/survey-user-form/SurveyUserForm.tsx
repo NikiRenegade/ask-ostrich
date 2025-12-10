@@ -8,14 +8,16 @@ import {
     Snackbar
 } from '@mui/material';
 import type { Survey } from '../../types/Survey.ts';
-import { loadSurveyById, submitSurveyResult } from '../../services/surveyUserFormApi';
+import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, type SurveyResultResponse } from '../../services/surveyUserFormApi';
 import { useAuth } from '../auth/AuthProvider.tsx';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
+import { SurveyResultsView } from './SurveyResultsView.tsx';
 
 export const SurveyUserForm: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { user } = useAuth();
     const [survey, setSurvey] = useState<Survey | null>(null);
+    const [surveyResult, setSurveyResult] = useState<SurveyResultResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
@@ -28,11 +30,6 @@ export const SurveyUserForm: React.FC = () => {
     const handleCloseSnack = () => {
         setOpenedSnack(false);
     };
-    const showSuccess = (msg: string) => {
-        setSnackMessage(msg);
-        setSnackSeverity("success");
-        setOpenedSnack(true);
-    };
     const showError = (msg: string) => {
         setSnackMessage(msg);
         setSnackSeverity("error");
@@ -40,7 +37,7 @@ export const SurveyUserForm: React.FC = () => {
     };
 
     useEffect(() => {
-        const loadSurvey = async () => {
+        const loadData = async () => {
             if (!id) {
                 showError('ID опроса не указан');
                 setLoading(false);
@@ -49,18 +46,28 @@ export const SurveyUserForm: React.FC = () => {
 
             try {
                 setLoading(true);
-                const loadedSurvey = await loadSurveyById(id);
-                setSurvey(loadedSurvey);
-            } catch (err: unknown) {
-                console.error('Failed to load survey:', err);
-                showError(err instanceof Error ? err.message : 'Не удалось загрузить опрос');
+
+                let result: SurveyResultResponse | null = null;
+                if (user?.id) {
+                    result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
+                    if (result) {
+                        setSurveyResult(result);
+                    }
+                    else {
+                        const loadedSurvey = await loadSurveyById(id);
+                        setSurvey(loadedSurvey);
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load data:', err);
+                showError(err instanceof Error ? err.message : 'Не удалось загрузить данные');
             } finally {
                 setLoading(false);
             }
         };
 
-        loadSurvey();
-    }, [id]);
+        loadData();
+    }, [id, user]);
 
 
     const handleSubmit = async () => {
@@ -83,9 +90,18 @@ export const SurveyUserForm: React.FC = () => {
                 datePassed: new Date().toISOString(),
                 answers: answersArray,
             });
-
-            showSuccess('Ваши ответы успешно отправлены!');
-        } catch (err: unknown) {
+           
+            if (user?.id && id) {
+                try {
+                    const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
+                    if (result) {
+                        setSurveyResult(result);
+                    }
+                } catch (err) {
+                    console.error('Failed to load survey result:', err);
+                }
+            }
+        } catch (err) {
             console.error('Failed to submit survey:', err);
             showError('Не удалось отправить ответы');
         } finally {
@@ -105,45 +121,50 @@ export const SurveyUserForm: React.FC = () => {
         return null;
     }
 
-    return (
-        <Box>
-            {survey && (
-                <>
-                    <SurveyViewer 
-                        survey={survey} 
-                        answers={answers}
-                        onAnswersChange={setAnswers}
-                        disabled={submitting || (openedSnack && snackSeverity === 'success')}
-                    />
-                    
-                    {survey.Questions.length > 0 && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 3 }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="large"
-                                onClick={handleSubmit}
-                                disabled={submitting || (openedSnack && snackSeverity === 'success')}
-                                sx={{ minWidth: 200 }}
-                            >
-                                {submitting ? <CircularProgress size={24} /> : (openedSnack && snackSeverity === 'success') ? 'Отправлено!' : 'Отправить ответы'}
-                            </Button>
-                        </Box>
-                    )}
-                </>
-            )}
+    if (surveyResult) {
+        return (
+            <Box>
+                <SurveyResultsView survey={survey} surveyResult={surveyResult} />
+            </Box>
+        );
+    }
+    else {
+        return (
+            <Box>
+                <SurveyViewer 
+                    survey={survey} 
+                    answers={answers}
+                    onAnswersChange={setAnswers}
+                    disabled={submitting || (openedSnack && snackSeverity === 'success')}
+                />
+                
+                {survey.Questions.length > 0 && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 3 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            onClick={handleSubmit}
+                            disabled={submitting || (openedSnack && snackSeverity === 'success')}
+                            sx={{ minWidth: 200 }}
+                        >
+                            {submitting ? <CircularProgress size={24} /> : (openedSnack && snackSeverity === 'success') ? 'Отправлено!' : 'Отправить ответы'}
+                        </Button>
+                    </Box>
+                )}
 
-            <Snackbar
-                open={openedSnack}
-                autoHideDuration={3000}
-                onClose={handleCloseSnack}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-                <Alert onClose={handleCloseSnack} severity={snackSeverity} variant="filled">
-                    {snackMessage}
-                </Alert>
-            </Snackbar>
-        </Box>
-    );
+                <Snackbar
+                    open={openedSnack}
+                    autoHideDuration={3000}
+                    onClose={handleCloseSnack}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                >
+                    <Alert onClose={handleCloseSnack} severity={snackSeverity} variant="filled">
+                        {snackMessage}
+                    </Alert>
+                </Snackbar>
+            </Box>
+        );
+    }
 };
 

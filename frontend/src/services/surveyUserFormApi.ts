@@ -73,8 +73,13 @@ export interface PassedSurveyResponse {
     title: string;
     description: string;
     datePassed: string;
-    correctAnswers: number;
     totalQuestions: number;
+    answers: Array<{
+        questionId: string;
+        questionTitle: string;
+        values: string[];
+        isCorrect: boolean;
+    }>;
 }
 
 export async function loadSurveyById(id: string): Promise<Survey> {
@@ -114,6 +119,29 @@ export async function getPassedSurveysWithResultsByUserId(userId: string): Promi
         return response.data;
     } catch (error) {
         throw new Error('Не удалось загрузить пройденные опросы');
+    }
+}
+
+export interface SurveyResultResponse {
+    surveyId: string;
+    title: string;
+    description: string;
+    datePassed: string;
+    totalQuestions: number;
+    answers: Array<{
+        questionId: string;
+        questionTitle: string;
+        values: string[];
+        isCorrect: boolean;
+    }>;
+}
+
+export async function getSurveyResultBySurveyIdAndUserId(surveyId: string, userId: string): Promise<SurveyResultResponse | null> {
+    try {
+        const response = await api.get<SurveyResultResponse>(`/survey-response/api/SurveyResult/survey/${surveyId}/user/${userId}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Не удалось загрузить результат опроса');
     }
 }
 
