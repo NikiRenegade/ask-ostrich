@@ -47,17 +47,15 @@ export const SurveyUserForm: React.FC = () => {
             try {
                 setLoading(true);
 
-                let result: SurveyResultResponse | null = null;
                 if (user?.id) {
-                    result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
+                    const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
                     if (result) {
                         setSurveyResult(result);
                     }
-                    else {
-                        const loadedSurvey = await loadSurveyById(id);
-                        setSurvey(loadedSurvey);
-                    }
                 }
+
+                const loadedSurvey = await loadSurveyById(id);
+                setSurvey(loadedSurvey);
             } catch (err) {
                 console.error('Failed to load data:', err);
                 showError(err instanceof Error ? err.message : 'Не удалось загрузить данные');
