@@ -12,16 +12,18 @@ const App: React.FC = () => (
     <>
         <BrowserRouter>
             <AuthProvider>
-                <Header/>
-                <div className="min-h-screen bg-gray-100 p-6">
-                    <Routes>
-                        <Route path="/" element={<SurveyList />} />
-                        <Route path="/create" element={<SurveyBuilder />} />
-                        <Route path="/edit/:id" element={<SurveyBuilder />} />
-                        <Route path="/survey-form/:id" element={<SurveyUserForm />} />
-                    </Routes>
+                <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                    <Header/>
+                    <main style={{ flex: 1, backgroundColor: '#f3f4f6', padding: '24px' }}>
+                        <Routes>
+                            <Route path="/" element={<SurveyList />} />
+                            <Route path="/create" element={<SurveyBuilder />} />
+                            <Route path="/edit/:id" element={<SurveyBuilder />} />
+                            <Route path="/survey-form/:id" element={<SurveyUserForm />} />
+                        </Routes>
+                    </main>
+                    <Footer/>
                 </div>
-                <Footer/>
             </AuthProvider>
         </BrowserRouter>
     </>

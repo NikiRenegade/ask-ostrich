@@ -55,7 +55,17 @@ const Header: React.FC = () => {
             <img src={logoImage} alt="Logo" className="logo-img"/>
           </Typography>
 
-          <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 2 }}>
+            {user && (
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <Typography variant="body2" sx={{ color: 'inherit', fontWeight: 500, lineHeight: 1.2 }}>
+                  {user.firstName} {user.lastName}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.8, lineHeight: 1.2 }}>
+                  {user.email}
+                </Typography>
+              </Box>
+            )}
             {user ? (
               <Button color="inherit" onClick={handleOpenConfirm}>
                 Выйти
@@ -96,13 +106,6 @@ const Header: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
-      <Container sx={{ flex: 1, textAlign: "left", marginLeft: 0 }}>
-        {user ? (
-          <Typography variant="h6">Привет, {user.firstName}! Чем сегодня займемся?</Typography>
-        ) : (
-          <Typography variant="h6">Пожалуйста, войдите или зарегистрируйтесь</Typography>
-        )}
-      </Container>
       <Dialog open={openConfirm} onClose={handleCloseConfirm}>
         <DialogTitle>Подтверждение выхода</DialogTitle>
         <DialogContent>
