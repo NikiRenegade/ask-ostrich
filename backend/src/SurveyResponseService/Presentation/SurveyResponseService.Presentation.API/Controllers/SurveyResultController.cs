@@ -135,10 +135,6 @@ namespace SurveyResponseService.Presentation.API.Controllers
             try
             {
                 var result = await _surveyResultService.GetLatestBySurveyIdAndUserIdAsync(surveyId, userId, cancellationToken);
-                if (result == null)
-                {
-                    return NotFound(new { message = "Survey result not found" });
-                }
                 return Ok(result);
             }
             catch (Exception ex)

@@ -13,6 +13,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import LaunchIcon from "@mui/icons-material/Launch";
 import { useNavigate, useParams } from 'react-router-dom';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import { loadSurveyById, createSurvey, updateSurvey } from '../../services/surveyBuilderApi';
@@ -210,6 +211,11 @@ export const SurveyBuilder: React.FC = () => {
         setTabValue(newValue);
     };
 
+    const handleTakeSurvey = () => {
+        const surveyFormUrl = `${window.location.origin}/survey-form/${id}`;
+        window.open(surveyFormUrl, '_blank');
+    };
+
     return (
         <Box sx={{ position: 'relative' }}>
             <Typography variant="h4" sx={{mb: 3, fontWeight: "bold"}}>
@@ -229,6 +235,13 @@ export const SurveyBuilder: React.FC = () => {
                         title='Предпросмотр'
                         disabled={!user}>
                             <VisibilityIcon />
+                    </IconButton>
+
+                    <IconButton 
+                        onClick={handleTakeSurvey}
+                        title='Пройти опрос'
+                        disabled={!user || !isEditMode}>
+                        <LaunchIcon />
                     </IconButton>
 
                     <IconButton
