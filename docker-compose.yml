@@ -58,10 +58,10 @@ services:
     environment:
       ConnectionStrings__authdbconnection: "Host=ao_security_db;Port=5432;Database=AuthDb;Username=user;Password=password"
     command: >
-      sh -c "dotnet tool install --global dotnet-ef --version 9.0.1 &&
-             export PATH=\"$PATH:/root/.dotnet/tools\" &&
-             dotnet restore &&
-             dotnet ef database update --context AuthDbContext"
+      sh -c "dotnet new tool-manifest --force
+             dotnet tool install dotnet-ef --version 9.0.1
+             dotnet restore
+             dotnet tool run dotnet-ef database update --context AuthDbContext"
       
   # ========== message broker =========
   ao_message_broker:
