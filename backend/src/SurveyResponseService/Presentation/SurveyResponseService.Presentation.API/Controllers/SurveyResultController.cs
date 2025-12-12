@@ -114,5 +114,33 @@ namespace SurveyResponseService.Presentation.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while deleting the survey result", error = ex.Message });
             }
         }
+
+        [HttpGet("user-passed-surveys/{userId}")]
+        public async Task<ActionResult<IList<PassedSurveyDto>>> GetPassedSurveysByUserId(Guid userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var passedSurveys = await _surveyResultService.GetPassedSurveysByUserIdAsync(userId, cancellationToken);
+                return Ok(passedSurveys);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving passed surveys", error = ex.Message });
+            }
+        }
+
+        [HttpGet("survey/{surveyId}/user/{userId}")]
+        public async Task<ActionResult<PassedSurveyDto>> GetLatestBySurveyIdAndUserId(Guid surveyId, Guid userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var result = await _surveyResultService.GetLatestBySurveyIdAndUserIdAsync(surveyId, userId, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the survey result", error = ex.Message });
+            }
+        }
     }
 }

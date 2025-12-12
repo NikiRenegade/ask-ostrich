@@ -1,4 +1,5 @@
-﻿using SurveyResponseService.Application.Mappers;
+﻿using SurveyResponseService.Application.Helpers;
+using SurveyResponseService.Application.Mappers;
 using SurveyResponseService.Domain.DTOs.SurveyResults;
 using SurveyResponseService.Domain.Interfaces.Repositories;
 using SurveyResponseService.Domain.Interfaces.Services;
@@ -75,6 +76,77 @@ namespace SurveyResponseService.Application.Services
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _repository.DeleteAsync(id, cancellationToken);
+        }
+
+        public async Task<IList<PassedSurveyDto>> GetPassedSurveysByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var userResponses = await _repository.GetByUserIdAsync(userId, cancellationToken);
+            var result = new List<PassedSurveyDto>();
+
+            var surveyGroups = userResponses
+                .GroupBy(r => r.SurveyId)
+                .Select(g => g.OrderByDescending(r => r.DatePassed).First())
+                .ToList();
+
+            foreach (var surveyResult in surveyGroups)
+            {
+                var survey = await _surveyRepository.GetByIdAsync(surveyResult.SurveyId, cancellationToken);
+                if (survey == null) continue;
+
+                result.Add(new PassedSurveyDto
+                {
+                    SurveyId = survey.Id,
+                    Title = survey.Title,
+                    Description = survey.Description,
+                    DatePassed = surveyResult.DatePassed,
+                    TotalQuestions = survey.Questions.Count(),
+                    Answers = surveyResult.Answers.Select(a => new AnswerDto
+                    {
+                        QuestionId = a.QuestionId,
+                        QuestionTitle = a.QuestionTitle,
+                        Values = a.Values ?? [],
+                        IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, surveyResult, a.QuestionId)
+                    }).ToList()
+                });
+            }
+
+            return result;
+        }
+
+        public async Task<PassedSurveyDto?> GetLatestBySurveyIdAndUserIdAsync(Guid surveyId, Guid userId, CancellationToken cancellationToken = default)
+        {
+            var userResponses = await _repository.GetByUserIdAsync(userId, cancellationToken);
+            var surveyResult = userResponses
+                .Where(r => r.SurveyId == surveyId)
+                .OrderByDescending(r => r.DatePassed)
+                .FirstOrDefault();
+
+            if (surveyResult == null)
+            {
+                return null;
+            }
+
+            var survey = await _surveyRepository.GetByIdAsync(surveyId, cancellationToken);
+            if (survey == null)
+            {
+                return null;
+            }
+
+            return new PassedSurveyDto
+            {
+                SurveyId = survey.Id,
+                Title = survey.Title,
+                Description = survey.Description,
+                DatePassed = surveyResult.DatePassed,
+                TotalQuestions = survey.Questions.Count(),
+                Answers = surveyResult.Answers.Select(a => new AnswerDto
+                {
+                    QuestionId = a.QuestionId,
+                    QuestionTitle = a.QuestionTitle,
+                    Values = a.Values ?? [],
+                    IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, surveyResult, a.QuestionId)
+                }).ToList()
+            };
         }
     }
 }
