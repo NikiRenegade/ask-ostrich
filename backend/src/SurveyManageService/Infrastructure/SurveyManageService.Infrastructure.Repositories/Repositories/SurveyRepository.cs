@@ -48,7 +48,7 @@ public class SurveyRepository: ISurveyRepository
         existingSurvey.IsPublished = survey.IsPublished;
         existingSurvey.AuthorId = survey.AuthorId;
         existingSurvey.LastUpdateAt = survey.LastUpdateAt;
-        existingSurvey.ShortUrl = survey.ShortUrl;
+        existingSurvey.ShortUrlId = survey.ShortUrlId;
 
         existingSurvey.UpdateQuestions(survey.Questions.ToList());
 

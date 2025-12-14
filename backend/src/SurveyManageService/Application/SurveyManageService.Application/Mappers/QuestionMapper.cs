@@ -40,4 +40,26 @@ public static class QuestionMapper
 
         return question;
     }
+
+    public static Question ToEntity(QuestionDto questionDto)
+    {
+        if (questionDto == null)
+            throw new ArgumentNullException(nameof(questionDto));
+
+        var question = new Question(
+            questionDto.Type,
+            questionDto.Title,
+            questionDto.Order,
+            questionDto.InnerText
+        );
+
+        question.Id = questionDto.Id;
+
+        if (questionDto.Options.Any())
+        {
+            question.AddOptions(questionDto.Options.ToList());
+        }
+
+        return question;
+    }
 }

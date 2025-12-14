@@ -10,16 +10,16 @@ public class Survey : BaseEntity
     public Guid AuthorId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime LastUpdateAt { get; set; }
-    public string ShortUrl { get; set; } = string.Empty; 
+    public Guid? ShortUrlId { get; set; } 
     public IEnumerable<Question> Questions => _questions.ToList();
 
     public virtual User? Author { get; set; }
+    public virtual ShortUrl? ShortUrl { get; set; }
 
     // Parameterless constructor for Entity Framework
     public Survey()
     {
         Id = Guid.NewGuid();
-        ShortUrl = string.Empty;
         IsPublished = false;
         CreatedAt = DateTime.Now;
         LastUpdateAt = DateTime.Now;
@@ -30,7 +30,6 @@ public class Survey : BaseEntity
         Id = Guid.NewGuid();
         Title = title;
         Description = description;
-        ShortUrl = string.Empty;
         AuthorId = authorId;
         IsPublished = false;
         CreatedAt = DateTime.Now;
