@@ -153,6 +153,8 @@ services:
     container_name: ao_ai_assistant_service
     environment:
       ASPNETCORE_URLS: http://+:8080
+      Ollama__BaseUrl: "http://host.docker.internal:11434/"
+      Ollama__Model: "gpt-oss:20b-cloud"
     ports:
       - "5004:8080"
 
