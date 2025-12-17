@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import BuildIcon from '@mui/icons-material/Build';
-import { generateSurvey, askLLM } from '../../services/aiAssistantApi';
+import { askLLM, llamaHub } from '../../services/aiAssistantApi';
 import { AssistentMode, type ChatMessage, type GeneratedSurvey } from '../../models/aiAssistantModels';
 import type { Survey } from '../../types/Survey';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,11 +19,15 @@ interface AIAssistantProps {
 export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurveyJson = '{}', onMessagesChange, onSurveyGenerationStarted, onSurveyGenerated, disabled }) => {
     const [prompt, setPrompt] = useState<string>('');
     const [assistentMode, setAssistentMode] = useState<AssistentMode>(AssistentMode.Construct);
+    const [progressPercent, setProgressPercent] = useState<number>(0);
+    const [aiMessageId, setAiMessageId] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const userPrompt = prompt.trim();
         if (!userPrompt) return;
+
+        setProgressPercent(0);
 
         const userMessage: ChatMessage = {
             id: crypto.randomUUID(),
@@ -31,11 +35,14 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             content: userPrompt,
         };
 
+        const aiMessageId = crypto.randomUUID();
+        setAiMessageId(aiMessageId);
+
         const aiMessage: ChatMessage = {
-            id: crypto.randomUUID(),
+            id: aiMessageId,
             isUserMessage: false,
             content: 'Запрос обрабатывается...',
-            isPending: true,
+            isPending: true
         };
 
         onMessagesChange([...messages, userMessage, aiMessage]);        
@@ -48,49 +55,26 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                 onSurveyGenerationStarted();
             }
 
-            const updatedMessages = [...messages, userMessage];
-            let responseMessage: ChatMessage;
-
             if (isAskMode) {
-                const answerText = await askLLM({
+                await llamaHub.askLLM({
                     prompt: userPrompt,
                     currentSurveyJson: currentSurveyJson,
-                    type: 1,
+                    type: 1
                 });
-
-                responseMessage = {
-                    id: aiMessage.id,
-                    isUserMessage: false,
-                    content: answerText,
-                    isPending: false,
-                    isHtml: true,
-                };
             } else {
-                const response = await generateSurvey({
+                await llamaHub.generateSurvey({
                     prompt: userPrompt,
                     currentSurveyJson: currentSurveyJson,
-                    type: 0,
+                    type: 0
                 });
-
-                const convertedSurvey = convertToSurvey(response, currentSurveyJson);
-                onSurveyGenerated(convertedSurvey);
-
-                responseMessage = {
-                    id: aiMessage.id,
-                    isUserMessage: false,
-                    content: 'Опрос успешно обновлен',
-                    isPending: false,
-                };
             }
-
-            onMessagesChange([...updatedMessages, responseMessage]);
         } catch (error) {
             const updatedMessages = [...messages, userMessage];
             const errorMessage: ChatMessage = {
                 id: aiMessage.id,
                 isUserMessage: false,
                 content: 'Ошибка получения ответа от ИИ-ассистента',
-                isPending: false,
+                isPending: false
             };
             console.error('Ошибка получения ответа от ИИ-ассистента:', error);
             onMessagesChange([...updatedMessages, errorMessage]);
@@ -98,6 +82,67 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             onSurveyGenerated(null);            
         }
     };
+
+    useEffect(() => {
+        llamaHub.connect(); // создание подключения при ререндере компонента
+    }, []);
+   
+    useEffect(() => {
+        
+        let responseMessage: ChatMessage;
+        
+        const listener = {
+            onEvent: (event: any) => {
+                if (event.type === "Progress") {
+                    setProgressPercent(parseInt(event.data));
+                }
+                if (event.type === "Completed") {
+                    
+                    if (assistentMode !== AssistentMode.Ask) {
+                        const convertedSurvey = convertToSurvey(event.data, currentSurveyJson);
+                        onSurveyGenerated(convertedSurvey);
+                           
+                        responseMessage = {
+                            id: aiMessageId,
+                            isUserMessage: false,
+                            content: 'Опрос успешно обновлен',
+                            isPending: false
+                        };
+                        onMessagesChange([...messages.filter(msg => msg.id != aiMessageId), responseMessage]);
+                    }
+                    
+                    onSurveyGenerated(null);
+                }
+                if (event.type === "Error") {
+                    const errorMessage: ChatMessage = {
+                        id: aiMessageId,
+                        isUserMessage: false,
+                        content: 'Ошибка получения ответа от ИИ-ассистента',
+                        isPending: false
+                    };
+                    console.error('Ошибка получения ответа от ИИ-ассистента:', event.data);
+                    onMessagesChange([...messages.filter(msg => msg.id != aiMessageId), errorMessage]);
+                    onSurveyGenerated(null);
+                }
+                if (event.type === "Next") {
+                    let aiMessage : ChatMessage | undefined = messages.find(msg => msg.id === aiMessageId);
+                    if (!aiMessage) return;
+                    
+                    if (aiMessage.isPending) {
+                        aiMessage.content = event.data;
+                        aiMessage.isPending = false;
+                        aiMessage.isHtml = true;
+                    } else {
+                        aiMessage.content += event.data;
+                    }
+                    onMessagesChange([...messages]);
+                }
+            }
+        };
+
+        llamaHub.subscribe(listener);
+        return () => llamaHub.unsubscribe(listener);
+    }, [messages, llamaHub]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -116,6 +161,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                     {messages.map((m) => {
                         return (
+                            
                             <Box
                                 key={m.id}
                                 sx={{
@@ -123,6 +169,25 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                                     justifyContent: m.isUserMessage ? 'flex-start' : 'flex-end',
                                 }}
                             >
+                                {!m.isUserMessage && (m.isPending === true) &&(
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            marginRight: '10px'
+                                        }}
+                                        >
+                                        <CircularProgress
+                                            variant="determinate"
+                                            value={progressPercent}
+                                            size={20}
+                                        />
+                                        <Typography variant="body2" color="text.secondary">
+                                            {Math.round(progressPercent)}%
+                                        </Typography>
+                                    </Box>
+                                 )}
                                 <Box
                                     sx={{
                                         maxWidth: '85%',
@@ -135,10 +200,9 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                                         color: m.isUserMessage ? 'primary.contrastText' : 'text.primary',
                                     }}
                                 >
+                                    
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        {!m.isUserMessage && m.isPending === true && (
-                                            <CircularProgress size={16} />
-                                        )}
+                                        
                                         {m.isHtml && !m.isUserMessage ? (
                                             <Box
                                                 component="div"

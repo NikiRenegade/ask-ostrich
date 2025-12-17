@@ -58,6 +58,19 @@ namespace AIAssistantService.Application.Services
 
             return response;
         }
+
+        public async IAsyncEnumerable<string> AskLLMStreamAsync(string prompt, string currentSurveyJson, CancellationToken cancellationToken = default)
+        {
+            string generatedPrompt = PromptGenerationHelper.GeneratePrompt(prompt, currentSurveyJson, PromptType.Ask);
+            
+            await foreach (var responseChunk in _chatService.GetResponseStream(generatedPrompt, cancellationToken))
+            {
+                if (!string.IsNullOrWhiteSpace(responseChunk))
+                {
+                    yield return responseChunk;
+                }
+            }
+        }
     }
 }
 

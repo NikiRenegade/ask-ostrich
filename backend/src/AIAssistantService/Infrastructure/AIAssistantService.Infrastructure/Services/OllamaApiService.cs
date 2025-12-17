@@ -36,5 +36,20 @@ namespace AIAssistantService.Infrastructure.Services
             }
             return chatresponse;
         }
+
+        public async IAsyncEnumerable<string> GetResponseStream(string prompt, CancellationToken cancellationToken = default)
+        {
+            var baseUrl = _configuration["Ollama:BaseUrl"];
+            var model = _configuration["Ollama:Model"];
+            
+            using var client = new OllamaApiClient(new Uri(baseUrl!), model!);
+            var chatresponse = client.GetStreamingResponseAsync(prompt, cancellationToken: cancellationToken);
+
+            await foreach (var item in chatresponse)
+            {
+                Console.Write(item);
+                yield return item.ToString();
+            }
+        }
     }
 }
