@@ -38,19 +38,7 @@ public class ShortUrlService : IShortUrlService
         var survey = await _surveyRepository.GetByIdAsync(request.SurveyId, cancellationToken)
             ?? throw new ArgumentException("Survey not found", nameof(request.SurveyId));
 
-        string code = string.Empty;
-        
-        for (int i = 0; i <= __generateCodeAttempts; i++)
-        {
-            if (i == __generateCodeAttempts)
-                throw new InvalidOperationException("Failed to generate short url");
-
-            code = ShortUrl.GenerateCode();
-            var existsCode = await _repository.GetByCodeAsync(code, cancellationToken);
-
-            if (existsCode == null)
-                break; 
-        }
+        string code = await GenerateShortCode(cancellationToken);
 
         var shortUrl = ShortUrlMapper.ToEntity(request, code);
         await _repository.AddAsync(shortUrl, cancellationToken);
@@ -60,6 +48,24 @@ public class ShortUrlService : IShortUrlService
             Id = shortUrl.Id,
             Code = shortUrl.Code
         };
+    }
+
+    public async Task<string> GenerateShortCode(CancellationToken cancellationToken)
+    {
+        string code = string.Empty;
+
+        for (int i = 0; i <= __generateCodeAttempts; i++)
+        {
+            if (i == __generateCodeAttempts)
+                throw new InvalidOperationException("Failed to generate short url");
+
+            code = ShortUrl.GenerateCode();
+            var existsCode = await _repository.GetByCodeAsync(code, cancellationToken);
+
+            if (existsCode == null)
+                break;
+        }
+        return code;
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)

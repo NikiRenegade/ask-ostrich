@@ -15,6 +15,18 @@ public static class ShortUrlMapper
             OriginUrl = request.OriginUrl
         };
     }
+    
+    public static ShortUrl ToEntity(string code, string originUrl)
+    {
+        ArgumentNullException.ThrowIfNull(code);
+        ArgumentNullException.ThrowIfNull(originUrl);
+
+        return new ShortUrl()
+        {
+            Code = code,
+            OriginUrl = originUrl
+        };
+    }
 
     public static ShortUrlDto? ToDto(ShortUrl shortUrl)
     {

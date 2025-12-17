@@ -10,5 +10,7 @@ public interface IShortUrlService
 
     Task<ShortUrlCreatedDto> AddAsync(CreateShortUrlDto request, CancellationToken cancellationToken);
 
+    Task<string> GenerateShortCode(CancellationToken cancellationToken);
+
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
