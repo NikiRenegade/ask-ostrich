@@ -148,5 +148,11 @@ namespace SurveyResponseService.Application.Services
                 }).ToList()
             };
         }
+
+        public async Task<IList<SurveyResultDto>> GetBySurveyIdAsync(Guid surveyId, CancellationToken cancellationToken = default)
+        {
+            var results = await _repository.GetBySurveyIdAsync(surveyId, cancellationToken);
+            return results.Select(SurveyResultMapper.ToDto).ToList();
+        }
     }
 }

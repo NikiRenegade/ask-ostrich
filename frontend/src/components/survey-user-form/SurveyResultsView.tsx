@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Paper, Chip } from '@mui/material';
 import type { Survey } from '../../types/Survey';
-import type { SurveyResultResponse } from '../../services/surveyUserFormApi';
+import type { SurveyResultResponse } from '../../services/surveyResultApi';
 
 interface Props {
     survey: Survey;

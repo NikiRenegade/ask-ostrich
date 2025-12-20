@@ -82,6 +82,33 @@ export interface PassedSurveyResponse {
     }>;
 }
 
+export interface SurveyResultResponse {
+    surveyId: string;
+    title: string;
+    description: string;
+    datePassed: string;
+    totalQuestions: number;
+    answers: Array<{
+        questionId: string;
+        questionTitle: string;
+        values: string[];
+        isCorrect: boolean;
+    }>;
+}
+
+export interface SurveyResultDto {
+    id: string;
+    surveyId: string;
+    userId: string;
+    datePassed: string;
+    answers: Array<{
+        questionId: string;
+        questionTitle: string;
+        values: string[];
+        isCorrect: boolean;
+    }>;
+}
+
 export async function loadSurveyById(id: string): Promise<Survey> {
     try {        
         const response = await api.get<SurveyResponse>(`/survey-response/api/Survey/${id}`);
@@ -122,26 +149,21 @@ export async function getPassedSurveysWithResultsByUserId(userId: string): Promi
     }
 }
 
-export interface SurveyResultResponse {
-    surveyId: string;
-    title: string;
-    description: string;
-    datePassed: string;
-    totalQuestions: number;
-    answers: Array<{
-        questionId: string;
-        questionTitle: string;
-        values: string[];
-        isCorrect: boolean;
-    }>;
-}
-
 export async function getSurveyResultBySurveyIdAndUserId(surveyId: string, userId: string): Promise<SurveyResultResponse | null> {
     try {
         const response = await api.get<SurveyResultResponse>(`/survey-response/api/SurveyResult/survey/${surveyId}/user/${userId}`);
         return response.data;
     } catch (error) {
         throw new Error('Не удалось загрузить результат опроса');
+    }
+}
+
+export async function getSurveyResultsBySurveyId(surveyId: string): Promise<SurveyResultDto[]> {
+    try {
+        const response = await api.get<SurveyResultDto[]>(`/survey-response/api/SurveyResult/survey/${surveyId}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Не удалось загрузить результаты опроса');
     }
 }
 

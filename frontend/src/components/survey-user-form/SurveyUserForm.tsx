@@ -8,7 +8,7 @@ import {
     Snackbar
 } from '@mui/material';
 import type { Survey } from '../../types/Survey.ts';
-import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, type SurveyResultResponse } from '../../services/surveyUserFormApi';
+import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, type SurveyResultResponse } from '../../services/surveyResultApi';
 import { useAuth } from '../auth/AuthProvider.tsx';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import { SurveyResultsView } from './SurveyResultsView.tsx';

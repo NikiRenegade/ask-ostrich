@@ -1,7 +1,7 @@
 import React from "react";
 import { Paper, Typography, Box, IconButton, Tooltip } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
-import type { PassedSurveyResponse } from "../../services/surveyUserFormApi";
+import type { PassedSurveyResponse } from "../../services/surveyResultApi";
 
 interface Props {
     survey: PassedSurveyResponse;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { PassedSurveyCard } from "./PassedSurveyCard";
 import { useAuth } from "../auth/AuthProvider.tsx";
-import { getPassedSurveysWithResultsByUserId, type PassedSurveyResponse } from "../../services/surveyUserFormApi";
+import { getPassedSurveysWithResultsByUserId, type PassedSurveyResponse } from "../../services/surveyResultApi";
 
 export const PassedSurveysList: React.FC = () => {
     const { user } = useAuth();

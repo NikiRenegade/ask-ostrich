@@ -142,5 +142,19 @@ namespace SurveyResponseService.Presentation.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving the survey result", error = ex.Message });
             }
         }
+
+        [HttpGet("survey/{surveyId}")]
+        public async Task<ActionResult<IList<SurveyResultDto>>> GetBySurveyId(Guid surveyId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var results = await _surveyResultService.GetBySurveyIdAsync(surveyId, cancellationToken);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving survey results", error = ex.Message });
+            }
+        }
     }
 }
