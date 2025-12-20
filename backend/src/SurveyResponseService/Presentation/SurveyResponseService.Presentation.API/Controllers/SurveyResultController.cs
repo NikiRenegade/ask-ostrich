@@ -116,7 +116,7 @@ namespace SurveyResponseService.Presentation.API.Controllers
         }
 
         [HttpGet("user-passed-surveys/{userId}")]
-        public async Task<ActionResult<IList<PassedSurveyDto>>> GetPassedSurveysByUserId(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<IList<SurveyResultDto>>> GetPassedSurveysByUserId(Guid userId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -130,11 +130,15 @@ namespace SurveyResponseService.Presentation.API.Controllers
         }
 
         [HttpGet("survey/{surveyId}/user/{userId}")]
-        public async Task<ActionResult<PassedSurveyDto>> GetLatestBySurveyIdAndUserId(Guid surveyId, Guid userId, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<SurveyResultDto>> GetLatestBySurveyIdAndUserId(Guid surveyId, Guid userId, CancellationToken cancellationToken = default)
         {
             try
             {
                 var result = await _surveyResultService.GetLatestBySurveyIdAndUserIdAsync(surveyId, userId, cancellationToken);
+                if (result == null)
+                {
+                    return NotFound(new { message = $"Survey result not found for survey {surveyId} and user {userId}" });
+                }
                 return Ok(result);
             }
             catch (Exception ex)

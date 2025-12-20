@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { PassedSurveyCard } from "./PassedSurveyCard";
 import { useAuth } from "../auth/AuthProvider.tsx";
-import { getPassedSurveysWithResultsByUserId, type PassedSurveyResponse } from "../../services/surveyResultApi";
+import { getPassedSurveysWithResultsByUserId, type SurveyResultDto } from "../../services/surveyResultApi";
 
 export const PassedSurveysList: React.FC = () => {
     const { user } = useAuth();
-    const [surveys, setSurveys] = useState<PassedSurveyResponse[]>([]);
+    const [surveys, setSurveys] = useState<SurveyResultDto[]>([]);
     const [loading, setLoading] = useState(false);
 
     const loadSurveys = async () => {
