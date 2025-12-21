@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import api from './axios';
 import type { Survey } from '../types/Survey';
+import type { SurveyShort } from '../types/SurveyShort';
 
 export interface SurveyResponse {
     id: string;
@@ -30,6 +31,11 @@ export interface SurveyResponse {
             order: number;
         }>;
     }>;
+}
+
+interface PublishSurveyRequest {
+    Id: string;
+    IsPublished: boolean;
 }
 
 export interface SubmitSurveyResultRequest {
@@ -68,8 +74,7 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
     };
 }
 
-export interface SurveyResultDto {
-    id: string;
+export interface PassedSurveyResponse {
     surveyId: string;
     userId: string;
     datePassed: string;
@@ -141,3 +146,11 @@ export async function getSurveyResultsBySurveyId(surveyId: string): Promise<Surv
     }
 }
 
+export async function publishSurvey(survey: SurveyShort): Promise<void> {
+    try {
+        const request = mapSurveyToPublishRequest(survey);
+        await api.put("/survey-manage/api/survey/publish", request);
+    } catch (error) {
+        throw new Error('Не удалось обновить опрос');
+    }
+}
