@@ -153,9 +153,11 @@ services:
     container_name: ao_ai_assistant_service
     environment:
       ASPNETCORE_URLS: http://+:8080
+      Ollama__BaseUrl: "http://host.docker.internal:11434/"
+      Ollama__Model: "gpt-oss:20b-cloud"
     ports:
       - "5004:8080"
-
+      
   # ========== gateway ==========
   ao_gateway_service:
     build:
@@ -185,7 +187,16 @@ services:
     ports:
       - "80:80"
 
-#volumes:
-#  ao_security_db_data:
-#  ao_manage_db_data:
-#  ao_response_db_data:
+  # ========== telegram bot ==========
+  ao_telegram_bot:
+    build:
+      context: ./backend
+      dockerfile: src/TelegramBotService/Presentation/TelegramBotService.Presentation.Telegram/Dockerfile
+    container_name: ao_telegram_bot
+    environment:
+      BOT_TOKEN: "${BOT_TOKEN}"
+      Frontend__BaseUrl: "http://127.0.0.1"
+      AuthApi__BaseUrl: "http://ao_gateway_service:8080"
+    depends_on:
+      ao_gateway_service:
+        condition: service_started
