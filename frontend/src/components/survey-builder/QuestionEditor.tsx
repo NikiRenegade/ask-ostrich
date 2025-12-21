@@ -29,7 +29,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onChan
 
         const newOptions = question.Options.map(option => {
             if (option.Value === value) {
-                return { ...option, IsCorrect: updated.IsCorrect };
+                return { ...option, ...updated };
             }
             if (question.Type === 'SingleChoice' && updated.IsCorrect) {
                 return { ...option, IsCorrect: false };
