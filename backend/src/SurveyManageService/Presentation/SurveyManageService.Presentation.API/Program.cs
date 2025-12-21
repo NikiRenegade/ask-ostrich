@@ -40,10 +40,12 @@ builder.Services.AddDbContext<SurveyManageDbContext>(options =>
 // Register repositories
 builder.Services.AddScoped<ISurveyRepository, SurveyRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 
 // Register services
 builder.Services.AddScoped<ISurveyService, SurveyService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
 
 // Подключение к RabbitMQ
 var rabbitConfig = builder.Configuration.GetSection("RabbitMQ");

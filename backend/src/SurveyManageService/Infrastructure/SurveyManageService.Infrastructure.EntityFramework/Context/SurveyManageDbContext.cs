@@ -14,6 +14,7 @@ public class SurveyManageDbContext : DbContext
 
     public DbSet<Survey> Surveys => Set<Survey>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<ShortUrl> ShortUrls => Set<ShortUrl>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,5 +22,7 @@ public class SurveyManageDbContext : DbContext
         modelBuilder.Entity<Survey>().OwnsMany(s => s.Questions, question => question.OwnsMany(q => q.Options));
 
         modelBuilder.Entity<User>().ToCollection("users");
+        modelBuilder.Entity<ShortUrl>().ToCollection("short-urls");
+        modelBuilder.Entity<ShortUrl>().HasIndex(nameof(ShortUrl.Code)).IsUnique();
     }
 }

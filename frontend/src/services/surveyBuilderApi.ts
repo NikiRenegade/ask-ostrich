@@ -6,6 +6,7 @@ interface CreateSurveyRequest {
     Title: string;
     Description: string;
     AuthorGuid: string;
+    OriginUrl: string;
     Questions: Array<{
         Type: string;
         Title: string;
@@ -98,6 +99,7 @@ function mapSurveyToCreateRequest(survey: Survey): CreateSurveyRequest {
         Title: survey.Title,
         Description: survey.Description,
         AuthorGuid: survey.AuthorGuid,
+        OriginUrl: `${window.location.origin}/survey-form`,
         Questions: survey.Questions.map(q => ({
             Type: q.Type,
             Title: q.Title,

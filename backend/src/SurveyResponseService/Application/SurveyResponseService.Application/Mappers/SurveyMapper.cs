@@ -20,7 +20,7 @@ namespace SurveyResponseService.Application.Mappers
                     : throw new ArgumentNullException(nameof(survey.Author), "Author must exist!"),
                 CreatedAt = survey.CreatedAt,
                 LastUpdateAt = survey.LastUpdateAt,
-                ShortUrl = survey.ShortUrl,
+                ShortUrlId = survey.ShortUrlId,
                 Questions = survey.Questions.Select(QuestionMapper.ToDto).ToList()
             };
         }
@@ -35,7 +35,7 @@ namespace SurveyResponseService.Application.Mappers
                 CreatedAt = createSurveyDto.CreatedAt,
                 IsPublished = createSurveyDto.IsPublished,
                 LastUpdateAt = createSurveyDto.LastUpdateAt,
-                ShortUrl = createSurveyDto.ShortUrl
+                ShortUrlId = createSurveyDto.ShortUrlId
             };
 
             if (createSurveyDto.Questions.Any())
@@ -57,7 +57,7 @@ namespace SurveyResponseService.Application.Mappers
                 IsPublished = updateSurveyDto.IsPublished,
                 CreatedAt = updateSurveyDto.CreatedAt,
                 LastUpdateAt = updateSurveyDto.LastUpdateAt,
-                ShortUrl = updateSurveyDto.ShortUrl
+                ShortUrlId = updateSurveyDto.ShortUrlId
             };
 
             if (updateSurveyDto.Questions.Any())

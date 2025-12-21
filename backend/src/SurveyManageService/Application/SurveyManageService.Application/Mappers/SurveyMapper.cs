@@ -16,7 +16,7 @@ public static class SurveyMapper
             Title = survey.Title,
             Description = survey.Description,
             IsPublished = survey.IsPublished,
-            Author = survey.Author != null 
+            Author = survey.Author != null
                 ? UserMapper.ToDto(survey.Author)
                 : throw new ArgumentNullException(nameof(survey.Author), "Author must exist!"),
             CreatedAt = survey.CreatedAt,
@@ -30,7 +30,7 @@ public static class SurveyMapper
             throw new ArgumentNullException(nameof(survey));
 
         return new SurveyShortDto
-        { 
+        {
             Id = survey.Id,
             Title = survey.Title,
             Description = survey.Description,
@@ -63,8 +63,8 @@ public static class SurveyMapper
         var survey = new Survey(updateSurveyDto.Title, updateSurveyDto.Description, author.Id);
         survey.Id = updateSurveyDto.Id;
         survey.IsPublished = updateSurveyDto.IsPublished;
-        survey.ShortUrl = updateSurveyDto.ShortUrl;
-        
+        survey.ShortUrlId = updateSurveyDto.ShortUrlId;
+
         if (updateSurveyDto.Questions.Any())
         {
             var questions = updateSurveyDto.Questions.Select(QuestionMapper.ToEntity).ToList();
@@ -83,7 +83,7 @@ public static class SurveyMapper
         CreatedAt = source.CreatedAt,
         LastUpdateAt = source.LastUpdateAt,
         IsPublished = source.IsPublished,
-        ShortUrl = source.ShortUrl,
+        ShortUrlId = source.ShortUrlId,
         Questions = source.Questions.Select(QuestionMapper.ToDto).ToList()
     };
 
@@ -96,7 +96,7 @@ public static class SurveyMapper
         CreatedAt = source.CreatedAt,
         LastUpdateAt = source.LastUpdateAt,
         IsPublished = source.IsPublished,
-        ShortUrl = source.ShortUrl,
+        ShortUrlId = source.ShortUrlId,
         Questions = source.Questions.Select(QuestionMapper.ToDto).ToList(),
         Changes = new()
         {
