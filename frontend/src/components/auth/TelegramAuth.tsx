@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link as RouterLink, useSearchParams } from 'react-router-dom'
+import { Link as RouterLink, useSearchParams, useNavigate } from 'react-router-dom'
 import {Box, Typography, Paper, Link, CircularProgress,} from '@mui/material'
 import api from '../../services/axios'
 import { useAuth } from './AuthProvider'
@@ -7,6 +7,7 @@ import { useAuth } from './AuthProvider'
 export const TelegramAuth: React.FC = () => {
 	const [params] = useSearchParams()
 	const authId = params.get('authId')
+	const navigate = useNavigate()
 	const { token } = useAuth()
 	const [status, setStatus] = useState<string | null>(null)
 	const returnUrl = window.location.pathname + window.location.search
@@ -24,10 +25,9 @@ export const TelegramAuth: React.FC = () => {
 					'Успешно — сейчас Telegram-бот получит подтверждение. Можно закрыть страницу.'
 				)
 			} catch (e: any) {
-				if (e?.response?.status === 401) {
-					window.location.assign(
-						`auth/telegram/login?returnUrl=${encodeURIComponent(returnUrl)}`
-					)
+				const msg = e?.message ?? String(e)
+				if (msg.toLowerCase().includes('401')) {
+					navigate(`/auth/telegram/login?returnUrl=${encodeURIComponent(returnUrl)}`)
 					return
 				}
 
@@ -35,10 +35,8 @@ export const TelegramAuth: React.FC = () => {
 			}
 		}
 
-		if (token) {
-			complete()
-		}
-	}, [authId, token])
+		complete()
+	}, [authId, token, navigate])
 
 	return (
 		<Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" px={2}>
@@ -52,7 +50,7 @@ export const TelegramAuth: React.FC = () => {
 				) : (
 					<Box display="flex" alignItems="center" gap={2}>
 						<CircularProgress size={20} />
-						<Typography>Готовлюсь…</Typography>
+						<Typography>Ожидаю регистрацию…</Typography>
 					</Box>
 				)}
 
