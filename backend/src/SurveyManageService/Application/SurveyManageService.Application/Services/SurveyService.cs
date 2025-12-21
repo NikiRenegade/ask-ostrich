@@ -94,5 +94,11 @@ namespace SurveyManageService.Application.Services
             var surveys = await _repository.GetExistingByUserIdAsync(userId, cancellationToken);
             return surveys.Select(SurveyMapper.ToShortDto).ToList();
         }
+
+        public async Task<SurveyShortDto> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)
+        {
+            var survey = await _repository.GetByShortUrlCodeAsync(shortCode, cancellationToken);
+            return SurveyMapper.ToShortDto(survey);
+        }
     }
 }

@@ -115,4 +115,22 @@ public class SurveyRepository: ISurveyRepository
         if (entry.State != EntityState.Detached)
             entry.State = EntityState.Detached;
     }
+
+    public async Task<Survey?> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)
+    {
+        var shortUrl = await _dbContext.ShortUrls
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => 
+                s.Code.Equals(shortCode),
+                cancellationToken);
+
+        if (shortUrl == null)
+            return null;
+
+        return await _dbContext.Surveys
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => 
+                x.ShortUrlId == shortUrl.Id, 
+                cancellationToken);
+    }
 }
