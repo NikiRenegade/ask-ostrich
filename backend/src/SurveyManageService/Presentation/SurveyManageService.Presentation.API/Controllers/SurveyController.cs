@@ -65,6 +65,23 @@ public class SurveyController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while retrieving surveys", error = ex.Message });
         }
     }
+    [HttpGet("short/{shortCode}")]
+    public async Task<ActionResult<SurveyShortDto>> GetExistingByUserId(string shortCode, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var survey = await _surveyService.GetByShortUrlCodeAsync(shortCode, cancellationToken);
+            if (survey == null)
+            {
+                return NotFound(new { message = $"Surveys with short URL code {shortCode} not found" });
+            }
+            return Ok(survey);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while retrieving surveys", error = ex.Message });
+        }
+    }
 
     [HttpPost]
     public async Task<ActionResult<SurveyCreatedDto>> Create([FromBody] CreateSurveyDto request, CancellationToken cancellationToken = default)
