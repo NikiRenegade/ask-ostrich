@@ -74,6 +74,13 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
     };
 }
 
+function mapSurveyToPublishRequest(survey: SurveyShort): PublishSurveyRequest {
+    return {
+        Id: survey.id,
+        IsPublished: survey.isPublished,
+    };
+}
+
 export interface PassedSurveyResponse {
     surveyId: string;
     userId: string;
