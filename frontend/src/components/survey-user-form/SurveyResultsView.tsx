@@ -1,19 +1,20 @@
 import React from 'react';
 import { Box, Typography, Paper, Chip } from '@mui/material';
 import type { Survey } from '../../types/Survey';
-import type { SurveyResultResponse } from '../../services/surveyUserFormApi';
+import type { SurveyResultDto } from '../../services/surveyResultApi';
 
 interface Props {
     survey: Survey;
-    surveyResult: SurveyResultResponse;
+    surveyResult: SurveyResultDto;
 }
 
 export const SurveyResultsView: React.FC<Props> = ({ survey, surveyResult }) => {
     const correctAnswers = surveyResult.answers.filter(a => a.isCorrect).length;
+    const totalQuestions = survey.Questions.length;
     const score = {
         correct: correctAnswers,
-        total: surveyResult.totalQuestions,
-        percentage: surveyResult.totalQuestions > 0 ? (correctAnswers / surveyResult.totalQuestions * 100) : 0
+        total: totalQuestions,
+        percentage: totalQuestions > 0 ? (correctAnswers / totalQuestions * 100) : 0
     };
 
 

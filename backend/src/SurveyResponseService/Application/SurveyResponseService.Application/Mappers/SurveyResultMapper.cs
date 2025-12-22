@@ -16,6 +16,8 @@ namespace SurveyResponseService.Application.Mappers
                 UserId = entity.UserId,
                 SurveyId = entity.SurveyId,
                 DatePassed = entity.DatePassed,
+                Title = string.Empty,
+                Description = string.Empty,
                 Answers = entity.Answers?.Select(ToDto).ToList() ?? new List<AnswerDto>()
             };
         }

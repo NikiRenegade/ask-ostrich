@@ -1,5 +1,5 @@
 import React from 'react';
-import {SurveyBuilder} from './components/survey-builder/SurveyBuilder.tsx'
+import {SurveyDetail} from './components/survey-detail/SurveyDetail.tsx'
 import {SurveyList} from './components/survey-list/SurveyList.tsx'
 import {SurveyUserForm} from './components/survey-user-form/SurveyUserForm.tsx'
 import './index.css';
@@ -17,8 +17,8 @@ const App: React.FC = () => (
                     <main style={{ flex: 1, backgroundColor: '#f3f4f6', padding: '24px' }}>
                         <Routes>
                             <Route path="/" element={<SurveyList />} />
-                            <Route path="/create" element={<SurveyBuilder />} />
-                            <Route path="/edit/:id" element={<SurveyBuilder />} />
+                            <Route path="/create" element={<SurveyDetail />} />
+                            <Route path="/edit/:id" element={<SurveyDetail />} />
                             <Route path="/survey-form/:id" element={<SurveyUserForm />} />
                         </Routes>
                     </main>

@@ -218,10 +218,6 @@ export const SurveyBuilder: React.FC = () => {
 
     return (
         <Box sx={{ position: 'relative' }}>
-            <Typography variant="h4" sx={{mb: 3, fontWeight: "bold"}}>
-                {isEditMode ? 'Редактировать опрос' : 'Создать опрос'}
-            </Typography>
-
             <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
                 <IconButton
                     onClick={() => navigate("/")}
