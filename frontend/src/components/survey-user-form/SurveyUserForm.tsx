@@ -8,7 +8,7 @@ import {
     Snackbar
 } from '@mui/material';
 import type { Survey } from '../../types/Survey.ts';
-import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, type SurveyResultResponse } from '../../services/surveyUserFormApi';
+import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, type SurveyResultDto } from '../../services/surveyResultApi';
 import { useAuth } from '../auth/AuthProvider.tsx';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import { SurveyResultsView } from './SurveyResultsView.tsx';
@@ -17,7 +17,7 @@ export const SurveyUserForm: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { user } = useAuth();
     const [survey, setSurvey] = useState<Survey | null>(null);
-    const [surveyResult, setSurveyResult] = useState<SurveyResultResponse | null>(null);
+    const [surveyResult, setSurveyResult] = useState<SurveyResultDto | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [answers, setAnswers] = useState<Record<string, string | string[]>>({});

@@ -68,12 +68,13 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
     };
 }
 
-export interface PassedSurveyResponse {
+export interface SurveyResultDto {
+    id: string;
     surveyId: string;
+    userId: string;
+    datePassed: string;
     title: string;
     description: string;
-    datePassed: string;
-    totalQuestions: number;
     answers: Array<{
         questionId: string;
         questionTitle: string;
@@ -113,35 +114,30 @@ export async function getPassedSurveysByUserId(userId: string): Promise<SurveyRe
     }
 }
 
-export async function getPassedSurveysWithResultsByUserId(userId: string): Promise<PassedSurveyResponse[]> {
+export async function getPassedSurveysWithResultsByUserId(userId: string): Promise<SurveyResultDto[]> {
     try {
-        const response = await api.get<PassedSurveyResponse[]>(`/survey-response/api/SurveyResult/user-passed-surveys/${userId}`);
+        const response = await api.get<SurveyResultDto[]>(`/survey-response/api/SurveyResult/user-passed-surveys/${userId}`);
         return response.data;
     } catch (error) {
         throw new Error('Не удалось загрузить пройденные опросы');
     }
 }
 
-export interface SurveyResultResponse {
-    surveyId: string;
-    title: string;
-    description: string;
-    datePassed: string;
-    totalQuestions: number;
-    answers: Array<{
-        questionId: string;
-        questionTitle: string;
-        values: string[];
-        isCorrect: boolean;
-    }>;
-}
-
-export async function getSurveyResultBySurveyIdAndUserId(surveyId: string, userId: string): Promise<SurveyResultResponse | null> {
+export async function getSurveyResultBySurveyIdAndUserId(surveyId: string, userId: string): Promise<SurveyResultDto | null> {
     try {
-        const response = await api.get<SurveyResultResponse>(`/survey-response/api/SurveyResult/survey/${surveyId}/user/${userId}`);
+        const response = await api.get<SurveyResultDto>(`/survey-response/api/SurveyResult/survey/${surveyId}/user/${userId}`);
         return response.data;
     } catch (error) {
         throw new Error('Не удалось загрузить результат опроса');
+    }
+}
+
+export async function getSurveyResultsBySurveyId(surveyId: string): Promise<SurveyResultDto[]> {
+    try {
+        const response = await api.get<SurveyResultDto[]>(`/survey-response/api/SurveyResult/survey/${surveyId}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Не удалось загрузить результаты опроса');
     }
 }
 

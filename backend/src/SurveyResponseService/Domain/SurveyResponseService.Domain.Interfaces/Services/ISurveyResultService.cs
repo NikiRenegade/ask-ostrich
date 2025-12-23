@@ -15,8 +15,10 @@ namespace SurveyResponseService.Domain.Interfaces.Services
 
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 
-        Task<IList<PassedSurveyDto>> GetPassedSurveysByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+        Task<IList<SurveyResultDto>> GetPassedSurveysByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 
-        Task<PassedSurveyDto?> GetLatestBySurveyIdAndUserIdAsync(Guid surveyId, Guid userId, CancellationToken cancellationToken);
+        Task<SurveyResultDto?> GetLatestBySurveyIdAndUserIdAsync(Guid surveyId, Guid userId, CancellationToken cancellationToken);
+
+        Task<IList<SurveyResultDto>> GetBySurveyIdAsync(Guid surveyId, CancellationToken cancellationToken);
     }
 }

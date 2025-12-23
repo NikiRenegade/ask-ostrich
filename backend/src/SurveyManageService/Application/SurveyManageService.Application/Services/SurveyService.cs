@@ -16,15 +16,18 @@ namespace SurveyManageService.Application.Services
     {
         private readonly ISurveyRepository _repository;
         private readonly IUserRepository _userRepository;
+        private readonly IShortUrlService _shortUrlService;
         private readonly ISurveyEventPublisher _surveyEventPublisher;
 
         public SurveyService(
             ISurveyRepository repository, 
             IUserRepository userRepository,
+            IShortUrlService shortUrlService,
             ISurveyEventPublisher surveyEventPublisher)
         {
             _repository = repository;
             _userRepository = userRepository;
+            _shortUrlService = shortUrlService;
             _surveyEventPublisher = surveyEventPublisher;
         }
 
@@ -46,8 +49,14 @@ namespace SurveyManageService.Application.Services
                 ?? throw new ArgumentException("Author not found", nameof(request.AuthorGuid));
 
             var survey = SurveyMapper.ToEntity(request, author);
-            await _repository.AddAsync(survey, cancellationToken);
 
+            var originUrl = $"{request.OriginUrl}/{survey.Id}";
+            var shortCode = await _shortUrlService.GenerateShortCode(cancellationToken);
+            var shortUrl = ShortUrlMapper.ToEntity(shortCode, originUrl);
+
+            survey.ShortUrlId = shortUrl.Id;
+
+            await _repository.AddWithShortUrlAsync(survey, shortUrl, cancellationToken);
             await _surveyEventPublisher.PublishSurveyCreated(survey.ToSurveyCreatedEvent());
 
             return new SurveyCreatedDto { Id = survey.Id };
@@ -84,6 +93,12 @@ namespace SurveyManageService.Application.Services
         {
             var surveys = await _repository.GetExistingByUserIdAsync(userId, cancellationToken);
             return surveys.Select(SurveyMapper.ToShortDto).ToList();
+        }
+
+        public async Task<SurveyShortDto> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)
+        {
+            var survey = await _repository.GetByShortUrlCodeAsync(shortCode, cancellationToken);
+            return SurveyMapper.ToShortDto(survey);
         }
     }
 }

@@ -68,5 +68,13 @@ namespace SurveyResponseService.Infrastructure.Repositories
                 .Where(r => r.UserId == userId)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<IList<SurveyResult>> GetBySurveyIdAsync(Guid surveyId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.SurveyResults
+                .AsNoTracking()
+                .Where(r => r.SurveyId == surveyId)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

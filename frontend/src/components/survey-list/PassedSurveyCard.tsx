@@ -1,10 +1,10 @@
 import React from "react";
 import { Paper, Typography, Box, IconButton, Tooltip } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
-import type { PassedSurveyResponse } from "../../services/surveyUserFormApi";
+import type { SurveyResultDto } from "../../services/surveyResultApi";
 
 interface Props {
-    survey: PassedSurveyResponse;
+    survey: SurveyResultDto;
 }
 export const PassedSurveyCard: React.FC<Props> = ({ survey }) => {
     const handleTakeSurvey = () => {
@@ -13,6 +13,7 @@ export const PassedSurveyCard: React.FC<Props> = ({ survey }) => {
     };
 
     const correctAnswers = survey.answers.filter(a => a.isCorrect).length;
+    const totalQuestions = survey.answers.length;
 
     return (
         <Paper sx={{ p: 2, mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -29,7 +30,7 @@ export const PassedSurveyCard: React.FC<Props> = ({ survey }) => {
                 </Typography>
 
                 <Typography variant="caption" sx={{ display: "block", opacity: 0.7 }}>
-                    Результат: {(correctAnswers / survey.totalQuestions * 100).toFixed()}% ({correctAnswers} из {survey.totalQuestions})
+                    Результат: {totalQuestions > 0 ? `${(correctAnswers / totalQuestions * 100).toFixed()}%` : '0%'} ({correctAnswers} из {totalQuestions})
                 </Typography>
             </Box>
 

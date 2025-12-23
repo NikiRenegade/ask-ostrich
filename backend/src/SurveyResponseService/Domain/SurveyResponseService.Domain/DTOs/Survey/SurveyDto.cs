@@ -11,6 +11,6 @@ public class SurveyDto
     public UserDto Author { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
     public DateTime LastUpdateAt { get; set; }
-    public string ShortUrl { get; set; } = string.Empty;
+    public Guid? ShortUrlId { get; set; }
     public List<QuestionDto> Questions { get; set; } = [];
 }

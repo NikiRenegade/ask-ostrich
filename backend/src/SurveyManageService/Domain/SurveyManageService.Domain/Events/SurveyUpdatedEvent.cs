@@ -11,7 +11,7 @@ public record SurveyUpdatedEvent
     public Guid AuthorId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime LastUpdateAt { get; set; }
-    public string ShortUrl { get; set; } = null!;
+    public Guid? ShortUrlId { get; set; }
     public IEnumerable<QuestionDto> Questions { get; set; } = null!;
     public Dictionary<string, object> Changes { get; set; } = null!;
 }

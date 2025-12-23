@@ -15,6 +15,7 @@ export default ({ mode }) => {
         },
         '/ai-assistant': {
           target: env.VITE_API_URL,
+          ws: true,
           changeOrigin: true,
           secure: false,
         },

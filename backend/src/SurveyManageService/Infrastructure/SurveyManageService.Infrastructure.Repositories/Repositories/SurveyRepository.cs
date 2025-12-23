@@ -2,6 +2,7 @@
 using SurveyManageService.Domain.Entities;
 using SurveyManageService.Domain.Interfaces.Repositories;
 using SurveyManageService.Infrastructure.EntityFramework.Context;
+using System;
 
 namespace SurveyManageService.Infrastructure.Repositories.Repositories;
 
@@ -48,7 +49,7 @@ public class SurveyRepository: ISurveyRepository
         existingSurvey.IsPublished = survey.IsPublished;
         existingSurvey.AuthorId = survey.AuthorId;
         existingSurvey.LastUpdateAt = survey.LastUpdateAt;
-        existingSurvey.ShortUrl = survey.ShortUrl;
+        existingSurvey.ShortUrlId = survey.ShortUrlId;
 
         existingSurvey.UpdateQuestions(survey.Questions.ToList());
 
@@ -74,5 +75,62 @@ public class SurveyRepository: ISurveyRepository
             .AsNoTracking()
             .Where(x => x.AuthorId == userId)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task AddWithShortUrlAsync(Survey survey, ShortUrl shortUrl, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _dbContext.ShortUrls.AddAsync(shortUrl, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            await _dbContext.Surveys.AddAsync(survey, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            await TryRemoveShortUrlIfExists(shortUrl.Id, cancellationToken);
+
+            DetachEntity(survey);
+            DetachEntity(shortUrl);
+            throw;
+        }
+    }
+
+    private async Task TryRemoveShortUrlIfExists(Guid shortUrlId, CancellationToken cancellationToken)
+    {
+        var existing = await _dbContext.ShortUrls
+            .FirstOrDefaultAsync(s => s.Id == shortUrlId, cancellationToken);
+
+        if (existing != null)
+        {
+            _dbContext.ShortUrls.Remove(existing);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    private void DetachEntity(object entity)
+    {
+        var entry = _dbContext.Entry(entity);
+        if (entry.State != EntityState.Detached)
+            entry.State = EntityState.Detached;
+    }
+
+    public async Task<Survey?> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)
+    {
+        var shortUrl = await _dbContext.ShortUrls
+            .AsNoTracking()
+            .SingleOrDefaultAsync(s => 
+                s.Code.Equals(shortCode),
+                cancellationToken);
+
+        if (shortUrl == null)
+            return null;
+
+        return await _dbContext.Surveys
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => 
+                x.ShortUrlId == shortUrl.Id, 
+                cancellationToken);
     }
 }
