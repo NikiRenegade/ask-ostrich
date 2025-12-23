@@ -133,6 +133,50 @@ public class SurveyController : ControllerBase
         }
     }
 
+    [HttpPut("publish")]
+    public async Task<IActionResult> Publish([FromBody] PublishSurveyDto request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existing = await _surveyService.GetByIdAsync(request.Id, cancellationToken);
+            if (existing == null)
+            {
+                return NotFound(new { message = $"Survey with ID {request.Id} not found" });
+            }
+
+            var updatingRequest = new UpdateSurveyDto()
+            {
+                Id = request.Id,
+                Title = existing.Title,
+                Description = existing.Description,
+                AuthorGuid = existing.Author.Id,
+                IsPublished = request.IsPublished,
+                Questions = existing.Questions,
+                ShortUrlId = existing.ShortUrlId
+            };
+
+            var updated = await _surveyService.UpdateAsync(updatingRequest, cancellationToken);
+            if (!updated)
+            {
+                return NotFound(new { message = $"Survey with ID {request.Id} not found" });
+            }
+            return NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while updating the survey", error = ex.Message });
+        }
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken = default)
     {
