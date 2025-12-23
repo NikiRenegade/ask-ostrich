@@ -111,6 +111,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBotService.Application", "src\TelegramBotService\Application\TelegramBotService.Application\TelegramBotService.Application.csproj", "{B6CCAF27-B919-4655-B89D-2AF6BE39D837}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{0DCD6E39-3ABE-1C07-30A5-EBEC29642DB1}"
+	ProjectSection(SolutionItems) = preProject
+		Entities\User.cs = Entities\User.cs
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramBotService.Domain", "src\TelegramBotService\Domain\TelegramBotService.Domain\TelegramBotService.Domain.csproj", "{5EC40192-351C-4C4E-ABB3-A5B747A1075D}"
 EndProject

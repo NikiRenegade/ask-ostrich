@@ -40,7 +40,16 @@ public static class TelegramMapper
                     ? InlineKeyboardButton.WithUrl(a.Label, a.Url)
                     : InlineKeyboardButton.WithCallbackData(a.Label, a.Id!))
             .ToArray();
+        
+        var rows = new List<InlineKeyboardButton[]>();
+        for (int i = 0; i < buttons.Length; i += 2)
+        {
+            if (i + 1 < buttons.Length)
+                rows.Add(new[] { buttons[i], buttons[i + 1] });
+            else
+                rows.Add(new[] { buttons[i] });
+        }
 
-        return new InlineKeyboardMarkup(buttons);
+        return new InlineKeyboardMarkup(rows);
     }
 }

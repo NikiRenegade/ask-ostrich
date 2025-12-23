@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using SecurityService.Application.Interfaces;
 using SecurityService.Domain.Interfaces.Repositories;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 [ApiController]
 [Route("api/[controller]")]
 public class TelegramAuthController : ControllerBase
@@ -43,7 +43,7 @@ public class TelegramAuthController : ControllerBase
 		return BadRequest();
 	}
 
-	[Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	[HttpPost("complete")]
 	public async Task<IActionResult> Complete([FromBody] CompleteRequest req)
 	{

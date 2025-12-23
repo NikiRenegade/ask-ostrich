@@ -1,6 +1,8 @@
 using TelegramBotService.Application.Bot;
 using TelegramBotService.Application.Interfaces;
 using Microsoft.Extensions.Logging;
+using TelegramBotService.Application.Actions;
+using TelegramBotService.Domain.Entities;
 
 namespace TelegramBotService.Application.Commands.Auth;
 
@@ -15,9 +17,7 @@ public class AuthPendingCommand : IUserCommand
 
     public bool CanHandle(UserInput input, UserSession session)
     {
-        var can = session.AuthState == AuthState.WaitingForWebAuth 
-                  && input.IsAction("check.auth");
-        return can;
+        return session.AuthState == AuthState.WaitingForWebAuth && input.IsAction("check.auth");
     }
 
     public async Task<AppResponse> HandleAsync(UserInput input, UserSession session)
@@ -30,30 +30,29 @@ public class AuthPendingCommand : IUserCommand
 
         var status = await _auth.GetStatus(session.AuthId);
 
-        if (!status.Completed)
+        if (status.Completed && !string.IsNullOrWhiteSpace(status.UserName))
         {
-            return new AppResponse
+            if (session.User == null)
             {
-                Text = "Ожидаю вход на сайте ⏳"
-            };
-        }
-
-        session.AuthState = AuthState.Authorized;
-        session.UserId = status.UserId;
-
-        if (!string.IsNullOrWhiteSpace(status.UserName))
-        {
-            return new AppResponse
-            {
+                session.User = new User(status.UserId, status.UserName, status.FirstName, status.LastName);
+            }
+            session.AuthState = AuthState.Authorized;
+            session.User.Id = status.UserId;
+            session.User.UserName = status.UserName;
+            session.User.FirstName = status.FirstName;
+            session.User.LastName = status.LastName;
+            
+                
+            return new AppResponse {
+                    
                 Text = $"Вы вошли как {status.UserName} {status.FirstName} {status.LastName}  ✅",
-                Actions =  [new AppAction { Id = "menu.startSurvey", Label = "📝 Пройти опрос" },
-                            new AppAction { Id = "menu.mySurveys", Label = "📋 Мои опросы" }]
-            };
+                Actions =  MenuActions.GetMenuActions()
+                };
         }
 
         return new AppResponse
         {
-            Text = "Вы успешно вошли ✅"
+            Text = "Ожидаю вход на сайте ⏳"
         };
     }
 }

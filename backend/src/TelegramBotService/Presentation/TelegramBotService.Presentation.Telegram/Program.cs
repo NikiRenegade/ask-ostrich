@@ -19,10 +19,10 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<IUserSessionStore, InMemoryUserSessionStore>();
         services.AddSingleton<HandleUserInputUseCase>();
         
-        var frontendBaseUrl = configuration["Frontend:BaseUrl"] ?? "http://localhost:5173";
+        var frontendBaseUrl = configuration["Frontend:BaseUrl"];
         services.AddSingleton<IAuthFrontendUrlProvider>(new AuthFrontendUrlProvider(frontendBaseUrl));
         
-        var authApiBase = configuration["AuthApi:BaseUrl"] ?? "http://localhost:8080/";
+        var authApiBase = configuration["AuthApi:BaseUrl"];
         services.AddHttpClient<IAuthApi, AuthApi>(c => c.BaseAddress = new Uri(authApiBase));
 
         // Telegram Bot
@@ -42,6 +42,7 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<IUserCommand, LoginCommand>();
         services.AddSingleton<IUserCommand, StartSurveyCommand>();
         services.AddSingleton<IUserCommand, AuthPendingCommand>();
+        services.AddSingleton<IUserCommand, ProfileCommand>();
     })
     .Build()
     .Run();

@@ -15,12 +15,10 @@ public class LoginCommand : IUserCommand
     }
 
     public bool CanHandle(UserInput input, UserSession session)
-        => input.IsAction("menu.login")
-           && session.AuthState == AuthState.None;
+        => (input.IsAction("menu.login") && session.AuthState == AuthState.None) 
+           || (session.AuthState == AuthState.WaitingForWebAuth && input.IsAction("check.auth") == false);
 
-    public async Task<AppResponse> HandleAsync(
-        UserInput input,
-        UserSession session)
+    public async Task<AppResponse> HandleAsync(UserInput input, UserSession session)
     {
         var authId = await _authApi.StartTelegramAuth(input.ChatId);
 
