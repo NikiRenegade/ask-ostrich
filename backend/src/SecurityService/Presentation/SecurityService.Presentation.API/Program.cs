@@ -11,6 +11,7 @@ using SecurityService.Infrastructure.EntityFramework.Contexts;
 using SecurityService.Infrastructure.Repositories;
 using SecurityService.Domain.Interfaces.Publishers;
 using SecurityService.Infrastructure.Messaging;
+using SecurityService.Application.Services.TelegramAuth;
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== DbContext =====
@@ -23,7 +24,7 @@ builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
-// ===== Authentication (Google + Cookies) =====
+// ===== Authentication (Google + Cookies + JWT Bearer) =====
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -35,7 +36,22 @@ builder.Services.AddAuthentication(options =>
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
+    };
 });
+
 
 // ===== Authorization =====
 builder.Services.AddAuthorization();
@@ -47,6 +63,7 @@ builder.Services.AddSwaggerGen();
 // ===== Application Services =====
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<ITelegramAuthService, InMemoryTelegramAuthService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
@@ -66,8 +83,8 @@ builder.Services.AddSingleton(async sp =>
         UserName = rabbitConfig["UserName"],
         Password = rabbitConfig["Password"]
     };
-    
-    var connection = await factory.CreateConnectionAsync(); 
+
+    var connection = await factory.CreateConnectionAsync();
     return connection;
 });
 
