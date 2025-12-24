@@ -55,17 +55,13 @@ export const AnswersByQuestions: React.FC<AnswersByQuestionsProps> = ({ survey, 
     return (
         <Box>
             {sortedQuestions.map(question => {
-                const answerGroups = answersByQuestion[question.QuestionId] || [];
-                const totalAnswers = answerGroups.reduce((sum, group) => sum + group.count, 0);
+                const answerGroups = answersByQuestion[question.QuestionId] || [];                
 
                 return (
                     <Accordion key={question.QuestionId} sx={{ mb: 2 }}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', pr: 2 }}>
                                 <Typography variant="h6">{question.Title}</Typography>
-                                <Typography variant="body2" sx={{ color: 'text.secondary', ml: 2 }}>
-                                    Ответов: {totalAnswers}
-                                </Typography>
                             </Box>
                         </AccordionSummary>
                         <AccordionDetails>
