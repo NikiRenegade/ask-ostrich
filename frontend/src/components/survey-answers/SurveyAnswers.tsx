@@ -3,7 +3,6 @@ import { Box, Tabs, Tab, CircularProgress, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { AnswersByQuestions } from './AnswersByQuestions';
 import { AnswersByUsers } from './AnswersByUsers';
-import { AnswersSummary } from './AnswersSummary';
 import { loadSurveyById, getSurveyResultsBySurveyId, type SurveyResultDto } from '../../services/surveyResultApi';
 import type { Survey } from '../../types/Survey';
 
@@ -75,7 +74,6 @@ export const SurveyAnswers: React.FC = () => {
                     }}>
                     <Tab label="По вопросам" />
                     <Tab label="По пользователям" />
-                    <Tab label="Сводка" />
                 </Tabs>
             </Box>
 
@@ -85,10 +83,6 @@ export const SurveyAnswers: React.FC = () => {
 
             {activeTab === 1 && (
                 <AnswersByUsers survey={survey} surveyResults={surveyResults} />
-            )}
-
-            {activeTab === 2 && (
-                <AnswersSummary survey={survey} surveyResults={surveyResults} />
             )}
         </Box>
     );

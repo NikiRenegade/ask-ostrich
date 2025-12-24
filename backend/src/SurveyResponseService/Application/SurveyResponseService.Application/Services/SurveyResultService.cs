@@ -1,6 +1,7 @@
 ﻿using SurveyResponseService.Application.Helpers;
 using SurveyResponseService.Application.Mappers;
 using SurveyResponseService.Domain.DTOs.SurveyResults;
+using SurveyResponseService.Domain.Entities;
 using SurveyResponseService.Domain.Interfaces.Repositories;
 using SurveyResponseService.Domain.Interfaces.Services;
 
@@ -22,13 +23,72 @@ namespace SurveyResponseService.Application.Services
         public async Task<IList<SurveyResultDto>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var results = await _repository.GetAllAsync(cancellationToken);
-            return results.Select(SurveyResultMapper.ToDto).ToList();
+            
+            if (!results.Any())
+                return new List<SurveyResultDto>();
+
+            var userIds = results.Select(r => r.UserId).Distinct();
+            var surveyIds = results.Select(r => r.SurveyId).Distinct();
+
+            var allUsers = await _userRepository.GetAllAsync(cancellationToken);
+            var surveys = new Dictionary<Guid, Survey>();
+            foreach (var surveyId in surveyIds)
+            {
+                var survey = await _surveyRepository.GetByIdAsync(surveyId, cancellationToken);
+                if (survey != null)
+                    surveys[surveyId] = survey;
+            }
+
+            var userDict = allUsers
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionary(u => u.Id);
+
+            return results
+                .Select(r =>
+                {
+                    var dto = SurveyResultMapper.ToDto(r);
+                    
+                    if (surveys.TryGetValue(r.SurveyId, out var survey))
+                    {
+                        dto.Title = survey.Title;
+                        dto.Description = survey.Description;
+                        foreach (var answer in dto.Answers)
+                            answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, r, answer.QuestionId);
+                    }
+                    
+                    if (userDict.TryGetValue(r.UserId, out var user))
+                    {
+                        dto.UserName = user.UserName;
+                        dto.Email = user.Email;
+                    }
+                    
+                    return dto;
+                })
+                .ToList();
         }
 
         public async Task<SurveyResultDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var result = await _repository.GetByIdAsync(id, cancellationToken);
-            return result != null ? SurveyResultMapper.ToDto(result) : null;
+            if (result == null)
+                return null;
+
+            var dto = SurveyResultMapper.ToDto(result);
+            var survey = await _surveyRepository.GetByIdAsync(result.SurveyId, cancellationToken);
+            var user = await _userRepository.GetByIdAsync(result.UserId, cancellationToken);
+
+            if (survey != null)
+            {
+                dto.Title = survey.Title;
+                dto.Description = survey.Description;
+                foreach (var answer in dto.Answers)
+                    answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, result, answer.QuestionId);
+            }
+
+            dto.UserName = user?.UserName ?? string.Empty;
+            dto.Email = user?.Email ?? string.Empty;
+
+            return dto;
         }
 
         public async Task<SurveyResultCreatedDto> AddAsync(CreateSurveyResultDto request, CancellationToken cancellationToken = default)
@@ -80,38 +140,49 @@ namespace SurveyResponseService.Application.Services
 
         public async Task<IList<SurveyResultDto>> GetPassedSurveysByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var userResponses = await _repository.GetByUserIdAsync(userId, cancellationToken);
-            var result = new List<SurveyResultDto>();
-
-            var surveyGroups = userResponses
+            var latestResults = (await _repository.GetByUserIdAsync(userId, cancellationToken))
                 .GroupBy(r => r.SurveyId)
                 .Select(g => g.OrderByDescending(r => r.DatePassed).First())
                 .ToList();
 
-            foreach (var surveyResult in surveyGroups)
+            if (!latestResults.Any())
             {
-                var survey = await _surveyRepository.GetByIdAsync(surveyResult.SurveyId, cancellationToken);
-                if (survey == null) continue;
-
-                var dto = SurveyResultMapper.ToDto(surveyResult);
-                dto.Title = survey.Title;
-                dto.Description = survey.Description;
-                
-                foreach (var answer in dto.Answers)
-                {
-                    answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, surveyResult, answer.QuestionId);
-                }
-
-                result.Add(dto);
+                return new List<SurveyResultDto>();
             }
 
-            return result;
+            var surveyIds = latestResults.Select(r => r.SurveyId).Distinct();
+            var surveys = new Dictionary<Guid, Survey>();
+            foreach (var surveyId in surveyIds)
+            {
+                var survey = await _surveyRepository.GetByIdAsync(surveyId, cancellationToken);
+                if (survey != null)
+                    surveys[surveyId] = survey;
+            }
+
+            var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+
+            return latestResults
+                .Where(r => surveys.ContainsKey(r.SurveyId))
+                .Select(r =>
+                {
+                    var survey = surveys[r.SurveyId];
+                    var dto = SurveyResultMapper.ToDto(r);
+                    dto.Title = survey.Title;
+                    dto.Description = survey.Description;
+                    dto.UserName = user?.UserName ?? string.Empty;
+                    dto.Email = user?.Email ?? string.Empty;
+                    
+                    foreach (var answer in dto.Answers)
+                        answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, r, answer.QuestionId);
+                    
+                    return dto;
+                })
+                .ToList();
         }
 
         public async Task<SurveyResultDto?> GetLatestBySurveyIdAndUserIdAsync(Guid surveyId, Guid userId, CancellationToken cancellationToken = default)
         {
-            var userResponses = await _repository.GetByUserIdAsync(userId, cancellationToken);
-            var surveyResult = userResponses
+            var surveyResult = (await _repository.GetByUserIdAsync(userId, cancellationToken))
                 .Where(r => r.SurveyId == surveyId)
                 .OrderByDescending(r => r.DatePassed)
                 .FirstOrDefault();
@@ -130,30 +201,52 @@ namespace SurveyResponseService.Application.Services
             var dto = SurveyResultMapper.ToDto(surveyResult);
             dto.Title = survey.Title;
             dto.Description = survey.Description;
-            
+
+            var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+            dto.UserName = user?.UserName ?? string.Empty;
+            dto.Email = user?.Email ?? string.Empty;
+
             foreach (var answer in dto.Answers)
             {
                 answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, surveyResult, answer.QuestionId);
             }
-
             return dto;
         }
 
         public async Task<IList<SurveyResultDto>> GetBySurveyIdAsync(Guid surveyId, CancellationToken cancellationToken = default)
         {
             var results = await _repository.GetBySurveyIdAsync(surveyId, cancellationToken);
+            if (!results.Any())
+                return new List<SurveyResultDto>();
+
             var survey = await _surveyRepository.GetByIdAsync(surveyId, cancellationToken);
-            
-            return results.Select(r =>
-            {
-                var dto = SurveyResultMapper.ToDto(r);
-                if (survey != null)
+            var userIds = results.Select(r => r.UserId).Distinct();
+            var allUsers = await _userRepository.GetAllAsync(cancellationToken);
+            var userDict = allUsers
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionary(u => u.Id);
+
+            return results
+                .Select(r =>
                 {
-                    dto.Title = survey.Title;
-                    dto.Description = survey.Description;
-                }
-                return dto;
-            }).ToList();
+                    var dto = SurveyResultMapper.ToDto(r);
+                    if (survey != null)
+                    {
+                        dto.Title = survey.Title;
+                        dto.Description = survey.Description;
+                        foreach (var answer in dto.Answers)
+                            answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, r, answer.QuestionId);
+                    }
+                    
+                    if (userDict.TryGetValue(r.UserId, out var user))
+                    {
+                        dto.UserName = user.UserName;
+                        dto.Email = user.Email;
+                    }
+                    
+                    return dto;
+                })
+                .ToList();
         }
     }
 }
