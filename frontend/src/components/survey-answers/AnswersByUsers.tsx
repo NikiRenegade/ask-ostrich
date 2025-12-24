@@ -97,27 +97,38 @@ export const AnswersByUsers: React.FC<AnswersByUsersProps> = ({ survey, surveyRe
 
     return (
         <Box>
-            {groupedByUser.map((userGroup) => (
-                <Accordion key={userGroup.userId} sx={{ mb: 2 }}>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        sx={{
-                            '& .MuiAccordionSummary-content': {
-                                alignItems: 'center',
-                            }
-                        }}
-                    >
-                        <Box sx={{ flex: 1 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                                {userGroup.userName}
-                            </Typography>
-                            {userGroup.email && (
-                                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-                                    {userGroup.email}
+            {groupedByUser.map((userGroup) => {
+                const latestResult = userGroup.results[0];
+                const correctAnswers = latestResult.answers.filter(a => a.isCorrect).length;
+                const totalQuestions = latestResult.answers.length;
+                
+                return (
+                    <Accordion key={userGroup.userId} sx={{ mb: 2 }}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            sx={{
+                                '& .MuiAccordionSummary-content': {
+                                    alignItems: 'center',
+                                }
+                            }}
+                        >
+                            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Box>
+                                    <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
+                                        {userGroup.userName}
+                                    </Typography>
+                                    {userGroup.email && (
+                                        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                                            {userGroup.email}
+                                        </Typography>
+                                    )}
+                                </Box>
+                                <Typography variant="body2" sx={{ color: 'text.secondary', ml: 2 }}>
+                                    {totalQuestions > 0 ? `${(correctAnswers / totalQuestions * 100).toFixed()}%` : '0%'} ({correctAnswers} из {totalQuestions})
                                 </Typography>
-                            )}
-                        </Box>
-                    </AccordionSummary>
+                                
+                            </Box>
+                        </AccordionSummary>
                     <AccordionDetails>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                             {userGroup.results.map((result, resultIndex) => (
@@ -229,7 +240,8 @@ export const AnswersByUsers: React.FC<AnswersByUsersProps> = ({ survey, surveyRe
                         </Box>
                     </AccordionDetails>
                 </Accordion>
-            ))}
+                );
+            })}
         </Box>
     );
 };
