@@ -12,7 +12,6 @@ import type { ChatMessage } from '../../models/aiAssistantModels';
 import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CloseIcon from '@mui/icons-material/Close';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LaunchIcon from "@mui/icons-material/Launch";
 import { useNavigate, useParams } from 'react-router-dom';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
@@ -218,13 +217,7 @@ export const SurveyBuilder: React.FC = () => {
 
     return (
         <Box sx={{ position: 'relative' }}>
-            <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-                <IconButton
-                    onClick={() => navigate("/")}
-                    title='Назад к списку опросов'>
-                    <ArrowBackIcon />
-                </IconButton>
-
+            <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 2 }}>
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <IconButton
                         onClick={() => setPreviewOpen(true)}
