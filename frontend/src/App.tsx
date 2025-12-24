@@ -3,19 +3,11 @@ import { AuthProvider } from './components/auth/AuthProvider'
 
 import { MainLayout } from './layouts/MainLayout'
 import { TelegramLayout } from './layouts/TelegramLayout'
-import React from 'react';
-import {SurveyDetail} from './components/survey-detail/SurveyDetail.tsx'
 import {SurveyList} from './components/survey-list/SurveyList.tsx'
 import {SurveyUserForm} from './components/survey-user-form/SurveyUserForm.tsx'
 import './index.css';
-import Header from './components/Header.tsx';
-import {AuthProvider} from './components/auth/AuthProvider.tsx';
-import Footer from './components/Footer.tsx';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { SurveyList } from './components/survey-list/SurveyList'
 import { SurveyBuilder } from './components/survey-builder/SurveyBuilder'
-import { SurveyUserForm } from './components/survey-user-form/SurveyUserForm'
 
 import { TelegramAuth } from './components/auth/TelegramAuth'
 import TelegramLogin from './components/login/TelegramLogin'
