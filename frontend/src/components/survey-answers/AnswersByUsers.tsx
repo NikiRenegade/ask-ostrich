@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { Box, Accordion, AccordionSummary, AccordionDetails, Typography, Paper, Chip } from '@mui/material';
+import { Box, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { type SurveyResultDto } from '../../services/surveyResultApi';
 import type { Survey } from '../../types/Survey';
+import { SurveyAnswerItem } from '../survey-answer-item/SurveyAnswerItem';
 
 interface AnswersByUsersProps {
     survey: Survey;
@@ -44,35 +45,6 @@ export const AnswersByUsers: React.FC<AnswersByUsersProps> = ({ survey, surveyRe
         );
     }, [surveyResults]);
 
-    const getUserAnswerText = (questionId: string, result: SurveyResultDto): string => {
-        const userAnswer = result.answers.find(a => a.questionId === questionId);
-        if (!userAnswer || !userAnswer.values || userAnswer.values.length === 0) {
-            return 'Нет ответа';
-        }
-
-        const question = survey.Questions.find(q => q.QuestionId === questionId);
-        if (!question) return userAnswer.values.join(', ');
-
-        const answerTexts = userAnswer.values.map(value => {
-            const option = question.Options.find(opt => opt.Value === value);
-            return option ? option.Title : value;
-        });
-
-        return answerTexts.join(', ');
-    };
-
-    const getCorrectAnswerText = (questionId: string): string => {
-        const question = survey.Questions.find(q => q.QuestionId === questionId);
-        if (!question) return '';
-
-        const hasCorrectOptions = question.Options.some(opt => opt.IsCorrect);
-        if (!hasCorrectOptions) {
-            return '';
-        }
-
-        const correctOptions = question.Options.filter(opt => opt.IsCorrect);
-        return correctOptions.map(opt => opt.Title).join(', ');
-    };
 
     const formatDate = (dateString: string): string => {
         const date = new Date(dateString);
@@ -147,94 +119,16 @@ export const AnswersByUsers: React.FC<AnswersByUsersProps> = ({ survey, surveyRe
                                         Дата прохождения: {formatDate(result.datePassed)}
                                     </Typography>
                                     
-                                    {[...survey.Questions].sort((a, b) => a.Order - b.Order).map((question) => {
-                                        const hasCorrectOptions = question.Options.some(opt => opt.IsCorrect);
-                                        const userAnswer = result.answers.find(a => a.questionId === question.QuestionId);
-                                        const isCorrect = hasCorrectOptions && userAnswer ? userAnswer.isCorrect : null;
-                                        const userAnswerText = getUserAnswerText(question.QuestionId, result);
-                                        const correctAnswerText = hasCorrectOptions ? getCorrectAnswerText(question.QuestionId) : '';
-
-                                        const borderColor = hasCorrectOptions 
-                                            ? (isCorrect ? '#4caf50' : '#ff9800')
-                                            : '#2196f3'; 
-                                        const backgroundColor = hasCorrectOptions
-                                            ? (isCorrect ? 'rgba(76, 175, 80, 0.05)' : 'rgba(255, 152, 0, 0.05)')
-                                            : 'rgba(33, 150, 243, 0.05)';
-                                        const answerBackgroundColor = hasCorrectOptions
-                                            ? (isCorrect ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 152, 0, 0.1)')
-                                            : 'rgba(33, 150, 243, 0.1)'; 
-                                        const answerTextColor = hasCorrectOptions
-                                            ? (isCorrect ? '#2e7d32' : '#e65100')
-                                            : '#1565c0';
-
-                                        return (
-                                            <Paper
-                                                key={question.QuestionId}
-                                                elevation={1}
-                                                sx={{
-                                                    p: 2,
-                                                    mb: 2,
-                                                    borderLeft: `4px solid ${borderColor}`,
-                                                    backgroundColor: backgroundColor,
-                                                }}
-                                            >
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                                                    <Typography variant="h6" component="h3" sx={{ fontWeight: 'medium', flex: 1 }}>
-                                                        {question.Title || `Вопрос ${question.Order}`}
-                                                    </Typography>
-                                                    {hasCorrectOptions && (
-                                                        <Chip
-                                                            label={isCorrect ? 'Правильно' : 'Неправильно'}
-                                                            color={isCorrect ? 'success' : 'warning'}
-                                                            size="small"
-                                                        />
-                                                    )}
-                                                </Box>
-                                                {question.InnerText && (
-                                                    <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
-                                                        {question.InnerText}
-                                                    </Typography>
-                                                )}
-
-                                                <Box sx={{ mt: 2 }}>
-                                                    <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>
-                                                        Ответ:
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="body1"
-                                                        sx={{
-                                                            mb: 2,
-                                                            p: 1,
-                                                            backgroundColor: answerBackgroundColor,
-                                                            borderRadius: 1,
-                                                            color: answerTextColor,
-                                                        }}
-                                                    >
-                                                        {userAnswerText}
-                                                    </Typography>
-
-                                                    {hasCorrectOptions && !isCorrect && correctAnswerText && (
-                                                        <>
-                                                            <Typography variant="body2" sx={{ mb: 1, fontWeight: 'medium' }}>
-                                                                Правильный ответ:
-                                                            </Typography>
-                                                            <Typography
-                                                                variant="body1"
-                                                                sx={{
-                                                                    p: 1,
-                                                                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                                                                    borderRadius: 1,
-                                                                    color: '#2e7d32',
-                                                                }}
-                                                            >
-                                                                {correctAnswerText}
-                                                            </Typography>
-                                                        </>
-                                                    )}
-                                                </Box>
-                                            </Paper>
-                                        );
-                                    })}
+                                    {[...survey.Questions].sort((a, b) => a.Order - b.Order).map((question) => (
+                                        <SurveyAnswerItem
+                                            key={question.QuestionId}
+                                            question={question}
+                                            result={result}
+                                            answerLabel="Ответ:"
+                                            elevation={1}
+                                            padding={2}
+                                        />
+                                    ))}
                                 </Box>
                             ))}
                         </Box>
