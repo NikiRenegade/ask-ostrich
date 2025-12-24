@@ -81,9 +81,13 @@ function mapSurveyToPublishRequest(survey: SurveyShort): PublishSurveyRequest {
     };
 }
 
-export interface PassedSurveyResponse {
+
+export interface SurveyResultDto {
+    id: string;
     surveyId: string;
     userId: string;
+    userName: string;
+    email: string;
     datePassed: string;
     title: string;
     description: string;

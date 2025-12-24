@@ -75,7 +75,6 @@ export const SurveyAnswers: React.FC = () => {
                     }}>
                     <Tab label="По вопросам" />
                     <Tab label="По пользователям" />
-                    <Tab label="Сводка" />
                 </Tabs>
             </Box>
 
@@ -85,10 +84,6 @@ export const SurveyAnswers: React.FC = () => {
 
             {activeTab === 1 && (
                 <AnswersByUsers survey={survey} surveyResults={surveyResults} />
-            )}
-
-            {activeTab === 2 && (
-                <AnswersSummary survey={survey} surveyResults={surveyResults} />
             )}
         </Box>
     );

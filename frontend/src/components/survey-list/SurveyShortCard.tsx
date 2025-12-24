@@ -4,7 +4,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LaunchIcon from "@mui/icons-material/Launch";
 import type { SurveyShort } from "../../types/SurveyShort";
-import { publishSurvey } from '../../services/surveyUserFormApi';
+import { publishSurvey } from '../../services/surveyResultApi';
 
 interface Props {
     survey: SurveyShort;

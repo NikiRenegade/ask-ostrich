@@ -7,7 +7,7 @@ import {SurveyList} from './components/survey-list/SurveyList.tsx'
 import {SurveyUserForm} from './components/survey-user-form/SurveyUserForm.tsx'
 import './index.css';
 
-import { SurveyBuilder } from './components/survey-builder/SurveyBuilder'
+import { SurveyDetail } from './components/survey-detail/SurveyDetail.tsx'
 
 import { TelegramAuth } from './components/auth/TelegramAuth'
 import TelegramLogin from './components/login/TelegramLogin'
@@ -20,8 +20,8 @@ const App = () => (
 				{/* ===== Основное приложение ===== */}
 				<Route element={<MainLayout />}>
 					<Route path="/" element={<SurveyList />} />
-					<Route path="/create" element={<SurveyBuilder />} />
-					<Route path="/edit/:id" element={<SurveyBuilder />} />
+					<Route path="/create" element={<SurveyDetail />} />
+					<Route path="/edit/:id" element={<SurveyDetail />} />
 					<Route path="/survey-form/:id" element={<SurveyUserForm />} />
 				</Route>
 
