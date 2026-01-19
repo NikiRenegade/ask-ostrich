@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Box, Typography, Paper } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LabelList, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList, Cell } from 'recharts';
 import { type SurveyResultDto } from '../../services/surveyResultApi';
 import type { Survey } from '../../types/Survey';
 
@@ -137,7 +137,6 @@ export const AnswersSummary: React.FC<AnswersSummaryProps> = ({ survey, surveyRe
                             allowDecimals={false}
                             ticks={Array.from({ length: overallStats.maxCount + 1 }, (_, i) => i)}
                         />
-                        <Tooltip />
                         <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                             {overallStats.data.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -182,7 +181,6 @@ export const AnswersSummary: React.FC<AnswersSummaryProps> = ({ survey, surveyRe
                                         width={100}
                                         tick={{ fontSize: 12 }}
                                     />
-                                    <Tooltip />
                                     <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                                         {chartData.data.map((entry, idx) => (
                                             <Cell key={`cell-${idx}`} fill={entry.fill} />
