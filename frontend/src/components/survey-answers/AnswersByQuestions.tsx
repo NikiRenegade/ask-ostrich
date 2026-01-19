@@ -8,7 +8,6 @@ interface AnswerEntry {
     answerText: string;
     userName: string;
     date: string;
-    datePassed: string;
 }
 
 interface AnswersByQuestionsProps {
@@ -43,13 +42,12 @@ export const AnswersByQuestions: React.FC<AnswersByQuestionsProps> = ({ survey, 
                         answerText,
                         userName: result.userName || 'Неизвестный пользователь',
                         date: result.datePassed,
-                        datePassed: result.datePassed
                     });
                 }
             });
 
             entries.sort((a, b) => 
-                new Date(a.datePassed).getTime() - new Date(b.datePassed).getTime()
+                new Date(a.date).getTime() - new Date(b.date).getTime()
             );
 
             grouped[question.QuestionId] = entries;
