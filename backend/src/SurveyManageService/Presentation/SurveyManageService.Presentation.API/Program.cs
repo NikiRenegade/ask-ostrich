@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 using RabbitMQ.Client;
 using SurveyManageService.Application.Services;
 using SurveyManageService.Domain.Interfaces.Consumers;
@@ -9,6 +9,7 @@ using SurveyManageService.Domain.Interfaces.Services;
 using SurveyManageService.Infrastructure.EntityFramework.Context;
 using SurveyManageService.Infrastructure.Messaging;
 using SurveyManageService.Infrastructure.Repositories.Repositories;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,6 +85,9 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseHttpMetrics();
+
 app.MapControllers();
+app.MapMetrics();
 
 app.Run();

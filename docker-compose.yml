@@ -200,3 +200,39 @@ services:
     depends_on:
       ao_gateway_service:
         condition: service_started
+
+  # ========== monitoring ==========
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ao_prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../docker_data/ask-ostrich/prometheus_data:/prometheus
+    depends_on:
+      - ao_security_service
+      - ao_survey_manage_service
+      - ao_survey_response_service
+      - ao_ai_assistant_service
+      - ao_gateway_service
+    
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ao_grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin  
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../docker_data/ask-ostrich/grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus

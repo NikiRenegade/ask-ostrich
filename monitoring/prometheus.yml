@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s  
+
+scrape_configs:
+  - job_name: 'aspnet-microservices'
+    static_configs:
+      - targets:  
+        - 'ao_security_service:8080'
+        - 'ao_survey_manage_service:8080'
+        - 'ao_survey_response_service:8080'
+        - 'ao_ai_assistant_service:8080'
+        - 'ao_gateway_service:8080'
