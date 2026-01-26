@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\Domain\SurveyManageService.Domain.Interfaces\SurveyManageService.Domain.Interfaces.csproj" />
     <ProjectReference Include="..\..\Infrastructure\SurveyManageService.Infrastructure.Repositories\SurveyManageService.Infrastructure.Repositories.csproj" />
     <ProjectReference Include="..\..\Infrastructure\SurveyManageService.Infrastructure\SurveyManageService.Infrastructure.csproj" />
+	<PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
   </ItemGroup>
 
   <ItemGroup>

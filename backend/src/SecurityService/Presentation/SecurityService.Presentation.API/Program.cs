@@ -2,16 +2,17 @@
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 using RabbitMQ.Client;
 using SecurityService.Application.Interfaces;
 using SecurityService.Application.Services;
+using SecurityService.Application.Services.TelegramAuth;
 using SecurityService.Domain.Entities;
+using SecurityService.Domain.Interfaces.Publishers;
 using SecurityService.Domain.Interfaces.Repositories;
 using SecurityService.Infrastructure.EntityFramework.Contexts;
-using SecurityService.Infrastructure.Repositories;
-using SecurityService.Domain.Interfaces.Publishers;
 using SecurityService.Infrastructure.Messaging;
-using SecurityService.Application.Services.TelegramAuth;
+using SecurityService.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== DbContext =====
@@ -110,7 +111,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseHttpMetrics();
 
 app.MapControllers();
+app.MapMetrics();
 
 app.Run();

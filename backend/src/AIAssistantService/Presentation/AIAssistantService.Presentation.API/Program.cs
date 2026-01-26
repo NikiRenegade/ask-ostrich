@@ -2,6 +2,7 @@ using AIAssistantService.Application.Services;
 using AIAssistantService.Domain.Interfaces.Services;
 using AIAssistantService.Infrastructure.Services;
 using AIAssistantService.Presentation.API.SignalR;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,10 +41,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseHttpMetrics();
 
 app.MapControllers();
 
 app.UseCors("CorsPolicy");
 app.MapHub<LLMHub>("api/AIAssistant/stream");
+
+app.MapMetrics();
 
 app.Run();
