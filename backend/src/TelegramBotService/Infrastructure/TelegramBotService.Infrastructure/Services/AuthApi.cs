@@ -26,15 +26,4 @@ public class AuthApi : IAuthApi
     {
         return await _http.GetFromJsonAsync<AuthStatusDto>($"/security/api/TelegramAuth/status?authId={authId}");
     }
-
-    public async Task<IEnumerable<PendingAuthDto>> GetPendingAsync()
-    {
-        var list = await _http.GetFromJsonAsync<IEnumerable<PendingAuthDto>>("/security/api/TelegramAuth/pending");
-        return list ?? Enumerable.Empty<PendingAuthDto>();
-    }
-
-    public async Task ClearAsync(string authId)
-    {
-        await _http.PostAsJsonAsync("/security/api/TelegramAuth/clear", new { authId });
-    }
 }

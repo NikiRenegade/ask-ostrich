@@ -1,5 +1,5 @@
 
-using TelegramBotService.Application.Bot;
+using TelegramBotService.Domain.Sessions;
 using TelegramBotService.Application.Actions;
 using TelegramBotService.Application.Interfaces;
 

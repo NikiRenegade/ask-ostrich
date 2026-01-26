@@ -1,4 +1,4 @@
-namespace TelegramBotService.Application.Bot;
+namespace TelegramBotService.Domain.Sessions;
 
 public enum AuthState
 {
