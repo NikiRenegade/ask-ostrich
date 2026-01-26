@@ -188,18 +188,18 @@ services:
       - "80:80"
 
   # ========== telegram bot ==========
-  # ao_telegram_bot:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: src/TelegramBotService/Presentation/TelegramBotService.Presentation.Telegram/Dockerfile
-  #   container_name: ao_telegram_bot
-  #   environment:
-  #     BOT_TOKEN: "${BOT_TOKEN}"
-  #     Frontend__BaseUrl: "http://127.0.0.1"
-  #     AuthApi__BaseUrl: "http://ao_gateway_service:8080"
-  #   depends_on:
-  #     ao_gateway_service:
-  #       condition: service_started
+  ao_telegram_bot:
+    build:
+      context: ./backend
+      dockerfile: src/TelegramBotService/Presentation/TelegramBotService.Presentation.Telegram/Dockerfile
+    container_name: ao_telegram_bot
+    environment:
+      BOT_TOKEN: "${BOT_TOKEN}"
+      Frontend__BaseUrl: "http://127.0.0.1"
+      AuthApi__BaseUrl: "http://ao_gateway_service:8080"
+    depends_on:
+      ao_gateway_service:
+        condition: service_started
 
   # ========== monitoring ==========
   prometheus:
