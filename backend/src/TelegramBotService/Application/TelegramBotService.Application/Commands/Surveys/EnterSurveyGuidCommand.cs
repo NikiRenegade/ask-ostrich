@@ -14,27 +14,25 @@ public class EnterSurveyGuidCommand : IUserCommand
         _surveyApi = surveyApi;
     }
     public bool CanHandle(UserInput input, UserSession session)
-        => session.SurveyState == SurveyState.WaitingForSurveyGuid
-           && Guid.TryParse(input.Text, out _);
+        => session.SurveyState == SurveyState.WaitingForSurveyGuid;
 
     public async Task<AppResponse> HandleAsync(UserInput input, UserSession session)
     {
-        var surveyId = Guid.Parse(input.Text);
-        var passedSurvey = await _surveyApi.GetPassedSurvey(surveyId, session.User.Id);
-        if ((passedSurvey) != null)
-        {
-            return new SurveyResultPresenter().ShowPassedSurvey(passedSurvey);
-        }
-        var survey = _surveyApi.GetSurvey(surveyId);
-
+        var survey = _surveyApi.GetSurveyByShortCode(input.Text);
         if ( (await survey) == null)
         {
             return await Task.FromResult(new AppResponse
             {
-                Text = "Введите GUID опроса:"
+                Text = "Введите короткий код опроса:"
             });
         }
-        session.CurrentSurvey = await survey;
+        var passedSurvey = await _surveyApi.GetPassedSurvey(survey.Result.Id, session.User.Id);
+        if ((passedSurvey) != null)
+        {
+            return new SurveyResultPresenter().ShowPassedSurvey(passedSurvey);
+        }
+
+        session.CurrentSurvey = survey.Result;
         session.CurrentQuestionIndex = 0;
         session.SurveyState = SurveyState.InProgress;
         session.Answers.Clear();

@@ -66,7 +66,7 @@ public class SurveyController : ControllerBase
         }
     }
     [HttpGet("short/{shortCode}")]
-    public async Task<ActionResult<SurveyShortDto>> GetExistingByUserId(string shortCode, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<SurveyDto>> GetExistingByShortCode(string shortCode, CancellationToken cancellationToken = default)
     {
         try
         {

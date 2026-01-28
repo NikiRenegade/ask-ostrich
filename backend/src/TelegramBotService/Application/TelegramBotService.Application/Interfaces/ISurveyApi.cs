@@ -5,6 +5,7 @@ namespace TelegramBotService.Application.Interfaces;
 public interface ISurveyApi
 {
     Task<SurveyDto?> GetSurvey(Guid surveyId);
+    Task<SurveyDto?> GetSurveyByShortCode(string shortCode);
     Task<List<PassedSurveyListItemDto>> GetPassedSurveys(Guid userId);
     Task SavePassedSurvey(SurveyPassDto surveyPassDto);
     Task<PassedSurveyDto?> GetPassedSurvey(Guid surveyId, Guid userId);

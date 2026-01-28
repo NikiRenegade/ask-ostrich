@@ -14,7 +14,7 @@ public class StartSurveyCommand : IUserCommand
 
         return await Task.FromResult(new AppResponse
         {
-            Text = "Введите GUID опроса:"
+            Text = "Введите короткий код опроса:"
         });
     }
 }

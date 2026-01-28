@@ -127,10 +127,17 @@ public class SurveyRepository: ISurveyRepository
         if (shortUrl == null)
             return null;
 
-        return await _dbContext.Surveys
+        var survey = await _dbContext.Surveys
             .AsNoTracking()
             .SingleOrDefaultAsync(x => 
                 x.ShortUrlId == shortUrl.Id, 
                 cancellationToken);
+
+        if (survey == null) return null;
+
+        var author = await _dbContext.Users.AsTracking().SingleOrDefaultAsync(u => u.Id == survey.Id);
+        survey.Author = author;
+
+        return survey;
     }
 }

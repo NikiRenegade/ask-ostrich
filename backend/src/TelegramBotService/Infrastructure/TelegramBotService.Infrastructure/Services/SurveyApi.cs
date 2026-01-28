@@ -22,6 +22,16 @@ public class SurveyApi : ISurveyApi
 
         return await response.Content.ReadFromJsonAsync<SurveyDto>();
     }
+
+    public async Task<SurveyDto?> GetSurveyByShortCode(string shortCode)
+    {
+        var response = await _http.GetAsync($"/survey-manage/api/Survey/short/{shortCode}");
+
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            return null;
+
+        return await response.Content.ReadFromJsonAsync<SurveyDto>();
+    }
     
     public async Task<List<PassedSurveyListItemDto>> GetPassedSurveys(Guid userId)
     {
