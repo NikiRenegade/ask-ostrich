@@ -22,8 +22,9 @@ Host.CreateDefaultBuilder(args)
         var frontendBaseUrl = configuration["Frontend:BaseUrl"];
         services.AddSingleton<IAuthFrontendUrlProvider>(new AuthFrontendUrlProvider(frontendBaseUrl));
         
-        var authApiBase = configuration["AuthApi:BaseUrl"];
-        services.AddHttpClient<IAuthApi, AuthApi>(c => c.BaseAddress = new Uri(authApiBase));
+        var apiBase = configuration["Api:BaseUrl"];
+        services.AddHttpClient<IAuthApi, AuthApi>(c => c.BaseAddress = new Uri(apiBase));
+        services.AddHttpClient<ISurveyApi, SurveyApi>(c => c.BaseAddress = new Uri(apiBase));
 
         // Telegram Bot
 
@@ -43,6 +44,11 @@ Host.CreateDefaultBuilder(args)
         services.AddSingleton<IUserCommand, StartSurveyCommand>();
         services.AddSingleton<IUserCommand, AuthPendingCommand>();
         services.AddSingleton<IUserCommand, ProfileCommand>();
+        services.AddSingleton<IUserCommand, EnterSurveyGuidCommand>();
+        services.AddSingleton<IUserCommand, SurveyAnswerCommand>();
+        services.AddSingleton<IUserCommand, CompletedSurveysCommand>();
+        services.AddSingleton<IUserCommand, ViewPassedSurveyCommand>();
+        services.AddSingleton<IUserCommand, MySurveysCommand>();
     })
     .Build()
     .Run();

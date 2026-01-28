@@ -1,4 +1,4 @@
-using TelegramBotService.Application.Bot;
+using TelegramBotService.Domain.Sessions;
 
 namespace TelegramBotService.Application.Interfaces;
 

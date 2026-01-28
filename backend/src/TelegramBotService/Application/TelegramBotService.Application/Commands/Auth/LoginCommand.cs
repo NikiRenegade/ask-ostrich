@@ -1,4 +1,4 @@
-using TelegramBotService.Application.Bot;
+using TelegramBotService.Domain.Sessions;
 using TelegramBotService.Application.Interfaces;
 
 namespace TelegramBotService.Application.Commands.Auth;
