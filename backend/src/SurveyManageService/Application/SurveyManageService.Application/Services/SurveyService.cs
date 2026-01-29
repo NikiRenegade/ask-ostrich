@@ -95,10 +95,10 @@ namespace SurveyManageService.Application.Services
             return surveys.Select(SurveyMapper.ToShortDto).ToList();
         }
 
-        public async Task<SurveyShortDto> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)
+        public async Task<SurveyDto> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)
         {
             var survey = await _repository.GetByShortUrlCodeAsync(shortCode, cancellationToken);
-            return SurveyMapper.ToShortDto(survey);
+            return SurveyMapper.ToDto(survey);
         }
     }
 }
