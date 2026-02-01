@@ -353,8 +353,9 @@ export const SurveyBuilder: React.FC = () => {
                             </Tabs>
                         </Box>
 
-                        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                        <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                         {tabValue === TabValues.AIAssistant && (
+                        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
                         <AIAssistant                             
                             messages={aiMessages}                            
                             currentSurveyJson={JSON.stringify(survey, null, 2)}
@@ -364,12 +365,17 @@ export const SurveyBuilder: React.FC = () => {
                             onSurveyGenerated={handleSurveyGenerated}
                             disabled={!user || isLoading} 
                         />
+                        </Box>
                     )}
                     {tabValue === TabValues.YamlEditor && (
-                        <CodeEditor codeText={yamlText} onCodeChange={handleYamlChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType = "Yaml"/>
+                        <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <CodeEditor codeText={yamlText} onCodeChange={handleYamlChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType="Yaml"/>
+                        </Box>
                     )}
                     {tabValue === TabValues.JsonEditor && (
-                        <CodeEditor codeText={jsonText} onCodeChange={handleJsonChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType = "Json"/>
+                        <Box sx={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                            <CodeEditor codeText={jsonText} onCodeChange={handleJsonChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType="Json"/>
+                        </Box>
                     )}
                         </Box>
                     </Paper>

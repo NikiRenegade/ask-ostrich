@@ -11,11 +11,11 @@ interface CodeEditorProps {
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({ codeText, onCodeChange: onCodeChange, disabled = false, onUserEditingChange, codeType }) => {
     return (
-        <Box>
-            <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <Typography variant="h6" sx={{ mb: 1, color: 'text.secondary', flexShrink: 0 }}>
                 {codeType} структура
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+            <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary', flexShrink: 0 }}>
                 Изменяй {codeType} — изменения появятся в опросе (если {codeType} валидный)
             </Typography>
             <TextField
@@ -30,10 +30,22 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ codeText, onCodeChange: 
                 onBlur={() => onUserEditingChange?.(false)}
                 disabled={disabled}
                 sx={{
+                    flex: 1,
+                    minHeight: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    '& .MuiInputBase-root': {
+                        flex: 1,
+                        minHeight: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    },
                     '& .MuiInputBase-input': {
+                        flex: 1,
+                        minHeight: 0,
                         fontFamily: 'monospace',
-                        fontSize: '0.875rem',
-                    }
+                        fontSize: '0.875rem'
+                    },
                 }}
             />
         </Box>
