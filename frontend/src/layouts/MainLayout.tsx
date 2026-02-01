@@ -5,7 +5,7 @@ import Footer from '../components/Footer'
 export const MainLayout = () => (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Header />
-        <main style={{ flex: 1, backgroundColor: '#f3f4f6', padding: 24 }}>
+        <main style={{ flex: 1, backgroundColor: '#f3f4f6', padding: 12 }}>
             <Outlet />
         </main>
         <Footer />

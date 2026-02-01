@@ -21,18 +21,18 @@ export const SurveyResultsView: React.FC<Props> = ({ survey, surveyResult }) => 
 
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, gap: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2, gap: 2 }}>
             <Box sx={{ maxWidth: 900, width: '100%' }}>
                 <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
                     {survey.Title || 'Без названия'}
                 </Typography>
                 {survey.Description && (
-                    <Typography variant="body1" sx={{ mb: 4, textAlign: 'center', color: 'text.secondary' }}>
+                    <Typography variant="body1" sx={{ mb: 2, textAlign: 'center', color: 'text.secondary' }}>
                         {survey.Description}
                     </Typography>
                 )}
 
-                <Box sx={{ mb: 4, textAlign: 'center' }}>
+                <Box sx={{ mb: 2, textAlign: 'center' }}>
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 'bold' }}>
                         Результат: {score.percentage.toFixed(0)}%
                     </Typography>
@@ -50,7 +50,7 @@ export const SurveyResultsView: React.FC<Props> = ({ survey, surveyResult }) => 
                     answerLabel="Ваш ответ:"
                     elevation={2}
                     maxWidth={800}
-                    padding={3}
+                    padding={2}
                 />
             ))}
         </Box>
