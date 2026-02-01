@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import BuildIcon from '@mui/icons-material/Build';
-import { askLLM, llamaHub, getDialogHistory } from '../../services/aiAssistantApi';
+import { askLLM, llamaHub, getDialogHistory, clearDialogHistory } from '../../services/aiAssistantApi';
 import { AssistentMode, type ChatMessage, type GeneratedSurvey } from '../../models/aiAssistantModels';
 import type { Survey } from '../../types/Survey';
 import { v4 as uuidv4 } from 'uuid';
@@ -85,6 +85,13 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
         } finally {
             onSurveyGenerated(null);            
         }
+    };
+
+    const handleClearDialog = async () => {
+        if (surveyId) {
+            await clearDialogHistory(surveyId);
+        }
+        onMessagesChange([]);
     };
 
     useEffect(() => {
@@ -340,7 +347,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                         variant="outlined"
                         color="secondary"
                         startIcon={<span>🧹</span>}
-                        onClick={() => onMessagesChange([])}
+                        onClick={handleClearDialog}
                         disabled={messages.length === 0 || disabled}>
                         Очистить диалог
                     </Button>

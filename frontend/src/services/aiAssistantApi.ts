@@ -50,6 +50,10 @@ export async function getDialogHistory(surveyId: string): Promise<DialogMessage[
     }
 }
 
+export async function clearDialogHistory(surveyId: string): Promise<void> {
+    await api.delete(`/ai-assistant/api/AIAssistant/history/${surveyId}`);
+}
+
 export async function saveDialogHistory(surveyId: string, messages: { content: string; isUserMessage: boolean; timestamp?: string; isPending?: boolean }[]): Promise<void> {
     const payload = messages
         .filter(m => !m.isPending)
