@@ -8,10 +8,12 @@ namespace AIAssistantService.Presentation.API.SignalR;
 public class LLMHub: Hub
 {
     private readonly ILLMClientService _llmClientService;
+    private readonly IDialogHistoryService _dialogHistoryService;
 
-    public LLMHub(ILLMClientService llmClientService)
+    public LLMHub(ILLMClientService llmClientService, IDialogHistoryService dialogHistoryService)
     {
         _llmClientService = llmClientService;
+        _dialogHistoryService = dialogHistoryService;
     }
 
     public async Task GenerateSurvey(GenerateSurveyRequestDto request)
@@ -21,6 +23,17 @@ public class LLMHub: Hub
             if (request is null || string.IsNullOrWhiteSpace(request.Prompt))
             {
                 throw new InvalidOperationException("Prompt is required");
+            }
+            
+            if (!string.IsNullOrEmpty(request.SurveyId))
+            {
+                var userMessage = new DialogMessageDto
+                {
+                    Content = request.Prompt,
+                    IsUserMessage = true,
+                    Timestamp = DateTime.UtcNow
+                };
+                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, userMessage);
             }
             
             var result = _llmClientService.GenerateSurveyAsync(request.Prompt, request.CurrentSurveyJson);
@@ -39,7 +52,20 @@ public class LLMHub: Hub
 
             
             await Clients.Caller.SendAsync("Progress", 100);
-            await Clients.Caller.SendAsync("Completed", result.Result);
+            var surveyResult = result.Result;
+                        
+            if (!string.IsNullOrEmpty(request.SurveyId))
+            {
+                var aiMessage = new DialogMessageDto
+                {
+                    Content = "Опрос успешно обновлен",
+                    IsUserMessage = false,
+                    Timestamp = DateTime.UtcNow
+                };
+                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, aiMessage);
+            }
+            
+            await Clients.Caller.SendAsync("Completed", surveyResult);
         }
         catch (Exception e)
         {
@@ -55,6 +81,18 @@ public class LLMHub: Hub
             if (request is null || string.IsNullOrWhiteSpace(request.Prompt))
             {
                 throw new InvalidOperationException("Prompt is required");
+            }
+            
+            // Save user message to history if SurveyId is provided
+            if (!string.IsNullOrEmpty(request.SurveyId))
+            {
+                var userMessage = new DialogMessageDto
+                {
+                    Content = request.Prompt,
+                    IsUserMessage = true,
+                    Timestamp = DateTime.UtcNow
+                };
+                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, userMessage);
             }
             
             var result = _llmClientService.AskLLMAsync(request.Prompt, request.CurrentSurveyJson);
@@ -73,7 +111,21 @@ public class LLMHub: Hub
 
             
             await Clients.Caller.SendAsync("Progress", 100);
-            await Clients.Caller.SendAsync("Completed", result.Result);
+            var response = result.Result;
+            
+            // Save AI response to history if SurveyId is provided
+            if (!string.IsNullOrEmpty(request.SurveyId))
+            {
+                var aiMessage = new DialogMessageDto
+                {
+                    Content = response,
+                    IsUserMessage = false,
+                    Timestamp = DateTime.UtcNow
+                };
+                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, aiMessage);
+            }
+            
+            await Clients.Caller.SendAsync("Completed", response);
         }
         catch (Exception e)
         {
@@ -85,9 +137,21 @@ public class LLMHub: Hub
     public async Task AskLLMStream(GenerateSurveyRequestDto request)
     {
         var cts = new CancellationTokenSource();
+        var fullResponse = new System.Text.StringBuilder();
 
         try
         {
+            // Save user message to history if SurveyId is provided
+            if (!string.IsNullOrEmpty(request.SurveyId))
+            {
+                var userMessage = new DialogMessageDto
+                {
+                    Content = request.Prompt,
+                    IsUserMessage = true,
+                    Timestamp = DateTime.UtcNow
+                };
+                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, userMessage);
+            }
             
             var progressTask = Task.Run(async () =>
             {
@@ -112,6 +176,7 @@ public class LLMHub: Hub
                                request.Prompt,
                                request.CurrentSurveyJson))
             {
+                fullResponse.Append(chunk);
                 await Clients.Caller.SendAsync("Next", chunk);
                 await Task.Delay(100); // псевдо задержка для посимвольного вывода
 
@@ -120,6 +185,18 @@ public class LLMHub: Hub
             cts.Cancel();
             await Clients.Caller.SendAsync("Progress", 100);
             await Clients.Caller.SendAsync("Completed");
+            
+            // Save AI response to history if SurveyId is provided
+            if (!string.IsNullOrEmpty(request.SurveyId))
+            {
+                var aiMessage = new DialogMessageDto
+                {
+                    Content = fullResponse.ToString(),
+                    IsUserMessage = false,
+                    Timestamp = DateTime.UtcNow
+                };
+                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, aiMessage);
+            }
         }
         catch (Exception e)
         {

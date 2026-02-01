@@ -318,6 +318,7 @@ export const SurveyBuilder: React.FC = () => {
                         <AIAssistant                             
                             messages={aiMessages}                            
                             currentSurveyJson={JSON.stringify(survey, null, 2)}
+                            surveyId={isEditMode ? survey.SurveyId : undefined}
                             onMessagesChange={setAiMessages}
                             onSurveyGenerationStarted={handleSurveyGenerationStarted}
                             onSurveyGenerated={handleSurveyGenerated}

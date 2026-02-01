@@ -2,6 +2,7 @@ export interface GenerateSurveyRequest {
     prompt: string;
     currentSurveyJson: string;
     type: 0 | 1;
+    surveyId?: string;
 }
 
 export interface GeneratedSurvey {
@@ -31,6 +32,7 @@ export interface ChatMessage {
     content: string;
     isPending?: boolean;
     isHtml?: boolean;
+    timestamp?: string;
 }
 
 export const AssistentMode = {

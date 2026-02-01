@@ -2,21 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import BuildIcon from '@mui/icons-material/Build';
-import { askLLM, llamaHub } from '../../services/aiAssistantApi';
+import { askLLM, llamaHub, getDialogHistory } from '../../services/aiAssistantApi';
 import { AssistentMode, type ChatMessage, type GeneratedSurvey } from '../../models/aiAssistantModels';
 import type { Survey } from '../../types/Survey';
 import { v4 as uuidv4 } from 'uuid';
 
 interface AIAssistantProps {    
     messages: ChatMessage[];   
-    currentSurveyJson?: string;    
+    currentSurveyJson?: string;
+    surveyId?: string;
     onMessagesChange: (messages: ChatMessage[]) => void;
     onSurveyGenerationStarted: () => void;
     onSurveyGenerated: (survey: Survey | null) => void;
     disabled?: boolean;
 }
 
-export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurveyJson = '{}', onMessagesChange, onSurveyGenerationStarted, onSurveyGenerated, disabled }) => {
+export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurveyJson = '{}', surveyId, onMessagesChange, onSurveyGenerationStarted, onSurveyGenerated, disabled }) => {
     const [prompt, setPrompt] = useState<string>('');
     const [assistentMode, setAssistentMode] = useState<AssistentMode>(AssistentMode.Construct);
     const [progressPercent, setProgressPercent] = useState<number>(0);
@@ -33,6 +34,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
             id: crypto.randomUUID(),
             isUserMessage: true,
             content: userPrompt,
+            timestamp: new Date().toISOString(),
         };
 
         const aiMessageId = crypto.randomUUID();
@@ -59,13 +61,15 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                 await llamaHub.askLLM({
                     prompt: userPrompt,
                     currentSurveyJson: currentSurveyJson,
-                    type: 1
+                    type: 1,
+                    surveyId: surveyId
                 });
             } else {
                 await llamaHub.generateSurvey({
                     prompt: userPrompt,
                     currentSurveyJson: currentSurveyJson,
-                    type: 0
+                    type: 0,
+                    surveyId: surveyId
                 });
             }
         } catch (error) {
@@ -86,6 +90,29 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
     useEffect(() => {
         llamaHub.connect(); // создание подключения при ререндере компонента
     }, []);
+
+    useEffect(() => {
+        const loadHistory = async () => {
+            if (surveyId) {
+                try {
+                    const history = await getDialogHistory(surveyId);
+                    const chatMessages: ChatMessage[] = history.map((msg) => ({
+                        id: crypto.randomUUID(),
+                        isUserMessage: msg.isUserMessage,
+                        content: msg.content,
+                        timestamp: msg.timestamp,
+                        isHtml: !msg.isUserMessage
+                    }));
+                    if (chatMessages.length > 0) {
+                        onMessagesChange(chatMessages);
+                    }
+                } catch (error) {
+                    console.error('Ошибка загрузки истории диалога:', error);
+                }
+            }
+        };
+        loadHistory();
+    }, [surveyId]);
    
     useEffect(() => {
         
@@ -106,7 +133,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                             id: aiMessageId,
                             isUserMessage: false,
                             content: 'Опрос успешно обновлен',
-                            isPending: false
+                            isPending: false,
+                            timestamp: new Date().toISOString()
                         };
                         onMessagesChange([...messages.filter(msg => msg.id != aiMessageId), responseMessage]);
                     }
@@ -118,7 +146,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                         id: aiMessageId,
                         isUserMessage: false,
                         content: 'Ошибка получения ответа от ИИ-ассистента',
-                        isPending: false
+                        isPending: false,
+                        timestamp: new Date().toISOString()
                     };
                     console.error('Ошибка получения ответа от ИИ-ассистента:', event.data);
                     onMessagesChange([...messages.filter(msg => msg.id != aiMessageId), errorMessage]);
@@ -132,6 +161,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                         aiMessage.content = event.data;
                         aiMessage.isPending = false;
                         aiMessage.isHtml = true;
+                        aiMessage.timestamp = new Date().toISOString();
                     } else {
                         aiMessage.content += event.data;
                     }
@@ -200,8 +230,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                                         color: m.isUserMessage ? 'primary.contrastText' : 'text.primary',
                                     }}
                                 >
-                                    
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                         
                                         {m.isHtml && !m.isUserMessage ? (
                                             <Box
@@ -229,6 +259,19 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                                         ) : (
                                             <Typography component="span" variant="body2">
                                                 {m.content}
+                                            </Typography>
+                                        )}
+                                        </Box>
+                                        {m.timestamp && (
+                                            <Typography 
+                                                variant="caption" 
+                                                sx={{ 
+                                                    fontSize: '0.7rem',
+                                                    opacity: 0.7,
+                                                    alignSelf: 'flex-end'
+                                                }}
+                                            >
+                                                {new Date(m.timestamp).toLocaleString('ru-RU')}
                                             </Typography>
                                         )}
                                     </Box>
