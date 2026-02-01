@@ -284,10 +284,10 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                                                 sx={{ 
                                                     fontSize: '0.7rem',
                                                     opacity: 0.7,
-                                                    alignSelf: 'flex-end'
+                                                    alignSelf: m.isUserMessage ? 'flex-start' : 'flex-end'
                                                 }}
                                             >
-                                                {new Date(m.timestamp).toLocaleString('ru-RU')}
+                                                {new Date(m.timestamp).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                             </Typography>
                                         )}
                                     </Box>
