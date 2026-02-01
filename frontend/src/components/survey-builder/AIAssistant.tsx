@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress, ToggleButtonGroup, ToggleButton, Tooltip } from '@mui/material';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import BuildIcon from '@mui/icons-material/Build';
@@ -22,6 +22,14 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
     const [assistentMode, setAssistentMode] = useState<AssistentMode>(AssistentMode.Construct);
     const [progressPercent, setProgressPercent] = useState<number>(0);
     const [aiMessageId, setAiMessageId] = useState<string>('');
+    const dialogScrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const el = dialogScrollRef.current;
+        if (el) {
+            el.scrollTop = el.scrollHeight;
+        }
+    }, [messages]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -182,20 +190,21 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
     }, [messages, llamaHub]);
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                    ИИ Ассистент
-                </Typography>
-                {messages.length === 0 && (
-                    <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
-                        Опишите, какие изменения необходимо внести в текущий опрос.
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+            <Box ref={dialogScrollRef} sx={{ flex: 1, minHeight: 0, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ flexShrink: 0 }}>
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                        ИИ Ассистент
                     </Typography>
-                )}
-            </Box>
+                    {messages.length === 0 && (
+                        <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                            Опишите, какие изменения необходимо внести в текущий опрос.
+                        </Typography>
+                    )}
+                </Box>
 
-            {messages.length > 0 && (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                {messages.length > 0 && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, flexShrink: 0 }}>
                     {messages.map((m) => {
                         return (
                             
@@ -286,10 +295,11 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ messages, currentSurve
                             </Box>
                         );
                     })}
-                </Box>
-            )}
+                    </Box>
+                )}
+            </Box>
 
-            <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box component="form" onSubmit={handleSubmit} sx={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
                     <ToggleButtonGroup
                         value={assistentMode}
