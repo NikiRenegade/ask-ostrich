@@ -83,7 +83,6 @@ public class LLMHub: Hub
                 throw new InvalidOperationException("Prompt is required");
             }
             
-            // Save user message to history if SurveyId is provided
             if (!string.IsNullOrEmpty(request.SurveyId))
             {
                 var userMessage = new DialogMessageDto
@@ -113,7 +112,6 @@ public class LLMHub: Hub
             await Clients.Caller.SendAsync("Progress", 100);
             var response = result.Result;
             
-            // Save AI response to history if SurveyId is provided
             if (!string.IsNullOrEmpty(request.SurveyId))
             {
                 var aiMessage = new DialogMessageDto
@@ -141,7 +139,6 @@ public class LLMHub: Hub
 
         try
         {
-            // Save user message to history if SurveyId is provided
             if (!string.IsNullOrEmpty(request.SurveyId))
             {
                 var userMessage = new DialogMessageDto
@@ -186,7 +183,6 @@ public class LLMHub: Hub
             await Clients.Caller.SendAsync("Progress", 100);
             await Clients.Caller.SendAsync("Completed");
             
-            // Save AI response to history if SurveyId is provided
             if (!string.IsNullOrEmpty(request.SurveyId))
             {
                 var aiMessage = new DialogMessageDto
