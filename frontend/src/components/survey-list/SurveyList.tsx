@@ -60,7 +60,7 @@ export const SurveyList: React.FC = () => {
 
     return (
         <Box sx={{ position: 'relative' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
                 <Tabs 
                     value={activeTab} 
                     onChange={handleTabChange}
@@ -79,7 +79,7 @@ export const SurveyList: React.FC = () => {
 
             {activeTab === 0 && (
                 <>
-                    <Paper sx={{ p: 2, mb: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                    <Paper sx={{ p: 2, mb: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                         <IconButton
                             color="primary"
                             title='Создать опрос'

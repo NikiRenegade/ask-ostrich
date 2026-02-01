@@ -15,7 +15,7 @@ export const SurveyDetail: React.FC = () => {
 
     return (
         <Box sx={{ position: 'relative' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3, display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, display: 'flex', alignItems: 'center' }}>
                 <IconButton
                     onClick={() => navigate("/")}
                     title='Назад к списку опросов'
@@ -30,7 +30,7 @@ export const SurveyDetail: React.FC = () => {
                         '& .MuiTab-root': {
                             fontSize: '1.5rem',
                             fontWeight: 'bold',
-                            minHeight: '64px',
+                            minHeight: '48px',
                             textTransform: 'none',
                         }
                     }}>

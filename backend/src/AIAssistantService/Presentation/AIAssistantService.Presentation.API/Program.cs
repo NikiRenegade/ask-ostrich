@@ -18,6 +18,7 @@ builder.Services.AddSignalR();
 // Register services
 builder.Services.AddScoped<ILLMClientService, LLMClientService>();
 builder.Services.AddScoped<ILLMChatApiService, OllamaApiService>();
+builder.Services.AddSingleton<IDialogHistoryService, RedisDialogHistoryService>();
 
 builder.Services.AddCors(options =>
 {

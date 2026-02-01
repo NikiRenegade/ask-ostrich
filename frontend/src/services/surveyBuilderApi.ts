@@ -28,6 +28,7 @@ interface UpdateSurveyRequest {
     IsPublished: boolean;
     AuthorGuid: string;
     Questions: Array<{
+        Id: string;
         Type: string;
         Title: string;
         Order: number;
@@ -123,6 +124,7 @@ function mapSurveyToUpdateRequest(survey: Survey): UpdateSurveyRequest {
         IsPublished: survey.IsPublished,
         AuthorGuid: survey.AuthorGuid,
         Questions: survey.Questions.map(q => ({
+            Id: q.QuestionId,
             Type: q.Type,
             Title: q.Title,
             Order: q.Order,

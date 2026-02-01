@@ -45,6 +45,21 @@ services:
       - ../docker_data/ask-ostrich/ao_response_db_data:/data/db
       - ./backend/mongo-init-response.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
+  ao_redis_db:
+    image: redis:7-alpine
+    container_name: ao_redis_db
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ../docker_data/ask-ostrich/ao_redis_db_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
   # ========== migration ==========
   ao_security_db_migrate:
     image: mcr.microsoft.com/dotnet/sdk:9.0
@@ -151,10 +166,14 @@ services:
       context: ./backend
       dockerfile: src/AIAssistantService/Presentation/AIAssistantService.Presentation.API/Dockerfile
     container_name: ao_ai_assistant_service
+    depends_on:
+      ao_redis_db:
+        condition: service_healthy
     environment:
       ASPNETCORE_URLS: http://+:8080
       Ollama__BaseUrl: "http://host.docker.internal:11434/"
       Ollama__Model: "gpt-oss:20b-cloud"
+      Redis__ConnectionString: "ao_redis_db:6379"
     ports:
       - "5004:8080"
       

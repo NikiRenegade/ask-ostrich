@@ -137,7 +137,7 @@ export const SurveyUserForm: React.FC = () => {
                 />
                 
                 {survey.Questions.length > 0 && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
                         <Button
                             variant="contained"
                             color="primary"

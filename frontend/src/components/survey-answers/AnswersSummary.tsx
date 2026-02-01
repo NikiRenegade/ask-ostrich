@@ -110,7 +110,7 @@ export const AnswersSummary: React.FC<AnswersSummaryProps> = ({ survey, surveyRe
 
     if (surveyResults.length === 0) {
         return (
-            <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Box sx={{ p: 2, textAlign: 'center' }}>
                 <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                     Нет ответов для отображения
                 </Typography>
@@ -119,9 +119,9 @@ export const AnswersSummary: React.FC<AnswersSummaryProps> = ({ survey, surveyRe
     }
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
+        <Box sx={{ p: 2 }}>
+            <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
+                <Typography variant="h5" sx={{ mb: 1, fontWeight: 'bold' }}>
                     Общая статистика
                 </Typography>
                 <ResponsiveContainer width="100%" height={300}>
@@ -148,12 +148,12 @@ export const AnswersSummary: React.FC<AnswersSummaryProps> = ({ survey, surveyRe
             </Paper>
 
             <Box>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold' }}>
+                <Typography variant="h5" sx={{ mb: 1, fontWeight: 'bold' }}>
                     Статистика по вопросам
                 </Typography>
                 {questionCharts.map((chartData) => (
-                    <Paper key={chartData.question.QuestionId} elevation={2} sx={{ p: 3, mb: 4 }}>
-                        <Typography variant="h6" sx={{ mb: 3, fontWeight: 'bold' }}>
+                    <Paper key={chartData.question.QuestionId} elevation={2} sx={{ p: 2, mb: 2 }}>
+                        <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
                             {chartData.question.Title}
                         </Typography>
                         {chartData.data.length === 0 ? (

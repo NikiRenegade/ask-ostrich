@@ -8,7 +8,8 @@ export async function generateSurvey(request: GenerateSurveyRequest): Promise<Ge
         const response = await api.post("/ai-assistant/api/AIAssistant/generate", {
             prompt: request.prompt,
             currentSurveyJson: request.currentSurveyJson,
-            type: request.type
+            type: request.type,
+            surveyId: request.surveyId
         });
         return await response.data;
 
@@ -23,13 +24,46 @@ export async function askLLM(request: GenerateSurveyRequest): Promise<string> {
         const response = await api.post("/ai-assistant/api/AIAssistant/ask", {
             prompt: request.prompt,
             currentSurveyJson: request.currentSurveyJson,
-            type: request.type
+            type: request.type,
+            surveyId: request.surveyId
         });
         return await response.data;
 
     } catch (error) {
         throw new Error('Ошибка получения ответа от ИИ-ассистента');
     }
+}
+
+export interface DialogMessage {
+    content: string;
+    isUserMessage: boolean;
+    timestamp: string;
+}
+
+export async function getDialogHistory(surveyId: string): Promise<DialogMessage[]> {
+    try {
+        const response = await api.get<DialogMessage[]>(`/ai-assistant/api/AIAssistant/history/${surveyId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to load dialog history:', error);
+        return [];
+    }
+}
+
+export async function clearDialogHistory(surveyId: string): Promise<void> {
+    await api.delete(`/ai-assistant/api/AIAssistant/history/${surveyId}`);
+}
+
+export async function saveDialogHistory(surveyId: string, messages: { content: string; isUserMessage: boolean; timestamp?: string; isPending?: boolean }[]): Promise<void> {
+    const payload = messages
+        .filter(m => !m.isPending)
+        .map(m => ({
+            content: m.content,
+            isUserMessage: m.isUserMessage,
+            timestamp: m.timestamp ? new Date(m.timestamp).toISOString() : new Date().toISOString()
+        }));
+    if (payload.length === 0) return;
+    await api.post(`/ai-assistant/api/AIAssistant/history/${surveyId}`, payload);
 }
 
 export type LlamaHubEvents =
@@ -109,14 +143,24 @@ class LlamaHubClient {
         if (!this.connection || this.connection.state !== HubConnectionState.Connected){
             throw new Error("Не удалось подключиться к серверу");
         } 
-        await this.connection.send("GenerateSurvey", request);
+        await this.connection.send("GenerateSurvey", {
+            prompt: request.prompt,
+            currentSurveyJson: request.currentSurveyJson,
+            type: request.type,
+            surveyId: request.surveyId
+        });
     }
 
     askLLM(request: GenerateSurveyRequest) {
         if (!this.connection || this.connection.state !== HubConnectionState.Connected){
             throw new Error("Не удалось подключиться к серверу");
         } 
-        return this.connection.invoke("AskLLMStream", request);
+        return this.connection.invoke("AskLLMStream", {
+            prompt: request.prompt,
+            currentSurveyJson: request.currentSurveyJson,
+            type: request.type,
+            surveyId: request.surveyId
+        });
     }
 
     async disconnect() {

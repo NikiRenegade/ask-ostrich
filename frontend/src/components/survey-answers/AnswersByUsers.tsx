@@ -59,7 +59,7 @@ export const AnswersByUsers: React.FC<AnswersByUsersProps> = ({ survey, surveyRe
 
     if (groupedByUser.length === 0) {
         return (
-            <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Box sx={{ p: 2, textAlign: 'center' }}>
                 <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                     Нет ответов от пользователей
                 </Typography>
@@ -102,7 +102,7 @@ export const AnswersByUsers: React.FC<AnswersByUsersProps> = ({ survey, surveyRe
                             </Box>
                         </AccordionSummary>
                     <AccordionDetails>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             {userGroup.results.map((result, resultIndex) => (
                                 <Box key={result.id || resultIndex}>
                                     <Typography 
