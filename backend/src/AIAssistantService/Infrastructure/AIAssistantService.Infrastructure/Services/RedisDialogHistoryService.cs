@@ -24,11 +24,12 @@ public class RedisDialogHistoryService : IDialogHistoryService, IDisposable
         _redis?.Dispose();
     }
 
-    public async Task SaveMessageAsync(string surveyId, DialogMessageDto message, CancellationToken cancellationToken = default)
+    public async Task SaveMessagesAsync(string surveyId, IEnumerable<DialogMessageDto> messages, CancellationToken cancellationToken = default)
     {
         var key = GetKey(surveyId);
-        var messageJson = JsonSerializer.Serialize(message);
-        await _database.ListRightPushAsync(key, messageJson);
+        var values = messages.Select(m => (RedisValue)JsonSerializer.Serialize(m)).ToArray();
+        if (values.Length > 0)
+            await _database.ListRightPushAsync(key, values);
     }
 
     public async Task<List<DialogMessageDto>> GetDialogHistoryAsync(string surveyId, CancellationToken cancellationToken = default)

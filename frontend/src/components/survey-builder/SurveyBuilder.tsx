@@ -16,6 +16,7 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import { useNavigate, useParams } from 'react-router-dom';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import { loadSurveyById, createSurvey, updateSurvey } from '../../services/surveyBuilderApi';
+import { saveDialogHistory } from '../../services/aiAssistantApi';
 import {yamlToObject, objectToYaml} from "../../services/Converters/yamlConverter.ts";
 import {surveyToSurveyEditConverter} from "../../services/Converters/surveyToSurveyEditConverter.ts";
 import {surveyEditToSurveyConverter} from "../../services/Converters/surveyEditToSurveyConverter.ts";
@@ -179,8 +180,10 @@ export const SurveyBuilder: React.FC = () => {
             showSuccess("Опрос успешно обновлен!");
           } else {
             const response = await createSurvey(survey);
-            
-            showSuccess("Опрос успешно создан!");            
+            if (aiMessages.length > 0) {
+              await saveDialogHistory(response.id, aiMessages);
+            }
+            showSuccess("Опрос успешно создан!");
             navigate(`/edit/${response.id}`);
           }
     

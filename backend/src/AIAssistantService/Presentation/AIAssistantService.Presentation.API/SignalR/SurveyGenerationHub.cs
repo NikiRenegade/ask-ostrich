@@ -1,4 +1,4 @@
-﻿using System.Threading.Channels;
+using System.Threading.Channels;
 using AIAssistantService.Domain.DTO;
 using AIAssistantService.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.SignalR;
@@ -33,7 +33,7 @@ public class LLMHub: Hub
                     IsUserMessage = true,
                     Timestamp = DateTime.UtcNow
                 };
-                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, userMessage);
+                await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ userMessage ]);
             }
             
             var result = _llmClientService.GenerateSurveyAsync(request.Prompt, request.CurrentSurveyJson);
@@ -62,7 +62,7 @@ public class LLMHub: Hub
                     IsUserMessage = false,
                     Timestamp = DateTime.UtcNow
                 };
-                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, aiMessage);
+                await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ aiMessage ]);
             }
             
             await Clients.Caller.SendAsync("Completed", surveyResult);
@@ -92,7 +92,7 @@ public class LLMHub: Hub
                     IsUserMessage = true,
                     Timestamp = DateTime.UtcNow
                 };
-                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, userMessage);
+                await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ userMessage ]);
             }
             
             var result = _llmClientService.AskLLMAsync(request.Prompt, request.CurrentSurveyJson);
@@ -122,7 +122,7 @@ public class LLMHub: Hub
                     IsUserMessage = false,
                     Timestamp = DateTime.UtcNow
                 };
-                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, aiMessage);
+                await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ aiMessage ]);
             }
             
             await Clients.Caller.SendAsync("Completed", response);
@@ -150,7 +150,7 @@ public class LLMHub: Hub
                     IsUserMessage = true,
                     Timestamp = DateTime.UtcNow
                 };
-                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, userMessage);
+                await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ userMessage ]);
             }
             
             var progressTask = Task.Run(async () =>
@@ -195,7 +195,7 @@ public class LLMHub: Hub
                     IsUserMessage = false,
                     Timestamp = DateTime.UtcNow
                 };
-                await _dialogHistoryService.SaveMessageAsync(request.SurveyId, aiMessage);
+                await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ aiMessage ]);
             }
         }
         catch (Exception e)

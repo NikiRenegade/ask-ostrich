@@ -50,6 +50,18 @@ export async function getDialogHistory(surveyId: string): Promise<DialogMessage[
     }
 }
 
+export async function saveDialogHistory(surveyId: string, messages: { content: string; isUserMessage: boolean; timestamp?: string; isPending?: boolean }[]): Promise<void> {
+    const payload = messages
+        .filter(m => !m.isPending)
+        .map(m => ({
+            content: m.content,
+            isUserMessage: m.isUserMessage,
+            timestamp: m.timestamp ? new Date(m.timestamp).toISOString() : new Date().toISOString()
+        }));
+    if (payload.length === 0) return;
+    await api.post(`/ai-assistant/api/AIAssistant/history/${surveyId}`, payload);
+}
+
 export type LlamaHubEvents =
   | { type: "Completed"; data: GeneratedSurvey | string }
   | { type: "Next"; data: string }

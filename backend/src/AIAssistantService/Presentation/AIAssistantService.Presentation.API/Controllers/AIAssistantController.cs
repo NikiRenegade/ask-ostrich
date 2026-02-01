@@ -69,7 +69,7 @@ namespace AIAssistantService.Presentation.API.Controllers
                         IsUserMessage = true,
                         Timestamp = DateTime.UtcNow
                     };
-                    await _dialogHistoryService.SaveMessageAsync(request.SurveyId, userMessage, cancellationToken);
+                    await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ userMessage ], cancellationToken);
                 }
 
                 var result = await _llmClientService.AskLLMAsync(request.Prompt, request.CurrentSurveyJson, cancellationToken);
@@ -82,7 +82,7 @@ namespace AIAssistantService.Presentation.API.Controllers
                         IsUserMessage = false,
                         Timestamp = DateTime.UtcNow
                     };
-                    await _dialogHistoryService.SaveMessageAsync(request.SurveyId, aiMessage, cancellationToken);
+                    await _dialogHistoryService.SaveMessagesAsync(request.SurveyId, [ aiMessage ], cancellationToken);
                 }
 
                 return Ok(result);
@@ -94,6 +94,27 @@ namespace AIAssistantService.Presentation.API.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while asking the LLM", error = ex.Message });
+            }
+        }
+
+        [HttpPost("history/{surveyId}")]
+        public async Task<ActionResult> SaveDialogHistory(string surveyId, [FromBody] List<DialogMessageDto> messages, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(surveyId))
+                {
+                    return BadRequest(new { message = "SurveyId is required." });
+                }
+                if (messages != null && messages.Count > 0)
+                {
+                    await _dialogHistoryService.SaveMessagesAsync(surveyId, messages, cancellationToken);
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while saving dialog history", error = ex.Message });
             }
         }
 
