@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TextField, Button, Box, Paper, Typography, Tabs, Tab, IconButton, Dialog, DialogContent, DialogTitle, Snackbar, Alert } from '@mui/material';
 import type { Question } from "../../types/Question.ts";
@@ -71,6 +71,35 @@ export const SurveyBuilder: React.FC = () => {
     const [openedSnack, setOpenedSnack] = useState<boolean>(false);
     const [snackMessage, setSnackMessage] = useState<string>();
     const [snackSeverity, setSnackSeverity] = useState<SnackSeverity>();
+
+    const [rightPanelHeight, setRightPanelHeight] = useState(() =>
+        typeof window !== 'undefined' ? window.innerHeight - 280 : 480
+    );
+    const [isResizing, setIsResizing] = useState(false);
+    const resizeStartY = useRef(0);
+    const resizeStartHeight = useRef(0);
+
+    const handleResizeStart = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+        resizeStartY.current = e.clientY;
+        resizeStartHeight.current = rightPanelHeight;
+    }, [rightPanelHeight]);
+
+    useEffect(() => {
+        if (!isResizing) return;
+        const onMove = (e: MouseEvent) => {
+            const delta = e.clientY - resizeStartY.current;
+            setRightPanelHeight(() => resizeStartHeight.current + delta);
+        };
+        const onEnd = () => setIsResizing(false);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onEnd);
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onEnd);
+        };
+    }, [isResizing]);
 
     const handleCloseSnack = () => {
         setOpenedSnack(false);
@@ -308,17 +337,24 @@ export const SurveyBuilder: React.FC = () => {
                         </Button>
                     </Box>
                 </Paper>
-                <Paper sx={{ p: 2, height: { md: 'calc(100vh - 260px)' }, minHeight: { md: 320 }, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, flexShrink: 0 }}>
-                        <Tabs value={tabValue} onChange={handleTabChange}>
-                            <Tab icon={<span>✨</span>} iconPosition="start" label="AI" />
-                            <Tab icon={<span>📝</span>} iconPosition="start" label="YAML" />
-                            <Tab icon={<span>📄</span>} iconPosition="start" label="JSON" />
-                        </Tabs>
-                    </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                    <Paper sx={{
+                        p: 2,
+                        height: { xs: 'auto', md: rightPanelHeight },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden',
+                    }}>
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, flexShrink: 0 }}>
+                            <Tabs value={tabValue} onChange={handleTabChange}>
+                                <Tab icon={<span>✨</span>} iconPosition="start" label="AI" />
+                                <Tab icon={<span>📝</span>} iconPosition="start" label="YAML" />
+                                <Tab icon={<span>📄</span>} iconPosition="start" label="JSON" />
+                            </Tabs>
+                        </Box>
 
-                    <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-                    {tabValue === TabValues.AIAssistant && (
+                        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                        {tabValue === TabValues.AIAssistant && (
                         <AIAssistant                             
                             messages={aiMessages}                            
                             currentSurveyJson={JSON.stringify(survey, null, 2)}
@@ -335,8 +371,29 @@ export const SurveyBuilder: React.FC = () => {
                     {tabValue === TabValues.JsonEditor && (
                         <CodeEditor codeText={jsonText} onCodeChange={handleJsonChange} disabled={!user || isLoading} onUserEditingChange={setIsUserEditingYaml} codeType = "Json"/>
                     )}
-                    </Box>
-                </Paper>
+                        </Box>
+                    </Paper>
+                    <Box
+                        onMouseDown={handleResizeStart}
+                        sx={{
+                            height: 8,
+                            cursor: 'ns-resize',
+                            flexShrink: 0,
+                            display: { xs: 'none', md: 'flex' },
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            '&:hover': { bgcolor: 'action.hover' },
+                            '&::after': {
+                                content: '""',
+                                display: 'block',
+                                width: 40,
+                                height: 4,
+                                borderRadius: 2,
+                                bgcolor: 'divider',
+                            },
+                        }}
+                    />
+                </Box>
             </Box>
             <Snackbar
                 open={openedSnack}
