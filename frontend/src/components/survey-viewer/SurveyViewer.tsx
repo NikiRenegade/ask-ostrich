@@ -42,13 +42,13 @@ export const SurveyViewer: React.FC<SurveyViewerProps> = ({
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, gap: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2, gap: 2 }}>
             <Box sx={{ maxWidth: 900, width: '100%' }}>
                 <Typography variant="h3" component="h1" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
                     {survey.Title || 'Без названия'}
                 </Typography>
                 {survey.Description && (
-                    <Typography variant="body1" sx={{ mb: 4, textAlign: 'center', color: 'text.secondary' }}>
+                    <Typography variant="body1" sx={{ mb: 2, textAlign: 'center', color: 'text.secondary' }}>
                         {survey.Description}
                     </Typography>
                 )}
@@ -59,7 +59,7 @@ export const SurveyViewer: React.FC<SurveyViewerProps> = ({
                     key={question.QuestionId}
                     elevation={2}
                     sx={{
-                        p: 3,
+                        p: 2,
                         maxWidth: 800,
                         width: '100%',
                     }}

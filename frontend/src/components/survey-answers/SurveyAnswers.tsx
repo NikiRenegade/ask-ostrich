@@ -46,7 +46,7 @@ export const SurveyAnswers: React.FC = () => {
 
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
                 <CircularProgress />
             </Box>
         );
@@ -62,7 +62,7 @@ export const SurveyAnswers: React.FC = () => {
 
     return (
         <Box>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
                 <Tabs 
                     value={activeTab} 
                     onChange={handleTabChange}
