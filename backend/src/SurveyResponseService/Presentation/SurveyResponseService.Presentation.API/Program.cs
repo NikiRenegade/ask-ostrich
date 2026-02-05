@@ -9,9 +9,12 @@ using SurveyResponseService.Infrastructure.EntityFramework;
 using SurveyResponseService.Infrastructure.Messaging;
 using SurveyResponseService.Infrastructure.Repositories;
 using System.Text.Json.Serialization;
+using SurveyResponseService.Presentation.API.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add signalR
+builder.Services.AddSignalR();
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -99,8 +102,8 @@ app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
 app.UseHttpMetrics();
-
 app.MapControllers();
 app.MapMetrics();
+app.MapHub<SurveyHub>("api/survey-result/surveyHub");
 
 app.Run();

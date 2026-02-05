@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using SurveyResponseService.Domain.DTOs.SurveyResults;
 using SurveyResponseService.Domain.Interfaces.Services;
+using SurveyResponseService.Presentation.API.SignalR;
 
 namespace SurveyResponseService.Presentation.API.Controllers
 {
@@ -9,10 +11,12 @@ namespace SurveyResponseService.Presentation.API.Controllers
     public class SurveyResultController : ControllerBase
     {
         private readonly ISurveyResultService _surveyResultService;
+        private readonly IHubContext<SurveyHub> _hubContext;
 
-        public SurveyResultController(ISurveyResultService surveyResultService)
+        public SurveyResultController(ISurveyResultService surveyResultService, IHubContext<SurveyHub> hubContext)
         {
             _surveyResultService = surveyResultService;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -58,6 +62,9 @@ namespace SurveyResponseService.Presentation.API.Controllers
                 }
 
                 var result = await _surveyResultService.AddAsync(request, cancellationToken);
+                var surveyResult = await _surveyResultService.GetByIdAsync(result.Id, CancellationToken.None);
+                await _hubContext.Clients.Group(request.SurveyId.ToString())
+                    .SendAsync("SurveyResultsUpdated", new[] { surveyResult });
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (ArgumentException ex)
