@@ -26,6 +26,7 @@ export default ({ mode }) => {
         },
         '/survey-response': {
           target: env.VITE_API_URL,
+          ws: true,
           changeOrigin: true,
           secure: false,
         }
