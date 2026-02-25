@@ -109,6 +109,8 @@ services:
         condition: service_completed_successfully
       ao_message_broker:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__authdbconnection: Host=ao_security_db;Port=5432;Database=AuthDb;Username=user;Password=password
@@ -116,6 +118,7 @@ services:
       RABBITMQ__PORT: 5672
       RABBITMQ__USERNAME: admin
       RABBITMQ__PASSWORD: admin
+      JWT__PRIVATE_KEY: ${JWT_PRIVATE_KEY}
     ports:
       - "5001:8080"
 
@@ -212,8 +215,10 @@ services:
       context: ./backend
       dockerfile: src/TelegramBotService/Presentation/TelegramBotService.Presentation.Telegram/Dockerfile
     container_name: ao_telegram_bot
+    env_file:
+      - .env
     environment:
-      BOT_TOKEN: "${BOT_TOKEN}"
+      BOT_TOKEN: ${BOT_TOKEN}
       Frontend__BaseUrl: "http://127.0.0.1"
       AuthApi__BaseUrl: "http://ao_gateway_service:8080"
     depends_on:
