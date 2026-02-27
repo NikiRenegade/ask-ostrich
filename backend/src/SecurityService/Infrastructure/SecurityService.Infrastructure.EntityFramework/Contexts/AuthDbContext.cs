@@ -13,6 +13,7 @@ public class AuthDbContext : IdentityDbContext<User, Role, Guid>
     }
 
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,5 +22,6 @@ public class AuthDbContext : IdentityDbContext<User, Role, Guid>
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
     }
 }

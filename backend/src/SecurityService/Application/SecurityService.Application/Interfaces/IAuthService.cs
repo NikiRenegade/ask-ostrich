@@ -8,5 +8,6 @@ namespace SecurityService.Application.Interfaces
         Task<bool> LoginAsync(LoginDto loginDto);
         Task ChangePasswordAsync(ChangePasswordDto changePasswordDto);
         Task<UserProfileDto> GetUserProfileAsync(string email);
+        Task<UserProfileDto> GetUserProfileAsync(Guid userId);
     }
 }

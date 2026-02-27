@@ -13,17 +13,20 @@ public class AuthController : ControllerBase
     private readonly IEmailConfirmationService _emailConfirmationService;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IExternalAuthService _externalAuthService;
+    private readonly IRefreshTokenService _refreshTokenService;
 
     public AuthController(
         IAuthService authService,
         IEmailConfirmationService emailConfirmationService,
         IJwtTokenService jwtTokenService,
-        IExternalAuthService externalAuthService)
+        IExternalAuthService externalAuthService,
+        IRefreshTokenService refreshTokenService)
     {
         _authService = authService;
         _emailConfirmationService = emailConfirmationService;
         _jwtTokenService = jwtTokenService;
         _externalAuthService = externalAuthService;
+        _refreshTokenService =refreshTokenService;
     }
 
     // Регистрация
@@ -54,10 +57,45 @@ public class AuthController : ControllerBase
         if (!loginSucceeded)
             return Unauthorized(new { Message = "Неверный email или пароль." });
 
+        UserProfileDto user = await _authService.GetUserProfileAsync(dto.Email);
+
         // Генерация JWT только если вход успешен
         var accessToken = await _jwtTokenService.GenerateJwtToken(dto.Email);
-        
-        UserProfileDto user = await _authService.GetUserProfileAsync(dto.Email);
+
+        // Генерация refresh-токена
+        var refreshToken = await _refreshTokenService.CreateAsync(user.Id);
+
+        Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(3)
+        });
+
+        return Ok(new AuthResponseDto
+        {
+            AccessToken = accessToken,
+            ExpiresIn = 900,
+            UserProfile = user
+        });
+    }
+
+    // refresh токена
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AuthResponseDto>> Refresh()
+    {
+        if (!Request.Cookies.TryGetValue("refreshToken", out var rawToken))
+            return Unauthorized();
+
+        var storedToken = await _refreshTokenService.ValidateAsync(rawToken);
+        if (storedToken == null)
+            return Unauthorized();
+
+        // получаем пользователя
+        UserProfileDto user = await _authService.GetUserProfileAsync(storedToken.UserId);
+
+        var accessToken = await _jwtTokenService.GenerateJwtToken(user.Email);
 
         return Ok(new AuthResponseDto
         {
@@ -93,6 +131,7 @@ public class AuthController : ControllerBase
     }
 
     // Ответ Google OAuth
+    [HttpGet("google-response")]
     public async Task<IActionResult> GoogleResponse()
     {
         var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);

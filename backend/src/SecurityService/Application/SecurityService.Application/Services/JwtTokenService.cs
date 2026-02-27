@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -26,14 +27,22 @@ namespace SecurityService.Application.Services
 
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim("userId", user.Id.ToString())
-        };
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim("userId", user.Id.ToString())
+            };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var jwtKey = _configuration["JWT:PRIVATE_KEY"];
+            if (string.IsNullOrWhiteSpace(jwtKey))
+                throw new Exception("JWT private key not configured");
+
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(jwtKey.Replace("\\n", "\n"));
+            
+
+            var key = new RsaSecurityKey(rsa);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],

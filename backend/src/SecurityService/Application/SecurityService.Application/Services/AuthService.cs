@@ -69,5 +69,20 @@ namespace SecurityService.Application.Services
                 LastName = user.LastName ?? string.Empty
             };
         }
+
+        public async Task<UserProfileDto> GetUserProfileAsync(Guid userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new InvalidOperationException("Пользователь не найден.");
+
+            return new UserProfileDto
+            {
+                Id = user.Id,
+                Email = user.Email ?? string.Empty,
+                FirstName = user.FirstName ?? string.Empty,
+                LastName = user.LastName ?? string.Empty
+            };
+        }
     }
 }

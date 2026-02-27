@@ -13,6 +13,8 @@ using SecurityService.Domain.Interfaces.Repositories;
 using SecurityService.Infrastructure.EntityFramework.Contexts;
 using SecurityService.Infrastructure.Messaging;
 using SecurityService.Infrastructure.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 var builder = WebApplication.CreateBuilder(args);
 
 // ===== DbContext =====
@@ -26,6 +28,13 @@ builder.Services.AddIdentity<User, Role>()
     .AddDefaultTokenProviders();
 
 // ===== Authentication (Google + Cookies + JWT Bearer) =====
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+var rsa = RSA.Create();
+rsa.ImportFromPem(jwtKey?.Replace("\\n", "\n"));
+
+var key = new RsaSecurityKey(rsa);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -48,8 +57,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
+        IssuerSigningKey = key
     };
 });
 
@@ -59,6 +67,7 @@ builder.Services.AddAuthorization();
 
 // ===== Controllers + OpenAPI =====
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // ===== Application Services =====
@@ -69,6 +78,8 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
 builder.Services.AddScoped<IExternalAuthService, ExternalAuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 // ===== Repositories =====
 builder.Services.AddScoped<IUserRepository, UserRepository>();
