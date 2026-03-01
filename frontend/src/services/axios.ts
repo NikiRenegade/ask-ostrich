@@ -17,9 +17,43 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
+  res => res,
+  async error => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401) {
+        
+        const message = error.response.data?.message || error.message;
+        
+        if (originalRequest.url.includes("/refresh")) {
+            return Promise.reject(new Error(message));
+        }
+
+        if (originalRequest._retry) {
+            return Promise.reject(new Error(message));
+        }
+
+        originalRequest._retry = true;
+
+        try {
+            await axiosInstance.post("/security/api/Auth/refresh", null, {
+                withCredentials: true
+            });
+
+            return axiosInstance(originalRequest);
+
+        } catch (refreshError) {
+            return Promise.reject(refreshError);
+        }
+    }
+    return Promise.reject(error);
+  }
+);
+
+axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response.data?.message || error.message;
+    const message = error.response?.data?.message || error.message;
     return Promise.reject(new Error(message));
   }
 );
