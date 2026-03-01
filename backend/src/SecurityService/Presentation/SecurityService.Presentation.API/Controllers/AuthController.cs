@@ -86,11 +86,11 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponseDto>> Refresh()
     {
         if (!Request.Cookies.TryGetValue("refreshToken", out var rawToken))
-            return Unauthorized();
+            return Unauthorized(new { Message = "Неверный email или пароль." });
 
         var storedToken = await _refreshTokenService.ValidateAsync(rawToken);
         if (storedToken == null)
-            return Unauthorized();
+            return Unauthorized(new { Message = "Неверный email или пароль." });
 
         // получаем пользователя
         UserProfileDto user = await _authService.GetUserProfileAsync(storedToken.UserId);
