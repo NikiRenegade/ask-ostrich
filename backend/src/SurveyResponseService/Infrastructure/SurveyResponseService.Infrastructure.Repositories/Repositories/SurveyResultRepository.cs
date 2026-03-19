@@ -65,7 +65,14 @@ namespace SurveyResponseService.Infrastructure.Repositories
         {
             return await _dbContext.SurveyResults
                 .AsNoTracking()
-                .Where(r => r.UserId == userId)
+                .Where(r => r.UserId.HasValue && r.UserId.Value == userId)
+                .ToListAsync(cancellationToken);
+        }
+        public async Task<IList<SurveyResult>> GetByGuestIdAsync(Guid guestId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.SurveyResults
+                .AsNoTracking()
+                .Where(r => r.GuestId.HasValue && r.GuestId.Value == guestId)
                 .ToListAsync(cancellationToken);
         }
 

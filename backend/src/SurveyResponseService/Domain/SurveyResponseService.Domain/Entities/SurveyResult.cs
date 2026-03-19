@@ -6,7 +6,7 @@ public class SurveyResult : BaseEntity
 
     public Guid? UserId { get; set; }
     public Guid? GuestId { get; set; }
-    public string DisplayName { get; set; } = null!;
+    public string? DisplayName { get; set; } = null!;
     public Guid SurveyId { get; set; }
     public DateTime DatePassed { get; set; }
     public IEnumerable<Answer> Answers => _answers.ToList();

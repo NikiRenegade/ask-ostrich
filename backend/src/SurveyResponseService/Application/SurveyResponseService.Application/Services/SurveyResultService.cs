@@ -77,14 +77,18 @@ namespace SurveyResponseService.Application.Services
             if (result == null)
                 return null;
 
-            if (result.UserId == null)
+            if (result.UserId == null && result.GuestId == null)
             {
                 throw new ArgumentException("User not found");
             }
             var dto = SurveyResultMapper.ToDto(result);
             var survey = await _surveyRepository.GetByIdAsync(result.SurveyId, cancellationToken);
-            var user = await _userRepository.GetByIdAsync(result.UserId, cancellationToken);
-
+            if (result.UserId != null)
+            {
+                var user = await _userRepository.GetByIdAsync(result.UserId, cancellationToken);
+                dto.UserName = user?.UserName ?? string.Empty;
+                dto.Email = user?.Email ?? string.Empty;
+            }
             if (survey != null)
             {
                 dto.Title = survey.Title;
@@ -92,9 +96,6 @@ namespace SurveyResponseService.Application.Services
                 foreach (var answer in dto.Answers)
                     answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, result, answer.QuestionId);
             }
-
-            dto.UserName = user?.UserName ?? string.Empty;
-            dto.Email = user?.Email ?? string.Empty;
 
             return dto;
         }
@@ -120,7 +121,6 @@ namespace SurveyResponseService.Application.Services
                     throw new ArgumentException("User not found");
 
                 surveyResult.UserId = user.Id;
-                surveyResult.DisplayName = user.UserName;
             }
             else
             {
@@ -265,6 +265,7 @@ namespace SurveyResponseService.Application.Services
                     }
                     else
                     {
+                        dto.UserId = r.GuestId;
                         dto.UserName = r.DisplayName;
                     }
                     

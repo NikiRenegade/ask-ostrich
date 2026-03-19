@@ -24,3 +24,7 @@ export const getDisplayName = (user?: { name?: string }) => {
     const guestId = getGuestId();
     return `Гость ${guestId.slice(0, 4)}`;
 };
+export const deleteGuest = () => {
+    localStorage.removeItem('guestId');
+    localStorage.removeItem('guestName');
+}

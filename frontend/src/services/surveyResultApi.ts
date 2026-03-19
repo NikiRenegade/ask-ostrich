@@ -88,6 +88,7 @@ export interface SurveyResultDto {
     id: string;
     surveyId: string;
     userId: string;
+    guestId: string;
     userName: string;
     email: string;
     datePassed: string;
@@ -114,6 +115,8 @@ export async function submitSurveyResult(request: SubmitSurveyResultRequest): Pr
     try {
         await api.post('/survey-response/api/SurveyResult', {
             userId: request.userId,
+            guestId: request.guestId,
+            displayName: request.displayName || '',
             surveyId: request.surveyId,
             datePassed: request.datePassed,
             answers: request.answers,

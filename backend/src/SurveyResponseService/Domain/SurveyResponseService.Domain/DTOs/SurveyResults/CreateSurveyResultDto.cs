@@ -7,7 +7,7 @@
         
         public Guid? GuestId { get; set; }
 
-        public string DisplayName { get; set; } = null!;
+        public string? DisplayName { get; set; } = null!;
         public DateTime DatePassed { get; set; }
         public IList<AnswerDto>? Answers { get; set; }
     }

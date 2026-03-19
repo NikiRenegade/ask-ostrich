@@ -94,7 +94,7 @@ export const SurveyUserForm: React.FC = () => {
                 guestId: user?.id ? null : getGuestId(),
                 displayName: getDisplayName(user),
                 surveyId: id,
-                datePassed: new Date().toString(),
+                datePassed: new Date().toISOString(),
                 answers: answersArray,
             });
            
