@@ -6,7 +6,7 @@ namespace SurveyResponseService.Domain.Interfaces.Repositories
     {
         Task<IList<T>> GetAllAsync(CancellationToken cancellationToken);
 
-        Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<T?> GetByIdAsync(Guid? id, CancellationToken cancellationToken);
 
         Task AddAsync(T entity, CancellationToken cancellationToken);
 

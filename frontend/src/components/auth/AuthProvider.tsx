@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import {deleteGuest} from "../../services/gurestService.ts";
 
 export interface User {
     id: string;
@@ -51,6 +52,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("expiresAt", String(expiresAt));
+    deleteGuest();
+    
   };
 
   const logout = () => {

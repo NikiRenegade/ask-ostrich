@@ -39,7 +39,9 @@ interface PublishSurveyRequest {
 }
 
 export interface SubmitSurveyResultRequest {
-    userId: string | undefined;
+    userId: string | null;
+    guestId: string | null;
+    displayName: string | null;
     surveyId: string;
     datePassed: string;
     answers: Array<{
@@ -86,6 +88,7 @@ export interface SurveyResultDto {
     id: string;
     surveyId: string;
     userId: string;
+    guestId: string;
     userName: string;
     email: string;
     datePassed: string;
@@ -112,6 +115,8 @@ export async function submitSurveyResult(request: SubmitSurveyResultRequest): Pr
     try {
         await api.post('/survey-response/api/SurveyResult', {
             userId: request.userId,
+            guestId: request.guestId,
+            displayName: request.displayName || '',
             surveyId: request.surveyId,
             datePassed: request.datePassed,
             answers: request.answers,
@@ -142,6 +147,15 @@ export async function getPassedSurveysWithResultsByUserId(userId: string): Promi
 export async function getSurveyResultBySurveyIdAndUserId(surveyId: string, userId: string): Promise<SurveyResultDto | null> {
     try {
         const response = await api.get<SurveyResultDto>(`/survey-response/api/SurveyResult/survey/${surveyId}/user/${userId}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Не удалось загрузить результат опроса');
+    }
+}
+
+export async function getSurveyResultBySurveyIdAndGuestId(surveyId: string, guestId: string): Promise<SurveyResultDto | null> {
+    try {
+        const response = await api.get<SurveyResultDto>(`/survey-response/api/SurveyResult/survey/${surveyId}/guest/${guestId}`);
         return response.data;
     } catch (error) {
         throw new Error('Не удалось загрузить результат опроса');

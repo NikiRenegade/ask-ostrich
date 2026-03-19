@@ -44,6 +44,8 @@ namespace SurveyResponseService.Application.Mappers
             {
                 Id = Guid.NewGuid(),
                 UserId = dto.UserId,
+                GuestId = dto.GuestId,
+                DisplayName = dto.DisplayName,
                 SurveyId = dto.SurveyId,
                 DatePassed = dto.DatePassed == default ? DateTime.UtcNow : dto.DatePassed,
             };

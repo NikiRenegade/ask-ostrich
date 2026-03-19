@@ -19,7 +19,7 @@ namespace SurveyResponseService.Infrastructure.Repositories
             return await _dbContext.Surveys.AsNoTracking().ToListAsync(cancellationToken);
         }
 
-        public async Task<Survey?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Survey?> GetByIdAsync(Guid? id, CancellationToken cancellationToken = default)
         {
             var survey = await _dbContext.Surveys.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
             if (survey != null)

@@ -13,7 +13,6 @@ export const AnswersSummary: React.FC<AnswersSummaryProps> = ({ survey, surveyRe
     const overallStats = useMemo(() => {
         const correctAnswersCount = new Map<number, number>();
         const totalQuestions = survey.Questions.length;
-
         surveyResults.forEach(result => {
             const correctCount = result.answers.filter(answer => answer.isCorrect).length;
             correctAnswersCount.set(correctCount, (correctAnswersCount.get(correctCount) || 0) + 1);

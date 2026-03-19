@@ -4,7 +4,9 @@ public class SurveyResult : BaseEntity
 {
     private readonly List<Answer> _answers = [];
 
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
+    public Guid? GuestId { get; set; }
+    public string? DisplayName { get; set; } = null!;
     public Guid SurveyId { get; set; }
     public DateTime DatePassed { get; set; }
     public IEnumerable<Answer> Answers => _answers.ToList();

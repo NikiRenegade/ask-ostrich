@@ -22,12 +22,12 @@ export const AnswersByUsers: React.FC<AnswersByUsersProps> = ({ survey, surveyRe
         const userMap = new Map<string, UserResultGroup>();
 
         surveyResults.forEach(result => {
-            const key = result.userId;
+            const key = result.userId == null ? result.guestId : result.userId;
             if (!userMap.has(key)) {
                 userMap.set(key, {
-                    userId: result.userId,
+                    userId: result.userId == null ? result.guestId : result.userId,
                     userName: result.userName || 'Неизвестный пользователь',
-                    email: result.email || '',
+                    email: result.email || 'Незарегестрированный пользователь',
                     results: []
                 });
             }

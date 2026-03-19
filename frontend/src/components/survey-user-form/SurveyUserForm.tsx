@@ -8,12 +8,15 @@ import {
     Snackbar
 } from '@mui/material';
 import type { Survey } from '../../types/Survey.ts';
-import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, type SurveyResultDto } from '../../services/surveyResultApi';
+import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, getSurveyResultBySurveyIdAndGuestId, type SurveyResultDto } from '../../services/surveyResultApi';
 import { useAuth } from '../auth/AuthProvider.tsx';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import { SurveyResultsView } from './SurveyResultsView.tsx';
+import { getGuestId, getGuestName, setGuestName, getDisplayName } from '../../services/gurestService.ts';
+import { GuestNameModal } from './GuestNameModal';
 
 export const SurveyUserForm: React.FC = () => {
+    console.log("SurveyUserForm");
     const { id } = useParams<{ id: string }>();
     const { user } = useAuth();
     const [survey, setSurvey] = useState<Survey | null>(null);
@@ -21,7 +24,7 @@ export const SurveyUserForm: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
-    
+    const [askName, setAskName] = useState(false);
     type SnackSeverity = 'error' | 'warning' | 'info' | 'success';
     const [openedSnack, setOpenedSnack] = useState<boolean>(false);
     const [snackMessage, setSnackMessage] = useState<string>();
@@ -46,9 +49,16 @@ export const SurveyUserForm: React.FC = () => {
 
             try {
                 setLoading(true);
-
+                setSurveyResult(null);
                 if (user?.id) {
                     const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
+                    if (result) {
+                        console.log(user?.id);
+                        setSurveyResult(result);
+                    }
+                }
+                if (getGuestName() !== null) {
+                    const result = await getSurveyResultBySurveyIdAndGuestId(id, getGuestId());
                     if (result) {
                         setSurveyResult(result);
                     }
@@ -66,8 +76,12 @@ export const SurveyUserForm: React.FC = () => {
 
         loadData();
     }, [id, user]);
-
-
+    useEffect(() => {
+        if (loading) return;
+        if (!user && !getGuestName()) {
+            setAskName(true);
+        }
+    }, [user, loading]);
     const handleSubmit = async () => {
         if (!survey || !id) return;
 
@@ -83,15 +97,28 @@ export const SurveyUserForm: React.FC = () => {
             });
 
             await submitSurveyResult({
-                userId: user?.id,
+                userId: user?.id ?? null,
+                guestId: user?.id ? null : getGuestId(),
+                displayName: getDisplayName(user),
                 surveyId: id,
                 datePassed: new Date().toISOString(),
                 answers: answersArray,
             });
-           
             if (user?.id && id) {
+                console.log(id);
                 try {
+                    console.log(id);
                     const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
+                    if (result) {
+                        setSurveyResult(result);
+                    }
+                } catch (err) {
+                    console.error('Failed to load survey result:', err);
+                }
+            }
+            if (getGuestId()) {
+                try {
+                    const result = await getSurveyResultBySurveyIdAndGuestId(id, getGuestId());
                     if (result) {
                         setSurveyResult(result);
                     }
@@ -150,7 +177,15 @@ export const SurveyUserForm: React.FC = () => {
                         </Button>
                     </Box>
                 )}
-
+                <GuestNameModal
+                    open={askName}
+                    onSave={(name) => {
+                        if (name.trim()) {
+                            setGuestName(name.trim());
+                        }
+                        setAskName(false);
+                    }}
+                />
                 <Snackbar
                     open={openedSnack}
                     autoHideDuration={3000}
