@@ -54,7 +54,6 @@ export const SurveyUserForm: React.FC = () => {
                 if (user?.id) {
                     const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
                     if (result) {
-                        console.log(user?.id);
                         setSurveyResult(result);
                     }
                 }
@@ -77,7 +76,6 @@ export const SurveyUserForm: React.FC = () => {
 
         loadData();
     }, [id, user]);
-    console.log(answers)
     useEffect(() => {
         if (loading) return;
         if (!user && !getGuestName()) {
