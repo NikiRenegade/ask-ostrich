@@ -1,6 +1,7 @@
 using SurveyManageService.Domain.DTO;
 using SurveyManageService.Domain.Entities;
 using SurveyManageService.Domain.Events;
+using SurveyManageService.Domain.Services;
 
 namespace SurveyManageService.Application.Mappers;
 
@@ -21,10 +22,11 @@ public static class SurveyMapper
                 : throw new ArgumentNullException(nameof(survey.Author), "Author must exist!"),
             CreatedAt = survey.CreatedAt,
             LastUpdateAt = survey.LastUpdateAt,
+            ShortUrlId = survey.ShortUrlId,
             Questions = survey.Questions.Select(QuestionMapper.ToDto).ToList()
         };
     }
-    public static SurveyShortDto ToShortDto(Survey survey)
+    public static SurveyShortDto ToShortDto(Survey survey, IFrontendUrlProvider urlProvider)
     {
         if (survey == null)
             throw new ArgumentNullException(nameof(survey));
@@ -37,6 +39,12 @@ public static class SurveyMapper
             IsPublished = survey.IsPublished,
             AuthorGuid = survey.AuthorId,
             CreatedAt = survey.CreatedAt,
+            ShortUrl = survey.ShortUrl != null 
+                ? urlProvider.GetSurveyShortUrl(survey.ShortUrl.Code)
+                : string.Empty,
+            ShortUrlCode = survey.ShortUrl != null 
+                ? survey.ShortUrl.Code 
+                : string.Empty,
             QuestionCount = survey.Questions.Count()
         };
     }

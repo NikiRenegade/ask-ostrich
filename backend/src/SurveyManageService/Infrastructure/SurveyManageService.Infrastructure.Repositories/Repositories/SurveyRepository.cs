@@ -71,10 +71,17 @@ public class SurveyRepository: ISurveyRepository
 
     public async Task<IList<Survey>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Surveys
-            .AsNoTracking()
+        var surveys = await _dbContext.Surveys
             .Where(x => x.AuthorId == userId)
             .ToListAsync(cancellationToken);
+
+        foreach (var survey in surveys)
+            survey.ShortUrl = await _dbContext.ShortUrls
+                .FirstOrDefaultAsync(s => 
+                    s.Id == survey.ShortUrlId, 
+                    cancellationToken);
+
+        return surveys;
     }
 
     public async Task AddWithShortUrlAsync(Survey survey, ShortUrl shortUrl, CancellationToken cancellationToken)
@@ -119,8 +126,7 @@ public class SurveyRepository: ISurveyRepository
     public async Task<Survey?> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)
     {
         var shortUrl = await _dbContext.ShortUrls
-            .AsNoTracking()
-            .SingleOrDefaultAsync(s => 
+            .FirstOrDefaultAsync(s => 
                 s.Code.Equals(shortCode),
                 cancellationToken);
 
@@ -128,14 +134,16 @@ public class SurveyRepository: ISurveyRepository
             return null;
 
         var survey = await _dbContext.Surveys
-            .AsNoTracking()
-            .SingleOrDefaultAsync(x => 
+            .FirstOrDefaultAsync(x => 
                 x.ShortUrlId == shortUrl.Id, 
                 cancellationToken);
 
         if (survey == null) return null;
 
-        var author = await _dbContext.Users.AsTracking().SingleOrDefaultAsync(u => u.Id == survey.Id);
+        var author = await _dbContext.Users
+            .FirstOrDefaultAsync(u => 
+                u.Id == survey.AuthorId,
+                cancellationToken);
         survey.Author = author;
 
         return survey;

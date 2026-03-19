@@ -4,6 +4,7 @@ using SurveyManageService.Domain.Entities;
 using SurveyManageService.Domain.Interfaces.Publishers;
 using SurveyManageService.Domain.Interfaces.Repositories;
 using SurveyManageService.Domain.Interfaces.Services;
+using SurveyManageService.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,17 +19,20 @@ namespace SurveyManageService.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IShortUrlService _shortUrlService;
         private readonly ISurveyEventPublisher _surveyEventPublisher;
+        private readonly IFrontendUrlProvider _frontendUrlProvider;
 
         public SurveyService(
             ISurveyRepository repository, 
             IUserRepository userRepository,
             IShortUrlService shortUrlService,
-            ISurveyEventPublisher surveyEventPublisher)
+            ISurveyEventPublisher surveyEventPublisher,
+            IFrontendUrlProvider frontendUrlProvider)
         {
             _repository = repository;
             _userRepository = userRepository;
             _shortUrlService = shortUrlService;
             _surveyEventPublisher = surveyEventPublisher;
+            _frontendUrlProvider = frontendUrlProvider;
         }
 
         public async Task<IList<SurveyDto>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -92,7 +96,7 @@ namespace SurveyManageService.Application.Services
         public async Task<IList<SurveyShortDto>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
         {
             var surveys = await _repository.GetExistingByUserIdAsync(userId, cancellationToken);
-            return surveys.Select(SurveyMapper.ToShortDto).ToList();
+            return surveys.Select(s => SurveyMapper.ToShortDto(s, _frontendUrlProvider)).ToList();
         }
 
         public async Task<SurveyDto> GetByShortUrlCodeAsync(string shortCode, CancellationToken cancellationToken)

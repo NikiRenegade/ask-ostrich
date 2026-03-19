@@ -5,5 +5,7 @@ export interface SurveyShort {
     isPublished: boolean;
     authorGuid: string;
     createdAt: string;
+    shortUrl: string;
+    shortUrlCode: string;
     questionCount: number;
 }

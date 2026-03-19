@@ -9,4 +9,6 @@ public class SurveyShortDto
     public Guid AuthorGuid { get; set; }
     public DateTime CreatedAt { get; set; }
     public int QuestionCount { get; set; }
+    public string ShortUrl { get; set; } = string.Empty;
+    public string ShortUrlCode { get; set; } = string.Empty;
 }
