@@ -39,7 +39,9 @@ interface PublishSurveyRequest {
 }
 
 export interface SubmitSurveyResultRequest {
-    userId: string | undefined;
+    userId: string | null;
+    guestId: string | null;
+    displayName: string | null;
     surveyId: string;
     datePassed: string;
     answers: Array<{

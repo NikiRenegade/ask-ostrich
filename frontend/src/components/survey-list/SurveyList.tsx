@@ -23,6 +23,7 @@ export const SurveyList: React.FC = () => {
 
         try {
             const res = await api.get(`/survey-manage/api/Survey/existing/${user.id}`);
+            console.log(res);
             setSurveys(res.data);
         } catch (err) {
             console.error(err);
