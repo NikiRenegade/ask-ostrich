@@ -232,6 +232,42 @@ namespace SurveyResponseService.Application.Services
             }
             return dto;
         }
+        
+        
+        public async Task<SurveyResultDto?> GetLatestBySurveyIdAndGuestIdAsync(Guid surveyId, Guid guestId, CancellationToken cancellationToken = default)
+        {
+            var surveyResult = (await _repository.GetByGuestIdAsync(guestId, cancellationToken))
+                .Where(r => r.SurveyId == surveyId)
+                .OrderByDescending(r => r.DatePassed)
+                .FirstOrDefault();
+
+            if (surveyResult == null)
+            {
+                return null;
+            }
+
+            var survey = await _surveyRepository.GetByIdAsync(surveyId, cancellationToken);
+            if (survey == null)
+            {
+                return null;
+            }
+
+            var dto = SurveyResultMapper.ToDto(surveyResult);
+            dto.Title = survey.Title;
+            dto.Description = survey.Description;
+            if (surveyResult.GuestId == null || surveyResult.DisplayName == null)
+            {
+                return null;
+            }
+            dto.UserName = surveyResult.DisplayName;
+            dto.UserId = surveyResult.GuestId;
+
+            foreach (var answer in dto.Answers)
+            {
+                answer.IsCorrect = SurveyResultCalculator.IsAnswerCorrect(survey, surveyResult, answer.QuestionId);
+            }
+            return dto;
+        }
 
         public async Task<IList<SurveyResultDto>> GetBySurveyIdAsync(Guid surveyId, CancellationToken cancellationToken = default)
         {

@@ -153,6 +153,15 @@ export async function getSurveyResultBySurveyIdAndUserId(surveyId: string, userI
     }
 }
 
+export async function getSurveyResultBySurveyIdAndGuestId(surveyId: string, guestId: string): Promise<SurveyResultDto | null> {
+    try {
+        const response = await api.get<SurveyResultDto>(`/survey-response/api/SurveyResult/survey/${surveyId}/guest/${guestId}`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Не удалось загрузить результат опроса');
+    }
+}
+
 export async function getSurveyResultsBySurveyId(surveyId: string): Promise<SurveyResultDto[]> {
     try {
         const response = await api.get<SurveyResultDto[]>(`/survey-response/api/SurveyResult/survey/${surveyId}`);

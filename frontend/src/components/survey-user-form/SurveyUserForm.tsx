@@ -8,7 +8,7 @@ import {
     Snackbar
 } from '@mui/material';
 import type { Survey } from '../../types/Survey.ts';
-import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, type SurveyResultDto } from '../../services/surveyResultApi';
+import { loadSurveyById, submitSurveyResult, getSurveyResultBySurveyIdAndUserId, getSurveyResultBySurveyIdAndGuestId, type SurveyResultDto } from '../../services/surveyResultApi';
 import { useAuth } from '../auth/AuthProvider.tsx';
 import { SurveyViewer } from '../survey-viewer/SurveyViewer.tsx';
 import { SurveyResultsView } from './SurveyResultsView.tsx';
@@ -55,6 +55,12 @@ export const SurveyUserForm: React.FC = () => {
                         setSurveyResult(result);
                     }
                 }
+                if (getGuestId() !== null) {
+                    const result = await getSurveyResultBySurveyIdAndGuestId(id, getGuestId());
+                    if (result) {
+                        setSurveyResult(result);
+                    }
+                }
 
                 const loadedSurvey = await loadSurveyById(id);
                 setSurvey(loadedSurvey);
@@ -97,10 +103,21 @@ export const SurveyUserForm: React.FC = () => {
                 datePassed: new Date().toISOString(),
                 answers: answersArray,
             });
-           
             if (user?.id && id) {
+                console.log(id);
                 try {
+                    console.log(id);
                     const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
+                    if (result) {
+                        setSurveyResult(result);
+                    }
+                } catch (err) {
+                    console.error('Failed to load survey result:', err);
+                }
+            }
+            if (getGuestId()) {
+                try {
+                    const result = await getSurveyResultBySurveyIdAndGuestId(id, getGuestId());
                     if (result) {
                         setSurveyResult(result);
                     }

@@ -149,11 +149,12 @@ namespace SurveyResponseService.Presentation.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving the survey result", error = ex.Message });
             }
         }
+        [HttpGet("survey/{surveyId}/guest/{guestId}")]
         public async Task<ActionResult<SurveyResultDto>> GetLatestBySurveyIdAndGuestId(Guid surveyId, Guid guestId, CancellationToken cancellationToken = default)
         {
             try
             {
-                var result = await _surveyResultService.GetLatestBySurveyIdAndUserIdAsync(surveyId, guestId, cancellationToken);
+                var result = await _surveyResultService.GetLatestBySurveyIdAndGuestIdAsync(surveyId, guestId, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
