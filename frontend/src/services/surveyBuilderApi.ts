@@ -27,6 +27,7 @@ interface UpdateSurveyRequest {
     Description: string;
     IsPublished: boolean;
     AuthorGuid: string;
+    ShortUrlId: string;
     Questions: Array<{
         Id: string;
         Type: string;
@@ -50,7 +51,7 @@ export interface SurveyResponse {
     authorGuid?: string;
     author?: { id: string };
     createdAt: string;
-    shortUrl: string;
+    shortUrlId: string;
     questions: Array<{
         questionId: string;
         type: string;
@@ -78,7 +79,7 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string, userId:
         IsPublished: response.isPublished !== undefined ? response.isPublished : false,
         AuthorGuid: response.authorGuid || response.author?.id || userId,
         CreatedAt: response.createdAt || new Date().toISOString(),
-        ShortUrl: response.shortUrl || '',
+        ShortUrlId: response.shortUrlId || '',
         Questions: (response.questions || []).map((q: any) => ({
             QuestionId: q.questionId || uuidv4(),
             Type: (q.type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',
@@ -123,6 +124,7 @@ function mapSurveyToUpdateRequest(survey: Survey): UpdateSurveyRequest {
         Description: survey.Description,
         IsPublished: survey.IsPublished,
         AuthorGuid: survey.AuthorGuid,
+        ShortUrlId: survey.ShortUrlId,
         Questions: survey.Questions.map(q => ({
             Id: q.QuestionId,
             Type: q.Type,

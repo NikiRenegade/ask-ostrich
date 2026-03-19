@@ -17,7 +17,7 @@ export interface SurveyResponse {
     };
     createdAt: string;
     lastUpdateAt: string;
-    shortUrl: string;
+    shortUrlId: string;
     questions: Array<{
         id: string;
         type: string;
@@ -57,7 +57,7 @@ function mapSurveyResponseToSurvey(response: SurveyResponse, id: string): Survey
         IsPublished: response.isPublished !== undefined ? response.isPublished : false,
         AuthorGuid: response.author?.id || '',
         CreatedAt: response.createdAt || new Date().toISOString(),
-        ShortUrl: response.shortUrl || '',
+        ShortUrlId: response.shortUrlId || '',
         Questions: (response.questions || []).map((q: any) => ({
             QuestionId: q.id || uuidv4(),
             Type: (q.type || 'Text') as 'Text' | 'SingleChoice' | 'MultipleChoice',

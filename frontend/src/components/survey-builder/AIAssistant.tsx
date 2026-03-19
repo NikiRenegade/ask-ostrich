@@ -381,7 +381,7 @@ function convertToSurvey(generated: GeneratedSurvey, currentSurveyJson: string):
         IsPublished: currentSurvey.IsPublished || false,
         AuthorGuid: currentSurvey.AuthorGuid || uuidv4(),
         CreatedAt: currentSurvey.CreatedAt || new Date().toISOString(),
-        ShortUrl: currentSurvey.ShortUrl || '',
+        ShortUrlId: currentSurvey.ShortUrlId || '',
         Questions: generated.questions.map((q, index) => ({
             QuestionId: uuidv4(),
             Type: mapQuestionType(q.type),

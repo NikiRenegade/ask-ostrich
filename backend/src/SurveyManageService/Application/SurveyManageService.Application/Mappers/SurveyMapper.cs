@@ -21,6 +21,7 @@ public static class SurveyMapper
                 : throw new ArgumentNullException(nameof(survey.Author), "Author must exist!"),
             CreatedAt = survey.CreatedAt,
             LastUpdateAt = survey.LastUpdateAt,
+            ShortUrlId = survey.ShortUrlId,
             Questions = survey.Questions.Select(QuestionMapper.ToDto).ToList()
         };
     }
