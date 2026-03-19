@@ -50,10 +50,10 @@ export const SurveyUserForm: React.FC = () => {
             try {
                 setLoading(true);
                 setSurveyResult(null);
+                setAnswers({});
                 if (user?.id) {
                     const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
                     if (result) {
-                        console.log(user?.id);
                         setSurveyResult(result);
                     }
                 }
