@@ -97,6 +97,40 @@ export const SurveyShortCard: React.FC<Props> = ({ survey, onDelete, onEdit, onP
                 <Typography variant="caption" sx={{ display: "block", opacity: 0.7 }}>
                     Создан: {new Date(survey.createdAt).toLocaleString()}
                 </Typography>
+                <Typography variant="caption" sx={{ display: "block", opacity: 0.7, mt: 0.5 }}>
+                    Telegram код:{" "}
+                    <Box
+                        component="span"
+                        sx={{
+                            fontFamily: "monospace", backgroundColor: "grey.100",
+                            px: 0.8, py: 0.2, borderRadius: 1, 
+                            border: "1px solid", borderColor: "grey.300",
+                            letterSpacing: "0.5px"}}>
+                        {survey.shortUrlCode}
+                    </Box>
+                </Typography>
+                <Typography variant="caption" sx={{ display: "block", opacity: 0.9 }}>
+                    Ссылка:{" "}
+                    <Box
+                        component="a"
+                        href={survey.shortUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            color: "primary.main", textDecoration: "none",
+                            borderBottom: "1px dashed", 
+                            borderColor: "primary.main",
+                            transition: "all 0.2s ease",
+                            cursor: "pointer",
+                            "&:hover": {
+                                color: "primary.dark",
+                                borderBottom: "1px solid",
+                            }
+                        }}
+                    >
+                        {survey.shortUrl}
+                    </Box>
+                </Typography>
 
                 <Chip
                     label={isPublished ? "Опубликован" : "Черновик"}
