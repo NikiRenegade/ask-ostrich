@@ -16,6 +16,7 @@ import { getGuestId, getGuestName, setGuestName, getDisplayName } from '../../se
 import { GuestNameModal } from './GuestNameModal';
 
 export const SurveyUserForm: React.FC = () => {
+    console.log("SurveyUserForm");
     const { id } = useParams<{ id: string }>();
     const { user } = useAuth();
     const [survey, setSurvey] = useState<Survey | null>(null);
@@ -48,14 +49,15 @@ export const SurveyUserForm: React.FC = () => {
 
             try {
                 setLoading(true);
-
+                setSurveyResult(null);
                 if (user?.id) {
                     const result = await getSurveyResultBySurveyIdAndUserId(id, user.id);
                     if (result) {
+                        console.log(user?.id);
                         setSurveyResult(result);
                     }
                 }
-                if (getGuestId() !== null) {
+                if (getGuestName() !== null) {
                     const result = await getSurveyResultBySurveyIdAndGuestId(id, getGuestId());
                     if (result) {
                         setSurveyResult(result);
@@ -80,7 +82,6 @@ export const SurveyUserForm: React.FC = () => {
             setAskName(true);
         }
     }, [user, loading]);
-    console.log(user);
     const handleSubmit = async () => {
         if (!survey || !id) return;
 
