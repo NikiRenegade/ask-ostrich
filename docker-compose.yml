@@ -135,6 +135,7 @@ services:
       RABBITMQ__PORT: 5672
       RABBITMQ__USERNAME: admin
       RABBITMQ__PASSWORD: admin
+      Frontend__BaseUrl: "http://ask-ostrich.ru"
     depends_on:
       ao_manage_db:
         condition: service_started
@@ -219,7 +220,7 @@ services:
       - .env
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
-      Frontend__BaseUrl: "http://127.0.0.1"
+      Frontend__BaseUrl: "http://ask-ostrich.ru"
       AuthApi__BaseUrl: "http://ao_gateway_service:8080"
     depends_on:
       ao_gateway_service:

@@ -6,9 +6,11 @@ using SurveyManageService.Domain.Interfaces.Consumers;
 using SurveyManageService.Domain.Interfaces.Publishers;
 using SurveyManageService.Domain.Interfaces.Repositories;
 using SurveyManageService.Domain.Interfaces.Services;
+using SurveyManageService.Domain.Services;
 using SurveyManageService.Infrastructure.EntityFramework.Context;
 using SurveyManageService.Infrastructure.Messaging;
 using SurveyManageService.Infrastructure.Repositories.Repositories;
+using SurveyManageService.Infrastructure.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +49,9 @@ builder.Services.AddScoped<IShortUrlRepository, ShortUrlRepository>();
 builder.Services.AddScoped<ISurveyService, SurveyService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
+
+var frontendBaseUrl = builder.Configuration["Frontend:BaseUrl"];
+builder.Services.AddSingleton<IFrontendUrlProvider>(new FrontendUrlProvider(frontendBaseUrl));
 
 // Подключение к RabbitMQ
 var rabbitConfig = builder.Configuration.GetSection("RabbitMQ");

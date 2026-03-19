@@ -71,10 +71,17 @@ public class SurveyRepository: ISurveyRepository
 
     public async Task<IList<Survey>> GetExistingByUserIdAsync(Guid userId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Surveys
-            .AsNoTracking()
+        var surveys = await _dbContext.Surveys
             .Where(x => x.AuthorId == userId)
             .ToListAsync(cancellationToken);
+
+        foreach (var survey in surveys)
+            survey.ShortUrl = await _dbContext.ShortUrls
+                .FirstOrDefaultAsync(s => 
+                    s.Id == survey.ShortUrlId, 
+                    cancellationToken);
+
+        return surveys;
     }
 
     public async Task AddWithShortUrlAsync(Survey survey, ShortUrl shortUrl, CancellationToken cancellationToken)
